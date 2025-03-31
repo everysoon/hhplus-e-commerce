@@ -4,7 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="31cb9e89-321e-49fd-ab48-88d47c524993" name="변경" comment="" />
+    <list default="true" id="31cb9e89-321e-49fd-ab48-88d47c524993" name="변경" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/diagram/보유 쿠폰 조회.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/diagram/상품 목록 조회.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/diagram/인기 상품 조회.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/diagram/주문_결제_락추가_롤백추가.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/diagram/쿠폰 발급.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/diagram/포인트 조회.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/diagram/포인트 충전.png" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -23,21 +32,21 @@
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "everysoon"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;everysoon&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://everysoon@github.com/everysoon/hhplus-e-commerce.git",
-    "accountId": "85b2cd8b-1cc6-4f9c-9485-137216b8c8c9"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://everysoon@github.com/everysoon/hhplus-e-commerce.git&quot;,
+    &quot;accountId&quot;: &quot;85b2cd8b-1cc6-4f9c-9485-137216b8c8c9&quot;
   }
-}]]></component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 2
-}]]></component>
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2
+}</component>
   <component name="ProjectId" id="2v4ChQZQf9uHeUZi5sj4hO8NKRq" />
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
@@ -50,7 +59,7 @@
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "develop",
+    "git-widget-placeholder": "docs",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "/home/soon/soon-workspace/soon-study/tdd-concurrency-control",
     "node.js.detected.package.eslint": "true",

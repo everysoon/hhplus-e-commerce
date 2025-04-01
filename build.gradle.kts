@@ -44,6 +44,21 @@ dependencies {
 	testImplementation("org.testcontainers:junit-jupiter")
 	testImplementation("org.testcontainers:mysql")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+	// Spring boot 3.x 이상 QueryDsl
+	implementation("com.querydsl:querydsl-jpa:5.0.0:jakarta")
+	annotationProcessor("com.querydsl:querydsl-apt:5.0.0:jakarta")
+	annotationProcessor("jakarta.annotation:jakarta.annotation-api")
+	annotationProcessor("jakarta.persistence:jakarta.persistence-api")
+	// swagger
+	implementation ("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
+
+	// lombok
+	compileOnly ("org.projectlombok:lombok:1.18.34")
+	annotationProcessor ("org.projectlombok:lombok:1.18.34")
+	testCompileOnly ("org.projectlombok:lombok:1.18.34")
+	testAnnotationProcessor ("org.projectlombok:lombok:1.18.34")
+
 }
 
 tasks.withType<Test> {

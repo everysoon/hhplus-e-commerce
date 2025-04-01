@@ -11,7 +11,6 @@ import kr.hhplus.be.server.ResponseApi;
 import org.springdoc.core.customizers.OperationCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.method.HandlerMethod;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -29,9 +28,9 @@ import static java.util.stream.Collectors.groupingBy;
         )
 )
 public class SwaggerConfig {
-    private static final List<SwaggerErrorCode> DEFAULT_ERROR_CODES = List.of(
-            SwaggerErrorCode.CUSTOM_INTERNAL_SERVER_ERROR,
-            SwaggerErrorCode.CUSTOM_METHOD_NOT_ALLOWED
+    private static final List<ErrorCode> DEFAULT_ERROR_CODES = List.of(
+            ErrorCode.CUSTOM_INTERNAL_SERVER_ERROR,
+            ErrorCode.CUSTOM_METHOD_NOT_ALLOWED
     );
     @Bean
     public OperationCustomizer customizer() {
@@ -41,9 +40,9 @@ public class SwaggerConfig {
             return operation;
         };
     }
-    private void settingExamples(Operation operation, SwaggerErrorCode[] swaggerErrorCodes) {
+    private void settingExamples(Operation operation, ErrorCode[] swaggerErrorCodes) {
 
-        List<SwaggerErrorCode> errorCodes = new ArrayList<>(DEFAULT_ERROR_CODES);
+        List<ErrorCode> errorCodes = new ArrayList<>(DEFAULT_ERROR_CODES);
         errorCodes.addAll(Arrays.asList(swaggerErrorCodes));
 
         Map<Integer, List<ExampleHolder>> groupedExamples = errorCodes.stream()
@@ -53,7 +52,7 @@ public class SwaggerConfig {
         addExamplesToResponses(operation.getResponses(), groupedExamples);
     }
 
-    private ExampleHolder createExampleHolder(SwaggerErrorCode code) {
+    private ExampleHolder createExampleHolder(ErrorCode code) {
         return ExampleHolder.builder()
                 .holder(createExample(code))
                 .code(code.getStatusCode())
@@ -62,7 +61,7 @@ public class SwaggerConfig {
     }
 
 
-    private Example createExample(SwaggerErrorCode type) {
+    private Example createExample(ErrorCode type) {
         return new Example().value(new ResponseApi<>(false, type.getMessage(), type.getProcessCode(), new Object()));
     }
     private void addExamplesToResponses(ApiResponses responses, Map<Integer, List<ExampleHolder>> exampleHolders) {

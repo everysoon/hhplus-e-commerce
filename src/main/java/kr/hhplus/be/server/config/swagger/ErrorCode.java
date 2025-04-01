@@ -7,9 +7,11 @@ import static org.springframework.http.HttpStatus.*;
 
 @Getter
 @AllArgsConstructor
-public enum SwaggerErrorCode {
+public enum ErrorCode {
     // common
     HANDLE_ERROR(BAD_REQUEST.value(),"-101","서비스에서 오류가 발생했습니다."),
+    CLIENT_INPUT_ERROR(BAD_REQUEST.value(),"-102","매개변수 값을 확인해주세요."),
+    INVALID_CLIENT_VALUE(BAD_REQUEST.value(),"-103","변수 형태를 확인해주세요."),
     // user
     INVALID_USER(BAD_REQUEST.value(),"-201","유효하지 않은 사용자입니다."),
     NOT_EXIST_USER(BAD_REQUEST.value(),"-202","사용자가 존재하지 않습니다."),
@@ -26,6 +28,7 @@ public enum SwaggerErrorCode {
 
     CUSTOM_METHOD_NOT_ALLOWED(METHOD_NOT_ALLOWED.value(), "","지원하지 않은 요청입니다. 요청 정보를 다시 확인해 주시기 바랍니다."),
     CUSTOM_INTERNAL_SERVER_ERROR(INTERNAL_SERVER_ERROR.value(), "","예상하지 않은 에러가 발생하였습니다. 관리자에게 문의해 주세요."),
+
     ;
     private final int statusCode;
     private final String processCode;

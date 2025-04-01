@@ -23,6 +23,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @AllArgsConstructor
 @Builder
 public class Order {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
@@ -36,23 +37,22 @@ public class Order {
 
     @NotNull
     @Setter
-    private BigDecimal totalPrice;
+    private BigDecimal totalPrice = BigDecimal.ZERO;
 
     @NotNull
-    private BigDecimal totalDiscount;
+    private BigDecimal totalDiscount = BigDecimal.ZERO;
 
     @CreatedDate
     private LocalDateTime createdAt;
 
     public void addDiscount(BigDecimal discount) {
-        if(this.totalDiscount == null) {
+        if (this.totalDiscount == null) {
             this.totalDiscount = new BigDecimal(0);
         }
-        System.out.println("sub Price " + discount + " to " + this.totalDiscount);
         this.totalDiscount = this.totalDiscount.add(discount);
     }
 
-    public BigDecimal getTotalPrice(){
+    public BigDecimal getTotalPrice() {
         return this.totalPrice.subtract(this.totalDiscount);
     }
 //    private LocalDateTime deliveriedAt;

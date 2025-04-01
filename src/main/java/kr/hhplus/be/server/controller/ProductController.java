@@ -10,7 +10,6 @@ import kr.hhplus.be.server.ResponseApi;
 import kr.hhplus.be.server.config.swagger.SwaggerErrorExample;
 import kr.hhplus.be.server.config.swagger.SwaggerSuccessExample;
 import kr.hhplus.be.server.dto.product.ProductResponseDTO;
-import kr.hhplus.be.server.dto.user.UserResponseDTO;
 import kr.hhplus.be.server.service.MockService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

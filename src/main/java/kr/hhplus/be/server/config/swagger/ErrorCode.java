@@ -12,15 +12,19 @@ public enum ErrorCode {
     HANDLE_ERROR(BAD_REQUEST.value(),"-101","서비스에서 오류가 발생했습니다."),
     CLIENT_INPUT_ERROR(BAD_REQUEST.value(),"-102","매개변수 값을 확인해주세요."),
     INVALID_CLIENT_VALUE(BAD_REQUEST.value(),"-103","변수 형태를 확인해주세요."),
+
     // user
     INVALID_USER(BAD_REQUEST.value(),"-201","유효하지 않은 사용자입니다."),
     NOT_EXIST_USER(BAD_REQUEST.value(),"-202","사용자가 존재하지 않습니다."),
+
     // product
     OUT_OF_STOCK(BAD_REQUEST.value(),"-301","상품이 품절 상태 입니다."),
     NOT_EXIST_PRODUCT(BAD_REQUEST.value(),"-302","해당 상품이 존재하지 않습니다."),
+
     // coupon
     NOT_EXIST_COUPON(BAD_REQUEST.value(),"-401","유효하지 않은 쿠폰입니다."),
     COUPON_SOLD_OUT(BAD_REQUEST.value(),"-402","선착순 쿠폰이 마감되었습니다."),
+
     // point
     INSUFFICIENT_POINTS(BAD_REQUEST.value(),"-501","사용 가능한 포인트가 부족합니다."),
 

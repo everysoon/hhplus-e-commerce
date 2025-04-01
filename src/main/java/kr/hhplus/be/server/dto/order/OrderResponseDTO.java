@@ -25,5 +25,4 @@ public class OrderResponseDTO {
     private BigDecimal couponDiscountAmount;
     private LocalDateTime orderedAt;
     private OrderStatus status;
-
 }

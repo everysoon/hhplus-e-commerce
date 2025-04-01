@@ -84,10 +84,6 @@ public class MockService {
         Payment payment = createDefaultPayment();
         Order order = createOrder(payment);
 
-//        List<Product> products = dto.getProducts().stream()
-//            .map(opr -> createProduct(opr.getProductId(), 1))
-//
-//            .toList();
         List<OrderItem> orderItems = dto.getProducts().stream()
             .map(opr -> createProduct(opr.getProductId(), 1))
             .map(p->createOrderItem(p,10,order))

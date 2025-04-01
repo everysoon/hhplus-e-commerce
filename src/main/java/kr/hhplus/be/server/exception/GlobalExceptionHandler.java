@@ -58,15 +58,6 @@ public class GlobalExceptionHandler {
         return new ResponseApi<>(false, ex.getMessage(), INVALID_CLIENT_VALUE.getProcessCode(), null);
     }
 
-//    @ExceptionHandler(UnauthorizedException.class)
-//    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-//    public ResponseApi<?> handleUnauthorizedException(UnauthorizedException ex) {
-//        String processCode = ex.getProcessCode();
-//        String message = ex.getMessage();
-//        logger.error("Authorization Error, processCode: {}, message: {}", processCode, message, ex);
-//        return new ResponseApi<>(false, message, processCode, null);
-//    }
-
     @ExceptionHandler(NoResourceFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseApi<?> handleNoResourceFoundException(NoResourceFoundException ex) {

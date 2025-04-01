@@ -27,7 +27,7 @@ public class PointHistory {
     private User user;
     @Enumerated(EnumType.STRING)
     private PointStatus status;
-    private BigDecimal price;
+    private BigDecimal price= BigDecimal.ZERO;
 
     private LocalDateTime createdAt;
 

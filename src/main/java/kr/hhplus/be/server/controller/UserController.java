@@ -4,12 +4,8 @@ import static kr.hhplus.be.server.config.swagger.ErrorCode.INVALID_CLIENT_VALUE;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Min;
 import java.math.BigDecimal;
 import kr.hhplus.be.server.ResponseApi;
-import kr.hhplus.be.server.config.swagger.ErrorCode;
 import kr.hhplus.be.server.config.swagger.SwaggerErrorExample;
 import kr.hhplus.be.server.config.swagger.SwaggerSuccessExample;
 import kr.hhplus.be.server.dto.user.UserCouponResponseDTO;

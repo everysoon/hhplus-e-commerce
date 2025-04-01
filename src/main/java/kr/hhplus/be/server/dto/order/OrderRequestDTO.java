@@ -19,6 +19,5 @@ public class OrderRequestDTO {
     private Long userId;
     @NotNull
     private List<OrderProductRequestDTO> products;
-    @Nullable
     private List<UUID> couponId;
 }

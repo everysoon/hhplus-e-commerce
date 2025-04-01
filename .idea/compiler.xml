@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
+<<<<<<< HEAD
     <annotationProcessing>
       <profile name="Gradle Imported" enabled="true">
         <outputRelativeToContentRoot value="true" />
@@ -25,6 +26,8 @@
         </processorPath>
       </profile>
     </annotationProcessing>
+=======
+>>>>>>> parent of f0741bc ([feat] entity class)
     <bytecodeTargetLevel target="17" />
   </component>
 </project>

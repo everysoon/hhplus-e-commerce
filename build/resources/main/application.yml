@@ -1,9 +1,9 @@
-
 spring:
   application:
     name: hhplus
   profiles:
     active: local
+
   datasource:
     name: HangHaePlusDataSource
     type: com.zaxxer.hikari.HikariDataSource
@@ -21,20 +21,12 @@ spring:
     properties:
       hibernate.timezone.default_storage: NORMALIZE_UTC
       hibernate.jdbc.time_zone: UTC
-      hibernate.dialect: org.hibernate.dialect.MySQLDialect
 
-server:
-  port: 8223
 ---
 spring.config.activate.on-profile: local, test
-# http://localhost:8223/swagger-ui/index.html
-springdoc:
-  api-docs:
-    path: /v3/api-docs
-  swagger-ui:
-    path: /swagger-ui.html
+
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/hhplus?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=UTC
-    username: soon
-    password: alstjsl1!
+    url: jdbc:mysql://localhost:3306/hhplus?characterEncoding=UTF-8&serverTimezone=UTC
+    username: application
+    password: application

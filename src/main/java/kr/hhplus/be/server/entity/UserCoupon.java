@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.entity;
 
 import jakarta.persistence.*;
+import kr.hhplus.be.server.dto.user.UserCouponResponseDTO;
 import kr.hhplus.be.server.enums.CouponStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,4 +37,15 @@ public class UserCoupon {
 
     private LocalDateTime issuedAt;
 
+    public UserCouponResponseDTO toResponse(){
+        return UserCouponResponseDTO.builder()
+                .couponId(coupon.getId())
+                .userId(user.getId())
+                .couponType(coupon.getType())
+                .description(coupon.getDescription())
+                .remainingStock(remainingStock)
+                .couponStatus(status)
+                .issuedAt(issuedAt)
+                .build();
+    }
 }

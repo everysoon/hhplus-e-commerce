@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
@@ -34,6 +35,13 @@ public class User {
 
     @CreatedDate
     private LocalDateTime createdAt;
+
+    public void charge(BigDecimal price){
+        this.point = this.point.add(price);
+    }
+    public void use(BigDecimal price){
+        this.point = this.point.subtract(price);
+    }
 
     public UserResponseDTO toResponseDTO(){
         return UserResponseDTO.builder()

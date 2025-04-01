@@ -28,6 +28,8 @@ public class Order {
     @JoinColumn(name = "payment_id")
     private Payment payment;
 
+    private Coupon coupon;
+
     @OneToMany
     @JoinColumn(name = "order_item_id")
     private List<OrderItem> orderItem;

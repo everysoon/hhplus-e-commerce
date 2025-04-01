@@ -10,21 +10,18 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class OrderResponseDTO {
-    private Long orderId;
     private Long userId;
-    private Long productId;
-    private String productName;
-    private BigDecimal price;
-    private Integer quantity;
-    private BigDecimal couponDiscountAmount;
-    private OrderStatus status;
-    private LocalDateTime orderedAt;
+    private List<OrderItemDTO> orderInfo;
     private PaymentMethod paymentMethod;
     private PaymentStatus paymentStatus;
+    private LocalDateTime orderedAt;
+    private OrderStatus status;
+
 }

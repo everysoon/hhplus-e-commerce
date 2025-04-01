@@ -39,7 +39,7 @@ public class ResponseApi<T> {
 
     public ResponseApi(T data) {
         this.success = true;
-        this.message = "";
+        this.message = "요청이 성공했습니다.";
         this.processCode = "1";
         this.data = data;
     }

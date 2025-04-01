@@ -4,12 +4,15 @@ import static kr.hhplus.be.server.config.swagger.ErrorCode.INVALID_CLIENT_VALUE;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
 import java.math.BigDecimal;
 import kr.hhplus.be.server.ResponseApi;
 import kr.hhplus.be.server.config.swagger.ErrorCode;
 import kr.hhplus.be.server.config.swagger.SwaggerErrorExample;
 import kr.hhplus.be.server.config.swagger.SwaggerSuccessExample;
+import kr.hhplus.be.server.dto.user.UserCouponResponseDTO;
 import kr.hhplus.be.server.dto.user.UserResponseDTO;
 import kr.hhplus.be.server.service.MockService;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +43,18 @@ public class UserController {
         return ResponseEntity.ok(mockService.getUserPoint(userId));
     }
 
+    @GetMapping("/{userId}/coupon")
+    @SwaggerSuccessExample(responseType =  UserCouponResponseDTO.class)
+    @SwaggerErrorExample({
+        INVALID_CLIENT_VALUE
+    })
+    public ResponseEntity<ResponseApi<UserCouponResponseDTO>> getUserCoupon(
+        @Parameter(description = "유저 ID", required = true)
+        @PathVariable Long userId
+    ) {
+        return ResponseEntity.ok(mockService.getUserCoupon(userId));
+    }
+
     @SwaggerSuccessExample(responseType =  UserResponseDTO.class)
     @PostMapping("/{userId}/point")
     @SwaggerErrorExample({
@@ -49,9 +64,8 @@ public class UserController {
         @Parameter(description = "유저 ID", required = true)
         @PathVariable Long userId,
         @Parameter(description = "포인트 충전량", required = true)
-        @DecimalMin(value = "1", message = "값은 0 초과여야 합니다.")
-        @RequestParam BigDecimal price
+        @RequestParam Integer price
         ) {
-        return ResponseEntity.ok(mockService.chargePoint(userId,price));
+        return ResponseEntity.ok(mockService.chargePoint(userId,new BigDecimal(price)));
     }
 }

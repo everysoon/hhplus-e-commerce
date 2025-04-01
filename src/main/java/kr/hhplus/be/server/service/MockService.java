@@ -61,7 +61,7 @@ public class MockService {
     // 선착순 쿠폰 등록
     public ResponseApi<UserCouponResponseDTO> issueCoupon(Long userId) {
         User user = createUser(userId);
-        Coupon coupon = createCoupon();
+        Coupon coupon = createCoupon(null);
         UserCouponResponseDTO result = createUserCoupon(user, coupon,
             CouponStatus.ISSUED).toResponse();
         return new ResponseApi<>(result);
@@ -70,7 +70,7 @@ public class MockService {
     // 유저 보유 쿠폰 조회
     public ResponseApi<UserCouponResponseDTO> getUserCoupon(Long userId) {
         User user = createUser(userId);
-        Coupon coupon = createCoupon();
+        Coupon coupon = createCoupon(null);
         UserCouponResponseDTO result = createUserCoupon(user, coupon,
             CouponStatus.USED).toResponse();
         return new ResponseApi<>(result);
@@ -79,15 +79,31 @@ public class MockService {
     // 주문/결제
     public ResponseApi<OrderResponseDTO> order(OrderRequestDTO dto) {
         User user = createUser(dto.getUserId());
-        List<Coupon> coupons = createCouponList();
-        List<OrderItem> orderItems = dto.getProducts().stream()
-            .map(opr -> createProduct(opr.getProductId(), 1))
-            .map(p -> createOrderItem(p, 10))
-            .toList();
+
 
         Payment payment = createDefaultPayment();
         Order order = createOrder(payment);
-        List<OrderItemDTO> orderItemDtos = orderItems.stream().map(o -> o.toDTO(order.getId())).toList();
+
+//        List<Product> products = dto.getProducts().stream()
+//            .map(opr -> createProduct(opr.getProductId(), 1))
+//
+//            .toList();
+        List<OrderItem> orderItems = dto.getProducts().stream()
+            .map(opr -> createProduct(opr.getProductId(), 1))
+            .map(p->createOrderItem(p,10,order))
+            .collect(Collectors.toList());
+
+        BigDecimal priceSum = orderItems.stream()
+            .map(o->o.getProduct())
+            .map(p->p.getPrice()).reduce((x,y)->x.add(y)).get();
+        order.setTotalPrice(priceSum);
+
+        List<OrderItemDTO> orderItemDtos = orderItems.stream().map(o -> o.toDTO(order.getId()))
+            .toList();
+        List<Coupon> coupons = createCouponList(order);
+        coupons.stream()
+            .peek(c-> System.out.println("price ? "+ c.getOrder().getTotalDiscount()))
+            .forEach(c->c.calculateDiscount(priceSum));
 
         OrderResponseDTO result = OrderResponseDTO.builder()
             .userId(user.getId())
@@ -103,25 +119,31 @@ public class MockService {
     }
 
     // utils
-    private List<Coupon> createCouponList(){
+    private List<Coupon> createCouponList(Order order) {
         List<Coupon> coupons = new ArrayList<>();
-        coupons.add(createCoupon());
+        coupons.add(createCoupon(order));
         return coupons;
     }
+
     private Order createOrder(Payment payment) {
         return Order.builder()
+            .id(1L)
             .payment(payment)
+            .createdAt(LocalDateTime.now())
             .build();
     }
+
     private Payment createDefaultPayment() {
         return Payment.builder()
             .paymentMethod(PaymentMethod.POINTS)
             .createdAt(LocalDateTime.now())
             .build();
     }
-    private OrderItem createOrderItem(Product product, Integer quantity) {
+
+    private OrderItem createOrderItem(Product product, Integer quantity, Order order) {
         return OrderItem.builder()
             .product(product)
+            .order(order)
             .quantity(quantity)
             .build();
     }
@@ -137,9 +159,11 @@ public class MockService {
             .build();
     }
 
-    private Coupon createCoupon() {
+    private Coupon createCoupon(Order order) {
         return Coupon.builder()
             .id(UUID.randomUUID())
+            .order(order)
+            .discount(new BigDecimal(1000))
             .type(CouponType.FIXED)
             .description("TEST COUPON")
             .expiredAt(LocalDateTime.now().plusDays(7L))

@@ -40,6 +40,10 @@ public class Coupon {
     private LocalDateTime createdAt;
 
     public void calculateDiscount(BigDecimal originalPrice) {
+        if(this.discount == null) {
+            this.discount = new BigDecimal(0);
+        }
+        System.out.println("discount: " + this.discount);
         if (this.type == CouponType.FIXED) {
             this.order.addDiscount(discount);
         } else if (this.type == CouponType.PERCENT) {

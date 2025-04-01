@@ -32,13 +32,11 @@ public class OrderItem {
     private Order order;
     private Integer quantity;
 
-    public void calculateTotalPrice() {
-        this.order.addPrice(this.product.getPrice());
-    }
     public OrderItemDTO toDTO(Long orderId) {
         return OrderItemDTO.builder()
                 .orderId(orderId)
                 .productId(product.getId())
+                .price(product.getPrice())
                 .productName(product.getProductName())
                 .quantity(quantity)
                 .build();

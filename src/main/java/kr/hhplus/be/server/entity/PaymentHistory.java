@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import kr.hhplus.be.server.enums.PaymentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,7 +31,8 @@ public class PaymentHistory {
     private PaymentStatus status;
     @CreatedDate
     private LocalDateTime createdAt;
-    private BigDecimal amount; // 환불액, 또는 결제액
+    @NotNull
+    private BigDecimal amount = BigDecimal.ZERO; // 환불액, 또는 결제액
     private String description; // 실패,환불 사유 명
 
 }

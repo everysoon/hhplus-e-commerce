@@ -27,8 +27,8 @@ public enum ErrorCode {
     // lock
     LOCK_ACQUISITION_FAIL(BAD_REQUEST.value(),"-601","락을 획득하는데 실패했습니다. 다시 시도해주세요."),
 
-    CUSTOM_METHOD_NOT_ALLOWED(METHOD_NOT_ALLOWED.value(), "","지원하지 않은 요청입니다. 요청 정보를 다시 확인해 주시기 바랍니다."),
-    CUSTOM_INTERNAL_SERVER_ERROR(INTERNAL_SERVER_ERROR.value(), "","예상하지 않은 에러가 발생하였습니다. 관리자에게 문의해 주세요."),
+    CUSTOM_METHOD_NOT_ALLOWED(METHOD_NOT_ALLOWED.value(), "-1001","지원하지 않은 요청입니다. 요청 정보를 다시 확인해 주시기 바랍니다."),
+    CUSTOM_INTERNAL_SERVER_ERROR(INTERNAL_SERVER_ERROR.value(), "-1002","예상하지 않은 에러가 발생하였습니다. 관리자에게 문의해 주세요."),
 
     ;
     private final int statusCode;

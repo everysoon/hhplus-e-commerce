@@ -23,7 +23,7 @@ public class User {
     @Column(nullable = false)
     private Long id;
 
-    private BigDecimal point;
+    private BigDecimal point = BigDecimal.ZERO;
 
     private String name;
     private String email;

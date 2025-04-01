@@ -1,5 +1,7 @@
 package kr.hhplus.be.server.dto.order;
 
+import jakarta.annotation.Nullable;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +15,10 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class OrderRequestDTO {
+    @NotNull
     private Long userId;
+    @NotNull
     private List<OrderProductRequestDTO> products;
+    @Nullable
     private List<UUID> couponId;
 }

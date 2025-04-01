@@ -5,14 +5,26 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9ce96515-c520-4a0d-85ac-70be0204fdc3" name="변경" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/exception/CustomException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/exception/GlobalExceptionHandler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/exception/UnauthorizedException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/exception/ValidationCustomException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/config/swagger/SwaggerSuccessExample.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/dto/order/OrderResponseDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/dto/product/ProductResponseDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/dto/user/UserCouponResponseDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/dto/user/UserResponseDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/service/MockDataInitializer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/config/swagger/SwaggerConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/config/swagger/SwaggerConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/config/swagger/SwaggerErrorCode.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/config/swagger/ErrorCode.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/config/swagger/SwaggerErrorExample.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/config/swagger/SwaggerErrorExample.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/entity/Coupon.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/entity/Coupon.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/entity/Order.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/entity/Order.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/entity/OrderHistory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/entity/OrderHistory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/entity/OrderItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/entity/OrderItem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/entity/Payment.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/entity/Payment.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/entity/PaymentHistory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/entity/PaymentHistory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/entity/PointHistory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/entity/PointHistory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/entity/Product.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/entity/Product.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/entity/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/entity/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/entity/UserCoupon.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/entity/UserCoupon.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/enums/OrderStatus.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/enums/OrderStatus.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/service/MockService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/service/MockService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,8 +56,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Class" />
         <option value="Interface" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -101,6 +113,9 @@
       <recent name="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/exception" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="kr.hhplus.be.server.dto.user" />
+      <recent name="kr.hhplus.be.server.service" />
+      <recent name="kr.hhplus.be.server.config.swagger" />
       <recent name="kr.hhplus.be.server.repository" />
     </key>
   </component>
@@ -142,7 +157,7 @@
       <updated>1743481982673</updated>
       <workItem from="1743481983696" duration="124000" />
       <workItem from="1743482118163" duration="54000" />
-      <workItem from="1743482189110" duration="2449000" />
+      <workItem from="1743482189110" duration="5844000" />
     </task>
     <servers />
   </component>

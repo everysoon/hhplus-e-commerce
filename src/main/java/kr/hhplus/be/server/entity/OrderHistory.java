@@ -22,8 +22,8 @@ public class OrderHistory {
     @Column(nullable = false)
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "order_id")
     private Order order;
-
+    private OrderStatus status;
     private LocalDateTime createdAt;
 }

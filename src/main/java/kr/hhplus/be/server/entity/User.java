@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.entity;
 
 import jakarta.persistence.*;
+import kr.hhplus.be.server.dto.user.UserResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,7 +22,7 @@ public class User {
     @Column(nullable = false)
     private Long id;
 
-    private Float point;
+    private BigDecimal point;
 
     private String name;
     private String email;
@@ -29,9 +30,18 @@ public class User {
      * address, city, zipcode, detailedAddress의 Address 객체로 보완해도 좋음
      * */
     private String address;
-    private String phone;
     private String password;
 
     @CreatedDate
     private LocalDateTime createdAt;
+
+    public UserResponseDTO toResponseDTO(){
+        return UserResponseDTO.builder()
+                .id(id)
+                .point(point)
+                .name(name)
+                .email(email)
+                .address(address)
+                .build();
+    }
 }

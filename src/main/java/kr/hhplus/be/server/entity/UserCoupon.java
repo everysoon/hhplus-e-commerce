@@ -22,14 +22,14 @@ public class UserCoupon {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @Enumerated(EnumType.STRING)
     private CouponStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "coupon_id")
     private Coupon coupon;
 
     private Integer remainingStock; // 쿠폰이 사용되거나 만료되면 갱신

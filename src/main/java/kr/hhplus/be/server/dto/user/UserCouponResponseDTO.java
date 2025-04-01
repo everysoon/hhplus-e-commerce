@@ -1,0 +1,24 @@
+package kr.hhplus.be.server.dto.user;
+
+import kr.hhplus.be.server.enums.CouponStatus;
+import kr.hhplus.be.server.enums.CouponType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class UserCouponResponseDTO {
+    private Long userId;
+    private Long couponId;
+    private CouponType couponType;
+    private String description;
+    private Integer remainingStock;
+    private CouponStatus couponStatus;
+    private LocalDateTime issuedAt;
+}

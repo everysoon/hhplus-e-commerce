@@ -22,7 +22,6 @@ public class Coupon {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
     private UUID id;
-    private String code;
     @Enumerated(EnumType.STRING)
     private CouponType type;
     private String description;

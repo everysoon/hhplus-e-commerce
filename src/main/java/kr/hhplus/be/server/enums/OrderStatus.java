@@ -1,8 +1,8 @@
 package kr.hhplus.be.server.enums;
 
 public enum OrderStatus {
-    PENDING,
-    SHIPPED,
-    DELIVERED,
+    ORDERED,
+    SHIPPED, // 배송됨
+    DELIVERED, // 배송중
     CANCELED
 }

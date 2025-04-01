@@ -37,11 +37,12 @@ public class SwaggerConfig {
         return (operation, handlerMethod) -> {
             Optional.ofNullable(handlerMethod.getMethodAnnotation(SwaggerErrorExample.class))
                     .ifPresent(swaggerErrorExample -> settingExamples(operation, swaggerErrorExample.value()));
+            Optional.ofNullable(handlerMethod.getMethodAnnotation(SwaggerSuccessExample.class))
+                    .ifPresent(swaggerSuccessExample -> settingSuccessExample(operation, swaggerSuccessExample.responseType()));
             return operation;
         };
     }
     private void settingExamples(Operation operation, ErrorCode[] swaggerErrorCodes) {
-
         List<ErrorCode> errorCodes = new ArrayList<>(DEFAULT_ERROR_CODES);
         errorCodes.addAll(Arrays.asList(swaggerErrorCodes));
 
@@ -61,6 +62,22 @@ public class SwaggerConfig {
     }
 
 
+    private void settingSuccessExample(Operation operation, Class<?> responseType) {
+        ApiResponses responses = operation.getResponses();
+        MediaType mediaType = new MediaType();
+
+        Example successExample = new Example().value(new ResponseApi<>(true, "요청이 성공했습니다.", "SUCCESS", createMockResponse(responseType)));
+        mediaType.addExamples("SuccessResponse", successExample);
+
+        responses.addApiResponse("200", new ApiResponse().description("성공적인 응답").content(new Content().addMediaType("application/json", mediaType)));
+    }
+    private Object createMockResponse(Class<?> responseType) {
+        try {
+            return responseType.getDeclaredConstructor().newInstance(); // 기본 생성자로 Mock 객체 생성
+        } catch (Exception e) {
+            return new Object(); // 실패 시 빈 객체 반환
+        }
+    }
     private Example createExample(ErrorCode type) {
         return new Example().value(new ResponseApi<>(false, type.getMessage(), type.getProcessCode(), new Object()));
     }

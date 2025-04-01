@@ -1,12 +1,14 @@
 package kr.hhplus.be.server.entity;
 
 import jakarta.persistence.*;
+import kr.hhplus.be.server.dto.user.UserResponseDTO;
 import kr.hhplus.be.server.enums.PointStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
@@ -21,11 +23,13 @@ public class PointHistory {
     @Column(nullable = false)
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "user_id")
     private User user;
     @Enumerated(EnumType.STRING)
     private PointStatus status;
-    private Float amount;
+    private BigDecimal price;
 
     private LocalDateTime createdAt;
+
+
 }

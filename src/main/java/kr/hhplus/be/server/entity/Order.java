@@ -1,13 +1,13 @@
 package kr.hhplus.be.server.entity;
 
 import jakarta.persistence.*;
-import kr.hhplus.be.server.enums.OrderStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Entity
@@ -21,10 +21,17 @@ public class Order {
     @Column(nullable = false)
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "user_id")
     private User user;
-    private Float totalAmount;
-    private Float discountAmount;
 
-    private LocalDateTime deliveriedAt;
+    @OneToOne(mappedBy = "payment", cascade = CascadeType.ALL)
+    @JoinColumn(name = "payment_id")
+    private Payment payment;
+
+    @OneToMany
+    @JoinColumn(name = "order_item_id")
+    private List<OrderItem> orderItem;
+
+    private LocalDateTime createdAt;
+//    private LocalDateTime deliveriedAt;
 }

@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
@@ -22,14 +23,14 @@ public class PaymentHistory {
     @Column(nullable = false)
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "payment_id")
     private Payment payment;
 
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;
     @CreatedDate
     private LocalDateTime createdAt;
-
+    private BigDecimal amount; // 환불액, 또는 결제액
     private String description; // 실패,환불 사유 명
 
 }

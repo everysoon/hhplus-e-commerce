@@ -16,4 +16,5 @@ public class MockService {
     private final List<Product> products = new ArrayList<>();
     private final List<Product> coupons = new ArrayList<>();
     private final List<Product> orders = new ArrayList<>();
+
 }

@@ -21,6 +21,8 @@ public class OrderResponseDTO {
     private List<OrderItemDTO> orderInfo;
     private PaymentMethod paymentMethod;
     private PaymentStatus paymentStatus;
+    private BigDecimal totalPrice;
+    private BigDecimal couponDiscountAmount;
     private LocalDateTime orderedAt;
     private OrderStatus status;
 

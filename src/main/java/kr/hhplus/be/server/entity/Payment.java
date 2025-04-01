@@ -24,4 +24,8 @@ public class Payment {
     private Long id;
     private PaymentMethod  paymentMethod;
     private LocalDateTime createdAt;
+    @OneToOne
+    @JoinColumn(name = "order_id")
+    private Order order;
+
 }

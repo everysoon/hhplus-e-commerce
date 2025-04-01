@@ -23,6 +23,7 @@ public enum ErrorCode {
     COUPON_SOLD_OUT(BAD_REQUEST.value(),"-402","선착순 쿠폰이 마감되었습니다."),
     // point
     INSUFFICIENT_POINTS(BAD_REQUEST.value(),"-501","사용 가능한 포인트가 부족합니다."),
+
     // lock
     LOCK_ACQUISITION_FAIL(BAD_REQUEST.value(),"-601","락을 획득하는데 실패했습니다. 다시 시도해주세요."),
 

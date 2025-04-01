@@ -17,5 +17,5 @@ public class OrderItemDTO{
     private String productName;
     private BigDecimal price;
     private Integer quantity;
-    private BigDecimal couponDiscountAmount;
+
 }

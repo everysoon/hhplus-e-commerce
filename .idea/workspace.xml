@@ -5,18 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9ce96515-c520-4a0d-85ac-70be0204fdc3" name="변경" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/dto/coupon/CouponDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/dto/order/OrderItemDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/dto/order/OrderProductRequestDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/dto/order/OrderRequestDTO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/dto/order/OrderResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/dto/order/OrderResponseDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/dto/user/UserCouponResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/dto/user/UserCouponResponseDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/entity/Coupon.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/entity/Coupon.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/entity/OrderItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/entity/OrderItem.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/entity/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/entity/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/entity/UserCoupon.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/entity/UserCoupon.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/service/MockService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/hhplus/be/server/service/MockService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,12 +22,7 @@
       <state>
         <projects_view>
           <tree_state>
-            <expand>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="server" type="f1a62948:ProjectNode" />
-              </path>
-            </expand>
+            <expand />
             <select />
           </tree_state>
         </projects_view>
@@ -84,6 +68,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Spring Boot.ServerApplication.executor": "Debug",
     "git-widget-placeholder": "develop",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "/home/soon/soon-workspace/soon-study/hhplus-e-commerce/src/main/java/kr/hhplus/be/server/exception",
@@ -92,6 +77,7 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "reference.settingsdialog.project.gradle",
     "vue.rearranger.settings.migration": "true"
   },
   "keyToStringList": {
@@ -113,19 +99,9 @@
     </key>
   </component>
   <component name="RunManager">
-    <configuration default="true" type="JetRunConfigurationType">
-      <module name="hhplus-e-commerce" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
-      <module name="hhplus-e-commerce" />
-      <option name="filePath" />
-      <method v="2" />
-    </configuration>
     <configuration name="ServerApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
-      <module name="server.main" />
+      <option name="ACTIVE_PROFILES" value="local" />
+      <module name="hhplus-e-commerce" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="kr.hhplus.be.server.ServerApplication" />
       <method v="2">
         <option name="Make" enabled="true" />

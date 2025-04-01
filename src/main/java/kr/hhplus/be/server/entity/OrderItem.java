@@ -27,22 +27,20 @@ public class OrderItem {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
-
-    // 가격 리턴할땐 price - couponDiscountAmount;
-    private BigDecimal couponDiscountAmount; // 할인 할 가격
-    private BigDecimal price; // 기존 가격
+    @ManyToOne
+    @JoinColumn(name = "order_id") // FK 컬럼
+    private Order order;
     private Integer quantity;
 
-
-
+    public void calculateTotalPrice() {
+        this.order.addPrice(this.product.getPrice());
+    }
     public OrderItemDTO toDTO(Long orderId) {
         return OrderItemDTO.builder()
                 .orderId(orderId)
                 .productId(product.getId())
                 .productName(product.getProductName())
-//                .price(coupon != null && !coupon.isEmpty() ? price.subtract(applyCouponDiscount()) : price)
                 .quantity(quantity)
-                .couponDiscountAmount(couponDiscountAmount)
                 .build();
     }
 }

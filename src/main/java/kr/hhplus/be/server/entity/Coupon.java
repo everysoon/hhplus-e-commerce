@@ -28,21 +28,23 @@ public class Coupon {
     @Enumerated(EnumType.STRING)
     private CouponType type;
     private String description;
-
+    @ManyToOne
+    @JoinColumn(name = "order_id")
+    private Order order;
     private BigDecimal discount; // Fixed 일땐 할인 금액 (원), Percent 일땐 할인 비율 (1 ~ 100)
 
     private Integer stock;
+
     private LocalDateTime expiredAt;
     @CreatedDate
     private LocalDateTime createdAt;
 
-    public BigDecimal calculateDiscount(BigDecimal originalPrice) {
+    public void calculateDiscount(BigDecimal originalPrice) {
         if (this.type == CouponType.FIXED) {
-            return discount; // Fixed 금액을 그대로 반환
+            this.order.addDiscount(discount);
         } else if (this.type == CouponType.PERCENT) {
-            return originalPrice.multiply(discount.divide(BigDecimal.valueOf(100))); // 백분율 계산
+            this.order.addDiscount(originalPrice.multiply(discount.divide(BigDecimal.valueOf(100))));
         }
-        return BigDecimal.ZERO;
     }
     public CouponDTO toDTO(){
         return CouponDTO.builder()

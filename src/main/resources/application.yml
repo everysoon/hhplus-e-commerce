@@ -19,6 +19,8 @@ spring:
     hibernate:
       ddl-auto: none
     properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
       hibernate.timezone.default_storage: NORMALIZE_UTC
       hibernate.jdbc.time_zone: UTC
 server:
@@ -29,5 +31,5 @@ spring.config.activate.on-profile: local, test
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/hhplus?characterEncoding=UTF-8&serverTimezone=UTC
-    username: application
-    password: application
+    username: soon
+    password: alstjsl1!

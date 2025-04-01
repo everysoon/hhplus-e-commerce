@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-// 주문이 들어간 products
+// 주문이 들어간 products.sql
 public class OrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

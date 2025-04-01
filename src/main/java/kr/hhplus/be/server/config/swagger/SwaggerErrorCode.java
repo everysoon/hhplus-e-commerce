@@ -2,9 +2,8 @@ package kr.hhplus.be.server.config.swagger;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.springframework.web.client.HttpClientErrorException;
 
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.*;
 
 @Getter
 @AllArgsConstructor
@@ -23,9 +22,13 @@ public enum SwaggerErrorCode {
     // point
     INSUFFICIENT_POINTS(BAD_REQUEST.value(),"-501","사용 가능한 포인트가 부족합니다."),
     // lock
-    LOCK_ACQUISITION_FAIL(BAD_REQUEST.value(),"-601","락을 획득하는데 실패했습니다. 다시 시도해주세요.");
+    LOCK_ACQUISITION_FAIL(BAD_REQUEST.value(),"-601","락을 획득하는데 실패했습니다. 다시 시도해주세요."),
 
-    private int statusCode;
-    private String processCode;
-    private String message;
+    CUSTOM_METHOD_NOT_ALLOWED(METHOD_NOT_ALLOWED.value(), "","지원하지 않은 요청입니다. 요청 정보를 다시 확인해 주시기 바랍니다."),
+    CUSTOM_INTERNAL_SERVER_ERROR(INTERNAL_SERVER_ERROR.value(), "","예상하지 않은 에러가 발생하였습니다. 관리자에게 문의해 주세요."),
+    ;
+    private final int statusCode;
+    private final String processCode;
+    private final String message;
+
 }

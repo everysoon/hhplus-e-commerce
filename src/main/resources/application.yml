@@ -1,3 +1,4 @@
+
 spring:
   application:
     name: hhplus
@@ -20,7 +21,8 @@ spring:
     properties:
       hibernate.timezone.default_storage: NORMALIZE_UTC
       hibernate.jdbc.time_zone: UTC
-
+server:
+  port: 8223
 ---
 spring.config.activate.on-profile: local, test
 

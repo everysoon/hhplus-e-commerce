@@ -44,6 +44,8 @@ dependencies {
 	testImplementation("org.testcontainers:junit-jupiter")
 	testImplementation("org.testcontainers:mysql")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	// restAssured
+	testImplementation ("io.rest-assured:rest-assured:5.4.0")
 
 	// Spring boot 3.x 이상 QueryDsl
 	implementation("com.querydsl:querydsl-jpa:5.0.0:jakarta")
@@ -58,6 +60,7 @@ dependencies {
 	annotationProcessor ("org.projectlombok:lombok:1.18.34")
 	testCompileOnly ("org.projectlombok:lombok:1.18.34")
 	testAnnotationProcessor ("org.projectlombok:lombok:1.18.34")
+
 
 }
 

@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import kr.hhplus.be.server.dto.user.UserResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,14 +27,17 @@ public class User {
     private BigDecimal point = BigDecimal.ZERO;
 
     private String name;
+    @Column(nullable = false, unique = true)
     private String email;
     /**
      * address, city, zipcode, detailedAddress의 Address 객체로 보완해도 좋음
      * */
     private String address;
+    @Column(nullable = false)
     private String password;
 
     @CreatedDate
+    @Column(nullable = false)
     private LocalDateTime createdAt;
 
     public void charge(BigDecimal price){

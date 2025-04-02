@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 
@@ -24,6 +25,9 @@ public class OrderHistory {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private Order order;
+    @Column(nullable = false)
     private OrderStatus status;
+    @CreatedDate
+    @Column(nullable = false)
     private LocalDateTime createdAt;
 }

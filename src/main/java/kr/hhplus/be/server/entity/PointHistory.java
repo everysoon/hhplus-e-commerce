@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -26,9 +27,13 @@ public class PointHistory {
     @JoinColumn(name = "user_id")
     private User user;
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private PointStatus status;
-    private BigDecimal price= BigDecimal.ZERO;
+    @Column(nullable = false)
+    private BigDecimal price = BigDecimal.ZERO;
 
+    @CreatedDate
+    @Column(nullable = false)
     private LocalDateTime createdAt;
 
 

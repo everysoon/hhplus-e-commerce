@@ -35,14 +35,17 @@ public class Order {
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
     private Payment payment;
 
-    @NotNull
+
     @Setter
+    @Column(nullable = false)
     private BigDecimal totalPrice = BigDecimal.ZERO;
 
     @NotNull
+    @Column(nullable = false)
     private BigDecimal totalDiscount = BigDecimal.ZERO;
 
     @CreatedDate
+    @Column(nullable = false)
     private LocalDateTime createdAt;
 
     public void addDiscount(BigDecimal discount) {

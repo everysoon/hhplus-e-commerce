@@ -30,6 +30,7 @@ public class OrderItem {
     @ManyToOne
     @JoinColumn(name = "order_id") // FK 컬럼
     private Order order;
+    @Column(nullable = false)
     private Integer quantity;
 
     public OrderItemDTO toDTO(Long orderId) {

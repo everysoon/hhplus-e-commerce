@@ -28,8 +28,10 @@ public class PaymentHistory {
     private Payment payment;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private PaymentStatus status;
     @CreatedDate
+    @Column(nullable = false)
     private LocalDateTime createdAt;
     @NotNull
     private BigDecimal amount = BigDecimal.ZERO; // 환불액, 또는 결제액

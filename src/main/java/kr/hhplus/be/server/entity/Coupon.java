@@ -25,17 +25,22 @@ public class Coupon {
     @Column(updatable = false, nullable = false)
     private UUID id;
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private CouponType type;
     private String description;
     @ManyToOne
     @JoinColumn(name = "order_id")
     private Order order;
+    @Column(nullable = false)
     private BigDecimal discount = BigDecimal.ZERO; // Fixed 일땐 할인 금액 (원), Percent 일땐 할인 비율 (1 ~ 100)
 
+    @Column(nullable = false)
     private Integer stock;
 
+    @Column(nullable = false)
     private LocalDateTime expiredAt;
     @CreatedDate
+    @Column(nullable = false)
     private LocalDateTime createdAt;
 
     public void calculateDiscount(BigDecimal originalPrice) {

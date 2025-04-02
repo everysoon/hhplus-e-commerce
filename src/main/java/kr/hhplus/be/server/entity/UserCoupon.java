@@ -1,12 +1,14 @@
 package kr.hhplus.be.server.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import kr.hhplus.be.server.dto.user.UserCouponResponseDTO;
 import kr.hhplus.be.server.enums.CouponStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 
@@ -27,14 +29,18 @@ public class UserCoupon {
     private User user;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private CouponStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "coupon_id")
     private Coupon coupon;
 
+    @Column(nullable = false)
     private Integer remainingStock; // 쿠폰이 사용되거나 만료되면 갱신
 
+    @Column(nullable = false)
+    @CreatedDate
     private LocalDateTime issuedAt;
 
     public UserCouponResponseDTO toResponse(){

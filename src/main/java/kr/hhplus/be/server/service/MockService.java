@@ -26,15 +26,13 @@ import java.util.stream.Collectors;
 @Service
 @Getter
 public class MockService {
-
-    int stock = 10;
-
+    int defaultStock = 10;
     // 인기 상품 조회
     public ResponseApi<List<ProductResponseDTO>> findAllPopularProducts() {
         List<Product> products = new ArrayList<>();
-        products.add(createProduct(1L, 10));
-        products.add(createProduct(2L, 10));
-        products.add(createProduct(3L, 10));
+        products.add(createProduct(1L, defaultStock));
+        products.add(createProduct(2L, defaultStock));
+        products.add(createProduct(3L, defaultStock));
         List<ProductResponseDTO> result = products.stream().map(Product::toResponseDTO)
             .collect(Collectors.toList());
         return new ResponseApi<>(result);
@@ -42,7 +40,7 @@ public class MockService {
 
     // 상품 조회
     public ResponseApi<ProductResponseDTO> findProductById(Long productId) {
-        ProductResponseDTO result = createProduct(productId, 10).toResponseDTO();
+        ProductResponseDTO result = createProduct(productId, defaultStock).toResponseDTO();
         return new ResponseApi<>(result);
     }
 
@@ -86,12 +84,12 @@ public class MockService {
 
         List<OrderItem> orderItems = dto.getProducts().stream()
             .map(opr -> createProduct(opr.getProductId(), 1))
-            .map(p->createOrderItem(p,10,order))
-            .collect(Collectors.toList());
+            .map(p->createOrderItem(p,defaultStock,order))
+            .toList();
 
         BigDecimal priceSum = orderItems.stream()
-            .map(o->o.getProduct())
-            .map(p->p.getPrice()).reduce((x,y)->x.add(y)).get();
+            .map(OrderItem::getProduct)
+            .map(Product::getPrice).reduce(BigDecimal::add).get();
         order.setTotalPrice(priceSum);
 
         List<OrderItemDTO> orderItemDtos = orderItems.stream().map(o -> o.toDTO(order.getId()))
@@ -150,7 +148,7 @@ public class MockService {
             .id(1L)
             .user(user)
             .status(status)
-            .remainingStock(stock--)
+            .remainingStock(5)
             .issuedAt(LocalDateTime.now())
             .build();
     }

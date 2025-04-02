@@ -22,7 +22,6 @@ import java.util.UUID;
 public class Coupon {
     @Id
     @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(updatable = false, nullable = false)
     private UUID id;
     @Enumerated(EnumType.STRING)

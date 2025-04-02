@@ -43,6 +43,11 @@ bin/
 .DS_Store
 
 ## ADD By Soon
-data/mysql/**
-.gradle/**
-build/**
+# MySQL 데이터 폴더 제외
+data/mysql/
+
+# Gradle 빌드 폴더 제외
+.gradle/
+
+# 빌드 결과 폴더 제외
+build/

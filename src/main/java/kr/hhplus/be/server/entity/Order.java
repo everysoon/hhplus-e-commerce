@@ -38,10 +38,12 @@ public class Order {
 
     @Setter
     @Column(nullable = false)
+	@Builder.Default
     private BigDecimal totalPrice = BigDecimal.ZERO;
 
     @NotNull
     @Column(nullable = false)
+	@Builder.Default
     private BigDecimal totalDiscount = BigDecimal.ZERO;
 
     @CreatedDate

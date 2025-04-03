@@ -23,7 +23,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
     private Long id;
-
+	@Builder.Default
     private BigDecimal point = BigDecimal.ZERO;
 
     private String name;

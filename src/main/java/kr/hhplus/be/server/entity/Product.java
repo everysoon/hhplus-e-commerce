@@ -31,6 +31,7 @@ public class Product {
     private Category category;
     private String description;
     @Column(nullable = false)
+	@Builder.Default
     private BigDecimal price = BigDecimal.ZERO;
     /**
      * stock이 0인 경우 status를 out_of_stock로 자동으로 설정되도록 로직을 추가하거나, 상태를 관리할 때 재고를 기반으로 상태를 관리하는 로직을 추가하자

@@ -30,6 +30,7 @@ public class PointHistory {
     @Column(nullable = false)
     private PointStatus status;
     @Column(nullable = false)
+	@Builder.Default
     private BigDecimal price = BigDecimal.ZERO;
 
     @CreatedDate

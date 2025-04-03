@@ -34,6 +34,7 @@ public class PaymentHistory {
     @Column(nullable = false)
     private LocalDateTime createdAt;
     @NotNull
+	@Builder.Default
     private BigDecimal amount = BigDecimal.ZERO; // 환불액, 또는 결제액
     private String description; // 실패,환불 사유 명
 

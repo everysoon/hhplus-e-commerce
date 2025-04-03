@@ -1,7 +1,5 @@
 package kr.hhplus.be.server.controller;
 
-import static kr.hhplus.be.server.config.swagger.ErrorCode.INVALID_CLIENT_VALUE;
-
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.math.BigDecimal;
@@ -20,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import static kr.hhplus.be.server.config.swagger.ErrorCode.*;
+
 @RestController
 @RequestMapping("/api/users")
 @Tag(name="유저",description = "유저 관련 API")
@@ -30,7 +30,7 @@ public class UserController {
     @GetMapping("/{userId}/point")
     @SwaggerSuccessExample(responseType =  UserResponseDTO.class)
     @SwaggerErrorExample({
-        INVALID_CLIENT_VALUE
+		NOT_EXIST_USER
     })
     public ResponseEntity<ResponseApi<UserResponseDTO>> getUserPoint(
         @Parameter(description = "유저 ID", required = true)
@@ -42,7 +42,7 @@ public class UserController {
     @GetMapping("/{userId}/coupon")
     @SwaggerSuccessExample(responseType =  UserCouponResponseDTO.class)
     @SwaggerErrorExample({
-        INVALID_CLIENT_VALUE
+		NOT_EXIST_USER
     })
     public ResponseEntity<ResponseApi<UserCouponResponseDTO>> getUserCoupon(
         @Parameter(description = "유저 ID", required = true)
@@ -54,7 +54,8 @@ public class UserController {
     @SwaggerSuccessExample(responseType =  UserResponseDTO.class)
     @PostMapping("/{userId}/point")
     @SwaggerErrorExample({
-        INVALID_CLIENT_VALUE
+		NOT_EXIST_USER,
+		INVALID_CHARGE_AMOUNT
     })
     public ResponseEntity<ResponseApi<UserResponseDTO>> chargePoint(
         @Parameter(description = "유저 ID", required = true)

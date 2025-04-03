@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.dto.product;
 
 import kr.hhplus.be.server.enums.Category;
+import kr.hhplus.be.server.enums.ProductStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,4 +20,5 @@ public class ProductResponseDTO {
     private Category category;
     private String description;
     private BigDecimal price;
+	private ProductStatus status;
 }

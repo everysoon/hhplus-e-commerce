@@ -13,6 +13,7 @@ import org.junit.jupiter.api.function.Executable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.*;
@@ -34,8 +35,9 @@ public class TestUtils {
 	public static final Integer defaultCouponRemainingStock = 5;
 	public static final Integer defaultProductStock = 10;
 
+	public static final Long productId = 1L;
 	// default user info
-	public static final Long invalidUserId = -1L;
+	public static final Long invalidId = -1L;
 	public static final BigDecimal chargePoint = convertToBigDecimal(100);
 	public static final Long userId = 1L;
 	public static final String userName = "minsoon";
@@ -61,18 +63,29 @@ public class TestUtils {
 			.body("processCode", equalTo(errorCode.getProcessCode())); // 성공 코드 확인
 	}
 
-	public static <T> T parseResponse(Response response, Class<T> clazz) {
+//	public static <T> T parseResponse(Response response, Class<T> clazz) {
+//		try {
+//			String json = response.getBody().asString();
+//			ResponseApi<T> responseApi = objectMapper.readValue(json, new TypeReference<ResponseApi<T>>() {
+//			});
+//			log.info("### parseResponse : {}", responseApi.getData());
+//			return objectMapper.convertValue(responseApi.getData(), clazz);
+//		} catch (Exception e) {
+//			throw new RuntimeException("응답 파싱 오류", e);
+//		}
+//	}
+	public static <T> T parseResponse(Response response, TypeReference<ResponseApi<T>> typeReference) {
 		try {
 			String json = response.getBody().asString();
-			ResponseApi<T> responseApi = objectMapper.readValue(json, new TypeReference<ResponseApi<T>>() {
-			});
+			ResponseApi<T> responseApi = objectMapper.readValue(json, typeReference);
+
 			log.info("### parseResponse : {}", responseApi.getData());
-			return objectMapper.convertValue(responseApi.getData(), clazz);
+
+			return responseApi.getData();
 		} catch (Exception e) {
 			throw new RuntimeException("응답 파싱 오류", e);
 		}
 	}
-
 	public static BigDecimal convertToBigDecimal(Integer number) {
 		return BigDecimal.valueOf(number);
 	}

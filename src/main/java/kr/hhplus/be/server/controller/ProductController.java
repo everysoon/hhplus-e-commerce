@@ -1,8 +1,5 @@
 package kr.hhplus.be.server.controller;
 
-import static kr.hhplus.be.server.config.swagger.ErrorCode.INVALID_CLIENT_VALUE;
-import static kr.hhplus.be.server.config.swagger.ErrorCode.NOT_EXIST_PRODUCT;
-
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
@@ -17,6 +14,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import static kr.hhplus.be.server.config.swagger.ErrorCode.*;
 
 @RestController
 @RequestMapping("/api/products")
@@ -40,9 +39,6 @@ public class ProductController {
 
     @GetMapping("/popular")
     @SwaggerSuccessExample(responseType = ProductResponseDTO.class)
-    @SwaggerErrorExample({
-        NOT_EXIST_PRODUCT
-    })
     public ResponseEntity<ResponseApi<List<ProductResponseDTO>>> findAllPopularProducts() {
         return ResponseEntity.ok(mockService.findAllPopularProducts());
     }

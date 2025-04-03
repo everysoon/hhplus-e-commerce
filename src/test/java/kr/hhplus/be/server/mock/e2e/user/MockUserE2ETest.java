@@ -1,6 +1,8 @@
 package kr.hhplus.be.server.mock.e2e.user;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import io.restassured.response.Response;
+import kr.hhplus.be.server.ResponseApi;
 import kr.hhplus.be.server.config.BaseE2ETest;
 import kr.hhplus.be.server.dto.user.UserCouponResponseDTO;
 import kr.hhplus.be.server.dto.user.UserResponseDTO;
@@ -23,7 +25,7 @@ public class MockUserE2ETest extends BaseE2ETest {
 	public void getUserPoint() {
 		Response response = get(GET_USER_POINT, userId);
 		verifyApiResponseSuccess(response.then());
-		UserResponseDTO userResponseDTO = parseResponse(response, UserResponseDTO.class);
+		UserResponseDTO userResponseDTO = parseResponse(response,new TypeReference<ResponseApi< UserResponseDTO>>() {});
 		// dto값 검증
 		assertThat(userResponseDTO.getPoint()).isEqualTo(defaultPoint);
 		assertThat(userResponseDTO.getName()).isEqualTo(userName);
@@ -34,8 +36,8 @@ public class MockUserE2ETest extends BaseE2ETest {
 
 	@Test
 	@DisplayName("유저 포인트 조회 [400] 유효하지 않은 유저 ID로 유저 포인트 조회할 경우")
-	public void getUserPointErrorWhenInvalidUserId() {
-		Response response = get(GET_USER_POINT, invalidUserId);
+	public void getUserPointErrorWhenInvalidId() {
+		Response response = get(GET_USER_POINT, invalidId);
 		verifyApiResponseError(response.then(), NOT_EXIST_USER);
 	}
 
@@ -53,7 +55,7 @@ public class MockUserE2ETest extends BaseE2ETest {
 	public void getUserCoupon() {
 		Response response = get(GET_USER_COUPON, userId);
 		verifyApiResponseSuccess(response.then());
-		UserCouponResponseDTO userCouponResponseDTO = parseResponse(response, UserCouponResponseDTO.class);
+		UserCouponResponseDTO userCouponResponseDTO = parseResponse(response,new TypeReference<ResponseApi< UserCouponResponseDTO>>() {});
 		// dto값 검증
 		assertThat(userCouponResponseDTO.getUserId()).isEqualTo(userId);
 		assertThat(userCouponResponseDTO.getCouponId()).isNotNull();
@@ -65,8 +67,8 @@ public class MockUserE2ETest extends BaseE2ETest {
 
 	@Test
 	@DisplayName("유저 쿠폰 조회 [400] 유효하지 않은 유저 ID로 유저 쿠폰 조회할 경우")
-	public void getUserCouponErrorWhenInvalidUserId() {
-		Response response = get(GET_USER_COUPON, invalidUserId);
+	public void getUserCouponErrorWhenInvalidId() {
+		Response response = get(GET_USER_COUPON, invalidId);
 		verifyApiResponseError(response.then(), NOT_EXIST_USER);
 	}
 
@@ -88,7 +90,7 @@ public class MockUserE2ETest extends BaseE2ETest {
 			.when()
 			.post(POST_USER_POINT);
 		verifyApiResponseSuccess(response.then());
-		UserResponseDTO userResponseDTO = parseResponse(response, UserResponseDTO.class);
+		UserResponseDTO userResponseDTO = parseResponse(response,new TypeReference<ResponseApi< UserResponseDTO>>() {});
 		assertThat(userResponseDTO.getName()).isEqualTo(userName);
 		assertThat(userResponseDTO.getId()).isEqualTo(userId);
 		assertThat(userResponseDTO.getEmail()).isEqualTo(email);
@@ -98,9 +100,9 @@ public class MockUserE2ETest extends BaseE2ETest {
 
 	@Test
 	@DisplayName("포인트 충전 [400] 유저를 찾을 수 없는 경우")
-	public void chargePointErrorWhenInvalidUserId() {
+	public void chargePointErrorWhenInvalidId() {
 		Response response = given()
-			.pathParam("userId", invalidUserId)
+			.pathParam("userId", invalidId)
 			.queryParam("price", chargePoint)
 			.when()
 			.post(POST_USER_POINT);

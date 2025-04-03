@@ -44,6 +44,10 @@ public class MockService {
 
     // 상품 조회
     public ResponseApi<ProductResponseDTO> findProductById(Long productId) {
+		if(productId < 0){
+			throw new CustomException(NOT_EXIST_PRODUCT);
+		}
+
         ProductResponseDTO result = createProduct(productId, defaultStock).toResponseDTO();
         return new ResponseApi<>(result);
     }

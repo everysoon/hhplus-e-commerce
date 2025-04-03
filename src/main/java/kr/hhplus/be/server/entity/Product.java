@@ -49,6 +49,7 @@ public class Product {
                 .stock(stock)
                 .description(description)
                 .price(price)
+				.status(status)
                 .category(category)
                 .build();
     }

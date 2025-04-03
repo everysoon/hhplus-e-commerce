@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.dto.user;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import kr.hhplus.be.server.enums.CouponStatus;
 import kr.hhplus.be.server.enums.CouponType;
 import lombok.AllArgsConstructor;
@@ -21,5 +22,6 @@ public class UserCouponResponseDTO {
     private String description;
     private Integer remainingStock;
     private CouponStatus couponStatus;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime issuedAt;
 }

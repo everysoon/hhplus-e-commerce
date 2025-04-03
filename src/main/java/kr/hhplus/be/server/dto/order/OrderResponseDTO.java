@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.dto.order;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import kr.hhplus.be.server.enums.OrderStatus;
 import kr.hhplus.be.server.enums.PaymentMethod;
 import kr.hhplus.be.server.enums.PaymentStatus;
@@ -23,6 +24,7 @@ public class OrderResponseDTO {
     private PaymentStatus paymentStatus;
     private BigDecimal totalPrice;
     private BigDecimal couponDiscountAmount;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime orderedAt;
     private OrderStatus status;
 }

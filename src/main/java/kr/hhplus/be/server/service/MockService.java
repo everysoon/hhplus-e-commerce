@@ -28,61 +28,62 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static kr.hhplus.be.server.config.swagger.ErrorCode.*;
+import static kr.hhplus.be.server.utils.MockUtils.*;
 
 @Service
 @Getter
 public class MockService {
-    static int defaultStock = 10;
+	static int defaultStock = 5;
 	// 이미 발급된 사용자 정보 저장 (In-Memory)
 	private static final Set<Long> issuedUsers = ConcurrentHashMap.newKeySet();
-
 	// 남은 쿠폰 개수 (동시성을 고려해 AtomicInteger 사용)
 	private static final AtomicInteger remainingCoupons = new AtomicInteger(defaultStock); // 초기 쿠폰 개수 - 10
-    // 인기 상품 조회
-    public ResponseApi<List<ProductResponseDTO>> findAllPopularProducts() {
-        List<Product> products = new ArrayList<>();
-        products.add(createProduct(1L, defaultStock));
-        products.add(createProduct(2L, defaultStock));
-        products.add(createProduct(3L, defaultStock));
-        List<ProductResponseDTO> result = products.stream().map(Product::toResponseDTO)
-            .collect(Collectors.toList());
-        return new ResponseApi<>(result);
-    }
 
-    // 상품 조회
-    public ResponseApi<ProductResponseDTO> findProductById(Long productId) {
-		if(productId < 0){
+	// 인기 상품 조회
+	public ResponseApi<List<ProductResponseDTO>> findAllPopularProducts() {
+		List<Product> products = new ArrayList<>();
+		products.add(createProduct(1L, defaultStock));
+		products.add(createProduct(2L, defaultStock));
+		products.add(createProduct(3L, defaultStock));
+		List<ProductResponseDTO> result = products.stream().map(Product::toResponseDTO)
+			.collect(Collectors.toList());
+		return new ResponseApi<>(result);
+	}
+
+	// 상품 조회
+	public ResponseApi<ProductResponseDTO> findProductById(Long productId) {
+		if (productId < 0) {
 			throw new CustomException(NOT_EXIST_PRODUCT);
 		}
 
-        ProductResponseDTO result = createProduct(productId, defaultStock).toResponseDTO();
-        return new ResponseApi<>(result);
-    }
+		ProductResponseDTO result = createProduct(productId, defaultStock).toResponseDTO();
+		return new ResponseApi<>(result);
+	}
 
-    // 유저 포인트 충전
-    public ResponseApi<UserResponseDTO> chargePoint(Long userId, BigDecimal price) {
-		if(userId <= 0){
+	// 유저 포인트 충전
+	public ResponseApi<UserResponseDTO> chargePoint(Long userId, BigDecimal price) {
+		if (userId <= 0) {
 			throw new CustomException(NOT_EXIST_USER);
 		}
-		if(price.compareTo(BigDecimal.ZERO) <= 0){
+		if (price.compareTo(BigDecimal.ZERO) <= 0) {
 			throw new CustomException(INVALID_CHARGE_AMOUNT);
 		}
-        User user = createUser(userId);
-        user.charge(price);
-        return new ResponseApi<>(user.toResponseDTO());
-    }
+		User user = createUser(userId);
+		user.charge(price);
+		return new ResponseApi<>(user.toResponseDTO());
+	}
 
-    // 유저 포인트 조회
-    public ResponseApi<UserResponseDTO> getUserPoint(Long userId) {
-		if(userId <= 0){
+	// 유저 포인트 조회
+	public ResponseApi<UserResponseDTO> getUserPoint(Long userId) {
+		if (userId <= 0) {
 			throw new CustomException(NOT_EXIST_USER);
 		}
-        return new ResponseApi<>(createUser(userId).toResponseDTO());
-    }
+		return new ResponseApi<>(createUser(userId).toResponseDTO());
+	}
 
-    // 선착순 쿠폰 등록
-    public ResponseApi<UserCouponResponseDTO> issueCoupon(Long userId) {
-		if(userId <= 0){
+	// 선착순 쿠폰 등록
+	public ResponseApi<UserCouponResponseDTO> issueCoupon(Long userId) {
+		if (userId <= 0) {
 			throw new CustomException(NOT_EXIST_USER);
 		}
 		// 이미 발급받은 사용자 검증
@@ -96,144 +97,92 @@ public class MockService {
 		}
 
 		User user = createUser(userId);
-        Coupon coupon = createCoupon(null);
-        UserCouponResponseDTO result = createUserCoupon(user, coupon,
-            CouponStatus.ISSUED).toResponse(coupon.getExpiredAt());
+		Coupon coupon = createCoupon(null);
+		UserCouponResponseDTO result = createUserCoupon(user, coupon,
+			CouponStatus.ISSUED).toResponse(coupon.getExpiredAt());
 		issuedUsers.add(userId);
 		remainingCoupons.decrementAndGet();
 
-        return new ResponseApi<>(result);
-    }
+		return new ResponseApi<>(result);
+	}
 
-    // 유저 보유 쿠폰 조회
-    public ResponseApi<UserCouponResponseDTO> getUserCoupon(Long userId) {
-		if(userId <= 0){
+	// 유저 보유 쿠폰 조회
+	public ResponseApi<UserCouponResponseDTO> getUserCoupon(Long userId) {
+		if (userId <= 0) {
 			throw new CustomException(NOT_EXIST_USER);
 		}
-        User user = createUser(userId);
-        Coupon coupon = createCoupon(null);
-        UserCouponResponseDTO result = createUserCoupon(user, coupon,
-            CouponStatus.USED).toResponse(coupon.getExpiredAt());
-        return new ResponseApi<>(result);
-    }
-
-    // 주문/결제
-    public ResponseApi<OrderResponseDTO> order(OrderRequestDTO dto) {
-        User user = createUser(dto.getUserId());
+		User user = createUser(userId);
+		Coupon coupon = createCoupon(null);
+		UserCouponResponseDTO result = createUserCoupon(user, coupon,
+			CouponStatus.USED).toResponse(coupon.getExpiredAt());
+		return new ResponseApi<>(result);
+	}
 
 
-        Payment payment = createDefaultPayment();
-        Order order = createOrder(payment);
 
-        List<OrderItem> orderItems = dto.getProducts().stream()
-            .map(opr -> createProduct(opr.getProductId(), 1))
-            .map(p->createOrderItem(p,defaultStock,order))
-            .toList();
+	// 주문/결제
+	public ResponseApi<OrderResponseDTO> order(OrderRequestDTO dto) {
+		issuedDefaultCoupon();
+		if (dto.getUserId() <= 0) {
+			throw new CustomException(NOT_EXIST_USER);
+		}
+		if (dto.getProducts().isEmpty()) {
+			throw new CustomException(NOT_EXIST_ORDER_ITEM);
+		}
+		if (!dto.getCouponId().isEmpty()) {
+			if (!issuedCoupons.contains(dto.getCouponId().get(0))) {
+				throw new CustomException(NOT_EXIST_COUPON);
+			}
+		}
 
-        BigDecimal priceSum = orderItems.stream()
-            .map(OrderItem::getProduct)
-            .map(Product::getPrice).reduce(BigDecimal::add).get();
-        order.setTotalPrice(priceSum);
+		User user = createUser(dto.getUserId());
 
-        List<OrderItemDTO> orderItemDtos = orderItems.stream().map(o -> o.toDTO(order.getId()))
-            .toList();
-        List<Coupon> coupons = createCouponList(order);
-        coupons.stream()
-            .peek(c-> System.out.println("price ? "+ c.getOrder().getTotalDiscount()))
-            .forEach(c->c.calculateDiscount(priceSum));
+		Payment payment = createDefaultPayment();
+		Order order = createOrder(payment);
 
-        OrderResponseDTO result = OrderResponseDTO.builder()
-            .userId(user.getId())
-            .paymentMethod(payment.getPaymentMethod())
-            .paymentStatus(PaymentStatus.COMPLETED)
-            .totalPrice(order.getTotalPrice())
-            .couponDiscountAmount(order.getTotalDiscount())
-            .orderInfo(orderItemDtos)
-            .orderedAt(order.getCreatedAt())
-            .status(OrderStatus.ORDERED)
-            .build();
-        return new ResponseApi<>(result);
-    }
+		List<OrderItem> orderItems = dto.getProducts().stream()
+			.map(opr -> {
+				if (opr.getProductId() < 0) {
+					throw new CustomException(NOT_EXIST_PRODUCT);
+				}
+				return createProduct(opr.getProductId(), 1);
+			})
+			.map(p -> {
+				if (remainingProductStock.get() < 0) {
+					throw new CustomException(OUT_OF_STOCK);
+				}
+				return createOrderItem(p, defaultStock, order);
+			})
+			.toList();
 
-    // utils
-    private List<Coupon> createCouponList(Order order) {
-        List<Coupon> coupons = new ArrayList<>();
-        coupons.add(createCoupon(order));
-        return coupons;
-    }
+		BigDecimal priceSum = orderItems.stream()
+			.map(OrderItem::getProduct)
+			.map(Product::getPrice).reduce(BigDecimal::add).get();
+		order.setTotalPrice(priceSum);
+		if (user.getPoint().compareTo(priceSum) < 0) {
+			throw new CustomException(INSUFFICIENT_POINTS);
+		}
+		List<OrderItemDTO> orderItemDtos = orderItems.stream().map(o -> o.toDTO(order.getId()))
+			.toList();
+		// request CouponId로 쿠폰 검색할때 자신의 쿠폰이 아닐경우 에러 반환
+		List<UserCoupon> coupons = createCouponList(order)
+			.stream().peek(c ->c.calculateDiscount(priceSum))
+			.map(c->createUserCoupon(user, c, CouponStatus.ISSUED))
+			.toList();
 
-    private Order createOrder(Payment payment) {
-        return Order.builder()
-            .id(1L)
-            .payment(payment)
-            .createdAt(LocalDateTime.now())
-            .build();
-    }
+		OrderResponseDTO result = OrderResponseDTO.builder()
+			.userId(user.getId())
+			.paymentMethod(payment.getPaymentMethod())
+			.paymentStatus(PaymentStatus.COMPLETED)
+			.totalPrice(order.getTotalPrice())
+			.couponDiscountAmount(order.getTotalDiscount())
+			.orderInfo(orderItemDtos)
+			.orderedAt(order.getCreatedAt())
+			.status(OrderStatus.ORDERED)
+			.build();
+		return new ResponseApi<>(result);
+	}
 
-    private Payment createDefaultPayment() {
-        return Payment.builder()
-            .paymentMethod(PaymentMethod.POINTS)
-            .createdAt(LocalDateTime.now())
-            .build();
-    }
+	// utils
 
-    private OrderItem createOrderItem(Product product, Integer quantity, Order order) {
-        return OrderItem.builder()
-            .product(product)
-            .order(order)
-            .quantity(quantity)
-            .build();
-    }
-
-    private UserCoupon createUserCoupon(User user, Coupon coupon, CouponStatus status) {
-        return UserCoupon.builder()
-            .coupon(coupon)
-            .id(1L)
-            .user(user)
-            .status(status)
-            .remainingStock(5)
-            .issuedAt(LocalDateTime.now())
-            .build();
-    }
-
-    private Coupon createCoupon(Order order) {
-        return Coupon.builder()
-            .id(UUID.randomUUID())
-            .order(order)
-            .discount(new BigDecimal(1000))
-            .type(CouponType.FIXED)
-            .description("TEST COUPON")
-            .expiredAt(LocalDateTime.now().plusDays(7L))
-            .createdAt(LocalDateTime.now())
-            .build();
-    }
-
-    private User createUser(Long userId) {
-        return User.builder()
-            .id(userId)
-            .point(convertToBigDecimal(0))
-            .name("minsoon")
-            .email("soonforjoy@gmail.com")
-            .address("Guro,Seoul")
-            .password("$2a$12$NooMM5e1WBiD8uYqRkblTuNN0iesou/beJ/EeuTofsUmzjhuZ6NgK")
-            .createdAt(LocalDateTime.now())
-            .build();
-    }
-
-    private Product createProduct(Long productId, Integer stock) {
-        return Product.builder()
-            .id(productId)
-            .stock(stock)
-            .price(convertToBigDecimal(5000))
-            .productName("다이소 장난감 " + productId)
-            .category(Category.BABY)
-            .description("유아용 다이소 자동차 장난감 " + productId)
-            .status(ProductStatus.AVAILABLE)
-            .createdAt(LocalDateTime.now())
-            .build();
-    }
-
-    private BigDecimal convertToBigDecimal(Integer number) {
-        return BigDecimal.valueOf(number);
-    }
 }

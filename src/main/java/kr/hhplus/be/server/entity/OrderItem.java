@@ -33,9 +33,8 @@ public class OrderItem {
     @Column(nullable = false)
     private Integer quantity;
 
-    public OrderItemDTO toDTO(Long orderId) {
+    public OrderItemDTO toDTO() {
         return OrderItemDTO.builder()
-                .orderId(orderId)
                 .productId(product.getId())
                 .price(product.getPrice())
                 .productName(product.getProductName())

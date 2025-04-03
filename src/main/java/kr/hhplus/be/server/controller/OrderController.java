@@ -7,6 +7,7 @@ import kr.hhplus.be.server.config.swagger.SwaggerErrorExample;
 import kr.hhplus.be.server.config.swagger.SwaggerSuccessExample;
 import kr.hhplus.be.server.dto.order.OrderRequestDTO;
 import kr.hhplus.be.server.dto.order.OrderResponseDTO;
+import kr.hhplus.be.server.service.MockOrderService;
 import kr.hhplus.be.server.service.MockService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,18 +23,19 @@ import static kr.hhplus.be.server.config.swagger.ErrorCode.*;
 @Tag(name="주문",description = "주문 관련 API")
 @RequiredArgsConstructor
 public class OrderController {
-    private final MockService mockService;
+    private final MockOrderService mockService;
 
     @PostMapping
     @SwaggerSuccessExample(responseType =  OrderResponseDTO.class)
     @SwaggerErrorExample({
-        NOT_EXIST_COUPON,
-		INVALID_COUPON,
-        NOT_EXIST_PRODUCT,
-        NOT_EXIST_USER,
-        OUT_OF_STOCK,
-        INSUFFICIENT_POINTS,
-        LOCK_ACQUISITION_FAIL
+        NOT_EXIST_COUPON, // 0
+		INVALID_COUPON, // 0
+        NOT_EXIST_PRODUCT, // 0
+        NOT_EXIST_USER, // 0
+        OUT_OF_STOCK, // 0
+        INSUFFICIENT_POINTS, // 0
+        LOCK_ACQUISITION_FAIL,
+		NOT_EXIST_ORDER_ITEM // 0
     })
     public ResponseEntity<ResponseApi<OrderResponseDTO>> order(
        @Valid @RequestBody OrderRequestDTO dto

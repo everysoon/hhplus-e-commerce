@@ -19,6 +19,7 @@ import java.util.List;
 @Builder
 public class OrderResponseDTO {
     private Long userId;
+	private Long orderId;
     private List<OrderItemDTO> orderInfo;
     private PaymentMethod paymentMethod;
     private PaymentStatus paymentStatus;

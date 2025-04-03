@@ -51,4 +51,7 @@ public class Coupon {
             this.order.addDiscount(originalPrice.multiply(discount.divide(BigDecimal.valueOf(100))));
         }
     }
+	public boolean isValid(){
+		return expiredAt.isBefore(LocalDateTime.now());
+	}
 }

@@ -11,6 +11,9 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
 
 @Getter
 @Entity
@@ -55,4 +58,7 @@ public class UserCoupon {
                 .issuedAt(issuedAt)
                 .build();
     }
+	public boolean isValid(){
+		return EnumSet.of(CouponStatus.PENDING, CouponStatus.ISSUED).contains(this.status);
+	}
 }

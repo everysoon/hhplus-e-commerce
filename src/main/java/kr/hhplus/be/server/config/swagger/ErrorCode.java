@@ -27,13 +27,15 @@ public enum ErrorCode {
 	INVALID_COUPON(BAD_REQUEST.value(),"-403","유효하지 않은 쿠폰입니다."),
 	COUPON_ISSUED_FAIL(BAD_REQUEST.value(),"-404","쿠폰 발급에 대한 동시성 에러가 발생했습니다."),
 	DUPLICATE_COUPON_CLAIM(BAD_REQUEST.value(),"-405","이미 쿠폰을 받은 발급자 입니다."),
+
     // point
     INSUFFICIENT_POINTS(BAD_REQUEST.value(),"-501","사용 가능한 포인트가 부족합니다."),
 	INVALID_CHARGE_AMOUNT(BAD_REQUEST.value(),"-502","충전 금액은 0보다 커야합니다."),
 
     // lock
     LOCK_ACQUISITION_FAIL(BAD_REQUEST.value(),"-601","락을 획득하는데 실패했습니다. 다시 시도해주세요."),
-
+	// order
+	NOT_EXIST_ORDER_ITEM(BAD_REQUEST.value(),"-701","주문 상품이 존재하지 않습니다."),
     CUSTOM_METHOD_NOT_ALLOWED(METHOD_NOT_ALLOWED.value(), "-1001","지원하지 않은 요청입니다. 요청 정보를 다시 확인해 주시기 바랍니다."),
     CUSTOM_INTERNAL_SERVER_ERROR(INTERNAL_SERVER_ERROR.value(), "-1002","예상하지 않은 에러가 발생하였습니다. 관리자에게 문의해 주세요."),
 	;

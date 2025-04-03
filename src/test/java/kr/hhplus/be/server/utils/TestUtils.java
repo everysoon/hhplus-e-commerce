@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.UUID;
 
 import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.*;
@@ -35,11 +36,13 @@ public class TestUtils {
 	public static final Integer defaultCouponRemainingStock = 5;
 	public static final Integer defaultProductStock = 10;
 
+	public static final UUID availableCouponId =UUID.fromString("b284611e-3518-4857-ab86-dcacf9ceb0a1");
 	public static final Long productId = 1L;
 	// default user info
 	public static final Long invalidId = -1L;
 	public static final BigDecimal chargePoint = convertToBigDecimal(100);
 	public static Long userId = 1L;
+	public static Long pointAvailableUserId = 2L;
 	public static final String userName = "minsoon";
 	public static final String email = "soonforjoy@gmail.com";
 	public static final String address = "Guro,Seoul";
@@ -47,6 +50,7 @@ public class TestUtils {
 	private static final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
 	public static ValidatableResponse verifyApiResponseSuccess(ValidatableResponse response) {
+		log.info("### verifyApiResponseSuccess : {}", response);
 		return response
 			.statusCode(200) // HTTP 200 확인
 			.body("success", equalTo(true)) // API 요청 성공 여부
@@ -56,6 +60,8 @@ public class TestUtils {
 	}
 
 	public static ValidatableResponse verifyApiResponseError(ValidatableResponse response, ErrorCode errorCode) {
+		log.info("### verifyApiResponseError : {}", response);
+		log.info("### verifyApiResponseError ErrorCode : {}", errorCode);
 		return response
 			.statusCode(errorCode.getStatusCode()) // HTTP 200 확인
 			.body("success", equalTo(false)) // API 요청 성공 여부

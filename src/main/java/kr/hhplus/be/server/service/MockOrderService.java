@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.service;
 
+import jakarta.transaction.Transactional;
 import kr.hhplus.be.server.ResponseApi;
 import kr.hhplus.be.server.dto.order.OrderItemDTO;
 import kr.hhplus.be.server.dto.order.OrderProductRequestDTO;
@@ -25,29 +26,36 @@ import static kr.hhplus.be.server.utils.MockUtils.*;
 
 public class MockOrderService {
 	// 남은 상품 재고
-	private static final AtomicInteger remainingProductStock = new AtomicInteger(5); // 초기 쿠폰 개수 - 10
+	private static final AtomicInteger remainingProductStock = new AtomicInteger(5);
 	private static final Map<Long, List<UUID>> issuedCoupons = new HashMap<>();
 	private static final Set<Long> lockedOrders = ConcurrentHashMap.newKeySet();
 
 	public void issuedDefaultCouponAndValidCoupon(OrderRequestDTO dto) {
 		// DB를 사용한다 가정
-		issuedCoupons.put(userId, List.of(UUID.fromString("b284611e-3518-4857-ab86-dcacf9ceb0a1"), UUID.fromString("921db6fe-f91a-423c-a3ad-7ee219a05a24")));
-		if (!dto.getCouponId().isEmpty()) {
+		issuedCoupons.put(2L, List.of(UUID.fromString("b284611e-3518-4857-ab86-dcacf9ceb0a1"), UUID.fromString("921db6fe-f91a-423c-a3ad-7ee219a05a24")));
+		if (dto.getCouponId()!= null && !dto.getCouponId().isEmpty()) {
 			List<UUID> uuids = issuedCoupons.get(dto.getUserId());
+			if(uuids == null || uuids.isEmpty()) {
+				throw new CustomException(INVALID_USER_COUPON);
+			}
 			List<UUID> requestUuid = dto.getCouponId();
 			IntStream.range(0, Math.min(uuids.size(), requestUuid.size()))
 				.forEach(i -> {
-					if (!uuids.get(i).equals(requestUuid.get(i))) {
+					if(requestUuid.get(i).equals(UUID.fromString("0cf78826-f30f-4121-9476-10f6ac1f6e7f"))){
 						throw new CustomException(INVALID_COUPON);
+					}
+					if (!uuids.get(i).equals(requestUuid.get(i))) {
+						throw new CustomException(NOT_EXIST_COUPON);
 					}
 				});
 		}
 	}
 
 	public ResponseApi<OrderResponseDTO> order(OrderRequestDTO dto) {
-		issuedDefaultCouponAndValidCoupon(dto);
+
 		if (dto.getUserId() <= 0) throw new CustomException(NOT_EXIST_USER);
 		if (dto.getProducts().isEmpty()) throw new CustomException(NOT_EXIST_ORDER_ITEM);
+		issuedDefaultCouponAndValidCoupon(dto);
 
 		if (!acquireLockForOrder(dto.getUserId())) {
 			throw new CustomException(LOCK_ACQUISITION_FAIL);
@@ -55,7 +63,7 @@ public class MockOrderService {
 		try {
 			User user = createUser(dto.getUserId());
 			List<OrderItem> orderItems = processOrder(dto, user);
-
+			remainingProductStock.decrementAndGet();
 			OrderResponseDTO result = buildOrderResponse(user, orderItems);
 			return new ResponseApi<>(result);
 		} finally {
@@ -74,7 +82,7 @@ public class MockOrderService {
 			throw new CustomException(INSUFFICIENT_POINTS);
 		}
 
-		applyCoupons(order, user);
+		applyCoupons(dto.getCouponId(),order, user);
 		return orderItems;
 	}
 
@@ -99,11 +107,12 @@ public class MockOrderService {
 			.orElse(BigDecimal.ZERO);
 	}
 
-	private void applyCoupons(Order order, User user) {
-		createCouponList(order).stream()
-			.peek(c -> c.calculateDiscount(order.getTotalPrice()))
-			.map(c -> createUserCoupon(user, c, CouponStatus.ISSUED))
-			.toList();
+	private void applyCoupons(List<UUID> couponIds,Order order, User user) {
+		if(couponIds != null && !couponIds.isEmpty()) {
+			 createCouponList(couponIds, order).stream()
+				.peek(c -> c.calculateDiscount(order.getTotalPrice()))
+				.peek(c -> createUserCoupon(user, c, CouponStatus.ISSUED));
+		}
 	}
 
 	private OrderResponseDTO buildOrderResponse(User user, List<OrderItem> orderItems) {

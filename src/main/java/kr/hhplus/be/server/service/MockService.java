@@ -121,68 +121,65 @@ public class MockService {
 
 
 	// 주문/결제
-	public ResponseApi<OrderResponseDTO> order(OrderRequestDTO dto) {
-		issuedDefaultCoupon();
-		if (dto.getUserId() <= 0) {
-			throw new CustomException(NOT_EXIST_USER);
-		}
-		if (dto.getProducts().isEmpty()) {
-			throw new CustomException(NOT_EXIST_ORDER_ITEM);
-		}
-		if (!dto.getCouponId().isEmpty()) {
-			if (!issuedCoupons.contains(dto.getCouponId().get(0))) {
-				throw new CustomException(NOT_EXIST_COUPON);
-			}
-		}
-
-		User user = createUser(dto.getUserId());
-
-		Payment payment = createDefaultPayment();
-		Order order = createOrder(payment);
-
-		List<OrderItem> orderItems = dto.getProducts().stream()
-			.map(opr -> {
-				if (opr.getProductId() < 0) {
-					throw new CustomException(NOT_EXIST_PRODUCT);
-				}
-				return createProduct(opr.getProductId(), 1);
-			})
-			.map(p -> {
-				if (remainingProductStock.get() < 0) {
-					throw new CustomException(OUT_OF_STOCK);
-				}
-				return createOrderItem(p, defaultStock, order);
-			})
-			.toList();
-
-		BigDecimal priceSum = orderItems.stream()
-			.map(OrderItem::getProduct)
-			.map(Product::getPrice).reduce(BigDecimal::add).get();
-		order.setTotalPrice(priceSum);
-		if (user.getPoint().compareTo(priceSum) < 0) {
-			throw new CustomException(INSUFFICIENT_POINTS);
-		}
-		List<OrderItemDTO> orderItemDtos = orderItems.stream().map(o -> o.toDTO(order.getId()))
-			.toList();
-		// request CouponId로 쿠폰 검색할때 자신의 쿠폰이 아닐경우 에러 반환
-		List<UserCoupon> coupons = createCouponList(order)
-			.stream().peek(c ->c.calculateDiscount(priceSum))
-			.map(c->createUserCoupon(user, c, CouponStatus.ISSUED))
-			.toList();
-
-		OrderResponseDTO result = OrderResponseDTO.builder()
-			.userId(user.getId())
-			.paymentMethod(payment.getPaymentMethod())
-			.paymentStatus(PaymentStatus.COMPLETED)
-			.totalPrice(order.getTotalPrice())
-			.couponDiscountAmount(order.getTotalDiscount())
-			.orderInfo(orderItemDtos)
-			.orderedAt(order.getCreatedAt())
-			.status(OrderStatus.ORDERED)
-			.build();
-		return new ResponseApi<>(result);
-	}
-
-	// utils
-
+//	public ResponseApi<OrderResponseDTO> order(OrderRequestDTO dto) {
+//		issuedDefaultCoupon();
+//		if (dto.getUserId() <= 0) {
+//			throw new CustomException(NOT_EXIST_USER);
+//		}
+//		if (dto.getProducts().isEmpty()) {
+//			throw new CustomException(NOT_EXIST_ORDER_ITEM);
+//		}
+//		if (!dto.getCouponId().isEmpty()) {
+//			if (!issuedCoupons.contains(dto.getCouponId().get(0))) {
+//				throw new CustomException(NOT_EXIST_COUPON);
+//			}
+//		}
+//
+//		User user = createUser(dto.getUserId());
+//
+//		Payment payment = createDefaultPayment();
+//		Order order = createOrder(payment);
+//
+//		List<OrderItem> orderItems = dto.getProducts().stream()
+//			.map(opr -> {
+//				if (opr.getProductId() < 0) {
+//					throw new CustomException(NOT_EXIST_PRODUCT);
+//				}
+//				return createProduct(opr.getProductId(), 1);
+//			})
+//			.map(p -> {
+//				if (remainingProductStock.get() < 0) {
+//					throw new CustomException(OUT_OF_STOCK);
+//				}
+//				return createOrderItem(p, defaultStock, order);
+//			})
+//			.toList();
+//
+//		BigDecimal priceSum = orderItems.stream()
+//			.map(OrderItem::getProduct)
+//			.map(Product::getPrice).reduce(BigDecimal::add).get();
+//		order.setTotalPrice(priceSum);
+//		if (user.getPoint().compareTo(priceSum) < 0) {
+//			throw new CustomException(INSUFFICIENT_POINTS);
+//		}
+//		List<OrderItemDTO> orderItemDtos = orderItems.stream().map(o -> o.toDTO(order.getId()))
+//			.toList();
+//		// request CouponId로 쿠폰 검색할때 자신의 쿠폰이 아닐경우 에러 반환
+//		List<UserCoupon> coupons = createCouponList(order)
+//			.stream().peek(c ->c.calculateDiscount(priceSum))
+//			.map(c->createUserCoupon(user, c, CouponStatus.ISSUED))
+//			.toList();
+//
+//		OrderResponseDTO result = OrderResponseDTO.builder()
+//			.userId(user.getId())
+//			.paymentMethod(payment.getPaymentMethod())
+//			.paymentStatus(PaymentStatus.COMPLETED)
+//			.totalPrice(order.getTotalPrice())
+//			.couponDiscountAmount(order.getTotalDiscount())
+//			.orderInfo(orderItemDtos)
+//			.orderedAt(order.getCreatedAt())
+//			.status(OrderStatus.ORDERED)
+//			.build();
+//		return new ResponseApi<>(result);
+//	}
 }

@@ -28,14 +28,15 @@ public class OrderController {
     @PostMapping
     @SwaggerSuccessExample(responseType =  OrderResponseDTO.class)
     @SwaggerErrorExample({
-        NOT_EXIST_COUPON, // 0
-		INVALID_COUPON, // 0
-        NOT_EXIST_PRODUCT, // 0
-        NOT_EXIST_USER, // 0
-        OUT_OF_STOCK, // 0
-        INSUFFICIENT_POINTS, // 0
+        NOT_EXIST_COUPON,
+		INVALID_COUPON,
+        NOT_EXIST_PRODUCT,
+        NOT_EXIST_USER,
+        OUT_OF_STOCK,
+		INVALID_USER_COUPON,
+        INSUFFICIENT_POINTS,
         LOCK_ACQUISITION_FAIL,
-		NOT_EXIST_ORDER_ITEM // 0
+		NOT_EXIST_ORDER_ITEM
     })
     public ResponseEntity<ResponseApi<OrderResponseDTO>> order(
        @Valid @RequestBody OrderRequestDTO dto

@@ -19,6 +19,10 @@ public class MockUtils {
 		coupons.add(createCoupon(order));
 		return coupons;
 	}
+	public static List<Coupon> createCouponList(List<UUID> couponIds,Order order) {
+
+		return couponIds.stream().map(u->createCoupon(u,order)).toList();
+	}
 
 	public static Order createOrder(Payment payment) {
 		return Order.builder()
@@ -44,9 +48,7 @@ public class MockUtils {
 	}
 
 	public static UserCoupon createUserCoupon(User user, Coupon coupon, CouponStatus status) {
-		if(coupon.getId() == UUID.fromString("8282")){
-			throw new CustomException(INVALID_COUPON);
-		}
+
 		return UserCoupon.builder()
 			.coupon(coupon)
 			.id(1L)
@@ -80,11 +82,22 @@ public class MockUtils {
 			.createdAt(LocalDateTime.now())
 			.build();
 	}
+	public static Coupon createCoupon(UUID uuid,Order order) {
+		return Coupon.builder()
+			.id(uuid)
+			.order(order)
+			.discount(new BigDecimal(1000))
+			.type(CouponType.FIXED)
+			.description("TEST COUPON")
+			.expiredAt(LocalDateTime.now().plusDays(7L))
+			.createdAt(LocalDateTime.now())
+			.build();
+	}
 
 	public static User createUser(Long userId) {
 		return User.builder()
 			.id(userId)
-			.point(convertToBigDecimal(0))
+			.point(userId == 2 ? convertToBigDecimal(10000):convertToBigDecimal(0))
 			.name("minsoon")
 			.email("soonforjoy@gmail.com")
 			.address("Guro,Seoul")

@@ -52,15 +52,16 @@ public class MockCouponE2ETest extends BaseE2ETest {
 	@Test
 	@DisplayName("선착순 쿠폰 발급 [400] 같은 사용자가 쿠폰 재 발급 요청을 했을 때 (중복발급 X)")
 	public void getCouponErrorWhenDuplicateIssued() {
-		post(POST_ISSUED_COUPON,userId); // 정상
+		post(POST_ISSUED_COUPON, userId); // 정상
 		Response response = post(POST_ISSUED_COUPON, userId);// 에러
 		verifyApiResponseError(response.then(), DUPLICATE_COUPON_CLAIM);
 	}
+
 	@Test
 	@DisplayName("선착순 쿠폰 발급 [400] 쿠폰 재고가 없을 때")
 	public void getCouponErrorWhenCouponSoldOut() {
 		long userId = 1L;
-		for(int i =0; i<5; i++) post(POST_ISSUED_COUPON,userId++); // 정상
+		for (int i = 0; i < 5; i++) post(POST_ISSUED_COUPON, userId++); // 정상
 		Response response = post(POST_ISSUED_COUPON, ++userId);// 에러
 		verifyApiResponseError(response.then(), COUPON_SOLD_OUT);
 	}

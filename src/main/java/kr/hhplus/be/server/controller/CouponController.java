@@ -1,7 +1,5 @@
 package kr.hhplus.be.server.controller;
 
-import static kr.hhplus.be.server.config.swagger.ErrorCode.COUPON_SOLD_OUT;
-
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.hhplus.be.server.ResponseApi;
@@ -16,6 +14,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static kr.hhplus.be.server.config.swagger.ErrorCode.*;
+
 @RestController
 @RequestMapping("/api/coupons")
 @Tag(name="쿠폰",description = "쿠폰 관련 API")
@@ -26,9 +26,11 @@ public class CouponController {
     @PostMapping("/{userId}")
     @SwaggerSuccessExample(responseType =  UserCouponResponseDTO.class)
     @SwaggerErrorExample({
-        COUPON_SOLD_OUT
+        COUPON_SOLD_OUT,
+		NOT_EXIST_USER,
+		DUPLICATE_COUPON_CLAIM
     })
-    public ResponseEntity<ResponseApi<UserCouponResponseDTO>> getUserPoint(
+    public ResponseEntity<ResponseApi<UserCouponResponseDTO>> issueCoupon(
         @Parameter(description = "유저 ID", required = true)
         @PathVariable Long userId
     ) {

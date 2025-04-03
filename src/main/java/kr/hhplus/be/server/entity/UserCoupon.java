@@ -43,11 +43,12 @@ public class UserCoupon {
     @CreatedDate
     private LocalDateTime issuedAt;
 
-    public UserCouponResponseDTO toResponse(){
+    public UserCouponResponseDTO toResponse(LocalDateTime expired){
         return UserCouponResponseDTO.builder()
                 .couponId(coupon.getId())
                 .userId(user.getId())
                 .couponType(coupon.getType())
+				.expiredAt(expired)
                 .description(coupon.getDescription())
                 .remainingStock(remainingStock)
                 .couponStatus(status)

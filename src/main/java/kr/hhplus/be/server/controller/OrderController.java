@@ -1,13 +1,5 @@
 package kr.hhplus.be.server.controller;
 
-import static kr.hhplus.be.server.config.swagger.ErrorCode.COUPON_SOLD_OUT;
-import static kr.hhplus.be.server.config.swagger.ErrorCode.INSUFFICIENT_POINTS;
-import static kr.hhplus.be.server.config.swagger.ErrorCode.LOCK_ACQUISITION_FAIL;
-import static kr.hhplus.be.server.config.swagger.ErrorCode.NOT_EXIST_COUPON;
-import static kr.hhplus.be.server.config.swagger.ErrorCode.NOT_EXIST_PRODUCT;
-import static kr.hhplus.be.server.config.swagger.ErrorCode.NOT_EXIST_USER;
-import static kr.hhplus.be.server.config.swagger.ErrorCode.OUT_OF_STOCK;
-
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import kr.hhplus.be.server.ResponseApi;
@@ -23,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static kr.hhplus.be.server.config.swagger.ErrorCode.*;
+
 @RestController
 @RequestMapping("/api/orders")
 @Tag(name="주문",description = "주문 관련 API")
@@ -34,13 +28,14 @@ public class OrderController {
     @SwaggerSuccessExample(responseType =  OrderResponseDTO.class)
     @SwaggerErrorExample({
         NOT_EXIST_COUPON,
+		INVALID_COUPON,
         NOT_EXIST_PRODUCT,
         NOT_EXIST_USER,
         OUT_OF_STOCK,
         INSUFFICIENT_POINTS,
         LOCK_ACQUISITION_FAIL
     })
-    public ResponseEntity<ResponseApi<OrderResponseDTO>> getUserPoint(
+    public ResponseEntity<ResponseApi<OrderResponseDTO>> order(
        @Valid @RequestBody OrderRequestDTO dto
     ) {
         return ResponseEntity.ok(mockService.order(dto));

@@ -30,7 +30,7 @@ public class ProductController {
     @SwaggerErrorExample({
         NOT_EXIST_PRODUCT
     })
-    public ResponseEntity<ResponseApi<ProductResponseDTO>> getUserPoint(
+    public ResponseEntity<ResponseApi<ProductResponseDTO>> findProductById(
         @Parameter(description = "상품 ID", required = true)
         @PathVariable Long productId
     ) {

@@ -24,4 +24,6 @@ public class UserCouponResponseDTO {
     private CouponStatus couponStatus;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime issuedAt;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
+	private LocalDateTime expiredAt;
 }

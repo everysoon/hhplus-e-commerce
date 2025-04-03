@@ -23,6 +23,8 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static kr.hhplus.be.server.config.swagger.ErrorCode.*;
@@ -30,7 +32,12 @@ import static kr.hhplus.be.server.config.swagger.ErrorCode.*;
 @Service
 @Getter
 public class MockService {
-    int defaultStock = 10;
+    static int defaultStock = 10;
+	// 이미 발급된 사용자 정보 저장 (In-Memory)
+	private static final Set<Long> issuedUsers = ConcurrentHashMap.newKeySet();
+
+	// 남은 쿠폰 개수 (동시성을 고려해 AtomicInteger 사용)
+	private static final AtomicInteger remainingCoupons = new AtomicInteger(defaultStock); // 초기 쿠폰 개수 - 10
     // 인기 상품 조회
     public ResponseApi<List<ProductResponseDTO>> findAllPopularProducts() {
         List<Product> products = new ArrayList<>();
@@ -75,10 +82,26 @@ public class MockService {
 
     // 선착순 쿠폰 등록
     public ResponseApi<UserCouponResponseDTO> issueCoupon(Long userId) {
-        User user = createUser(userId);
+		if(userId <= 0){
+			throw new CustomException(NOT_EXIST_USER);
+		}
+		// 이미 발급받은 사용자 검증
+		if (issuedUsers.contains(userId)) {
+			throw new CustomException(DUPLICATE_COUPON_CLAIM);
+		}
+
+		// 쿠폰이 소진되었는지 확인
+		if (remainingCoupons.get() <= 0) {
+			throw new CustomException(COUPON_SOLD_OUT);
+		}
+
+		User user = createUser(userId);
         Coupon coupon = createCoupon(null);
         UserCouponResponseDTO result = createUserCoupon(user, coupon,
-            CouponStatus.ISSUED).toResponse();
+            CouponStatus.ISSUED).toResponse(coupon.getExpiredAt());
+		issuedUsers.add(userId);
+		remainingCoupons.decrementAndGet();
+
         return new ResponseApi<>(result);
     }
 
@@ -90,7 +113,7 @@ public class MockService {
         User user = createUser(userId);
         Coupon coupon = createCoupon(null);
         UserCouponResponseDTO result = createUserCoupon(user, coupon,
-            CouponStatus.USED).toResponse();
+            CouponStatus.USED).toResponse(coupon.getExpiredAt());
         return new ResponseApi<>(result);
     }
 

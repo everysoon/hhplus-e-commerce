@@ -39,7 +39,7 @@ public class TestUtils {
 	// default user info
 	public static final Long invalidId = -1L;
 	public static final BigDecimal chargePoint = convertToBigDecimal(100);
-	public static final Long userId = 1L;
+	public static Long userId = 1L;
 	public static final String userName = "minsoon";
 	public static final String email = "soonforjoy@gmail.com";
 	public static final String address = "Guro,Seoul";

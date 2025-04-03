@@ -22,9 +22,11 @@ public enum ErrorCode {
     NOT_EXIST_PRODUCT(BAD_REQUEST.value(),"-302","해당 상품이 존재하지 않습니다."),
 
     // coupon
-    NOT_EXIST_COUPON(BAD_REQUEST.value(),"-401","유효하지 않은 쿠폰입니다."),
-    COUPON_SOLD_OUT(BAD_REQUEST.value(),"-402","선착순 쿠폰이 마감되었습니다."),
-
+    NOT_EXIST_COUPON(BAD_REQUEST.value(),"-401","해당 쿠폰을 찾을 수 없습니다."),
+    COUPON_SOLD_OUT(BAD_REQUEST.value(),"-402","선착순 마감으로 쿠폰 재고가 존재하지않습니다."),
+	INVALID_COUPON(BAD_REQUEST.value(),"-403","유효하지 않은 쿠폰입니다."),
+	COUPON_ISSUED_FAIL(BAD_REQUEST.value(),"-404","쿠폰 발급에 대한 동시성 에러가 발생했습니다."),
+	DUPLICATE_COUPON_CLAIM(BAD_REQUEST.value(),"-405","이미 쿠폰을 받은 발급자 입니다."),
     // point
     INSUFFICIENT_POINTS(BAD_REQUEST.value(),"-501","사용 가능한 포인트가 부족합니다."),
 	INVALID_CHARGE_AMOUNT(BAD_REQUEST.value(),"-502","충전 금액은 0보다 커야합니다."),

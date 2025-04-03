@@ -6,6 +6,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 /**
  * E2E Test
@@ -15,7 +16,7 @@ import org.springframework.test.context.ActiveProfiles;
  * 4. API 요청 -> DB조회/수정 -> 응답반환 전체 흐름을 검증
  */
 
-//@Testcontainers
+@Testcontainers
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -24,30 +25,10 @@ public class BaseE2ETest {
 	@LocalServerPort
 	protected int port;
 
-//	@Container
-//	private static final MySQLContainer<?> MYSQL_CONTAINER = new MySQLContainer<>("mysql:8.0")
-//		.withDatabaseName("hhplus")
-//		.withUsername("soon")
-//		.withPassword("alstjsl1!");
-
 	@BeforeAll
 	public void setup() {
 		// RestAssured 설정 (테스트 대상 API의 base URI 및 포트 설정)
 		RestAssured.baseURI = "http://localhost/api";
 		RestAssured.port = port;
 	}
-//	@DynamicPropertySource
-//	static void configureProperties(DynamicPropertyRegistry registry) {
-//		MYSQL_CONTAINER.start();
-//		registry.add("spring.datasource.url", MYSQL_CONTAINER::getJdbcUrl);
-//		registry.add("spring.datasource.username", MYSQL_CONTAINER::getUsername);
-//		registry.add("spring.datasource.password", MYSQL_CONTAINER::getPassword);
-//		registry.add("spring.datasource.driver-class-name", MYSQL_CONTAINER::getDriverClassName);
-//	}
-//	@PreDestroy
-//	public void stopContainer() {
-//		if (MYSQL_CONTAINER.isRunning()) {
-//			MYSQL_CONTAINER.stop();
-//		}
-//	}
 }

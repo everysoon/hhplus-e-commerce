@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.mock.e2e.user;
+package kr.hhplus.be.server.mock.e2e;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.restassured.response.Response;

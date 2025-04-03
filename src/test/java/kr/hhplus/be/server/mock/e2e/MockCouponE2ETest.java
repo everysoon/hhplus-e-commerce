@@ -1,26 +1,20 @@
-package kr.hhplus.be.server.mock.e2e.user;
+package kr.hhplus.be.server.mock.e2e;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.restassured.response.Response;
 import kr.hhplus.be.server.ResponseApi;
 import kr.hhplus.be.server.config.BaseE2ETest;
-import kr.hhplus.be.server.dto.product.ProductResponseDTO;
 import kr.hhplus.be.server.dto.user.UserCouponResponseDTO;
-import kr.hhplus.be.server.enums.Category;
 import kr.hhplus.be.server.enums.CouponStatus;
 import kr.hhplus.be.server.enums.CouponType;
-import kr.hhplus.be.server.enums.ProductStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import java.util.List;
 
 import static io.restassured.RestAssured.get;
 import static io.restassured.RestAssured.post;
 import static kr.hhplus.be.server.config.swagger.ErrorCode.*;
 import static kr.hhplus.be.server.utils.TestUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.*;
 
 public class MockCouponE2ETest extends BaseE2ETest {
 	private final String POST_ISSUED_COUPON = "/coupons/{userId}";

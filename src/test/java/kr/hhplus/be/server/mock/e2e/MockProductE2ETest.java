@@ -1,14 +1,11 @@
-package kr.hhplus.be.server.mock.e2e.user;
+package kr.hhplus.be.server.mock.e2e;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.restassured.response.Response;
 import kr.hhplus.be.server.ResponseApi;
 import kr.hhplus.be.server.config.BaseE2ETest;
 import kr.hhplus.be.server.dto.product.ProductResponseDTO;
-import kr.hhplus.be.server.dto.user.UserCouponResponseDTO;
-import kr.hhplus.be.server.dto.user.UserResponseDTO;
 import kr.hhplus.be.server.enums.Category;
-import kr.hhplus.be.server.enums.CouponType;
 import kr.hhplus.be.server.enums.ProductStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.mock.e2e.user;
+package kr.hhplus.be.server.mock.e2e;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.restassured.http.ContentType;
@@ -8,19 +8,11 @@ import kr.hhplus.be.server.config.BaseE2ETest;
 import kr.hhplus.be.server.dto.order.OrderProductRequestDTO;
 import kr.hhplus.be.server.dto.order.OrderRequestDTO;
 import kr.hhplus.be.server.dto.order.OrderResponseDTO;
-import kr.hhplus.be.server.dto.user.UserCouponResponseDTO;
-import kr.hhplus.be.server.entity.Product;
 import kr.hhplus.be.server.enums.*;
-import org.apache.http.protocol.HTTP;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.*;

@@ -158,6 +158,7 @@ public class MockOrderE2ETest extends BaseE2ETest {
 	@Test
 	@DisplayName("상품 주문 [400] 락 획득에 실패했을 때")
 	public void getCouponErrorWhenAcquireLock() throws ExecutionException, InterruptedException {
+
 		ExecutorService executor = Executors.newFixedThreadPool(2);
 		CountDownLatch latch = new CountDownLatch(1);
 		List<Future<Response>> futures = IntStream.range(0, 2)

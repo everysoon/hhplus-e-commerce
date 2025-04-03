@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.service;
 
 import kr.hhplus.be.server.ResponseApi;
+import kr.hhplus.be.server.config.swagger.ErrorCode;
 import kr.hhplus.be.server.dto.order.OrderItemDTO;
 import kr.hhplus.be.server.dto.order.OrderRequestDTO;
 import kr.hhplus.be.server.dto.order.OrderResponseDTO;
@@ -15,6 +16,7 @@ import kr.hhplus.be.server.enums.OrderStatus;
 import kr.hhplus.be.server.enums.PaymentMethod;
 import kr.hhplus.be.server.enums.PaymentStatus;
 import kr.hhplus.be.server.enums.ProductStatus;
+import kr.hhplus.be.server.exception.CustomException;
 import lombok.Getter;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +24,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static kr.hhplus.be.server.config.swagger.ErrorCode.*;
 
 @Service
 @Getter
@@ -46,6 +50,12 @@ public class MockService {
 
     // 유저 포인트 충전
     public ResponseApi<UserResponseDTO> chargePoint(Long userId, BigDecimal price) {
+		if(userId <= 0){
+			throw new CustomException(NOT_EXIST_USER);
+		}
+		if(price.compareTo(BigDecimal.ZERO) <= 0){
+			throw new CustomException(INVALID_CHARGE_AMOUNT);
+		}
         User user = createUser(userId);
         user.charge(price);
         return new ResponseApi<>(user.toResponseDTO());
@@ -53,6 +63,9 @@ public class MockService {
 
     // 유저 포인트 조회
     public ResponseApi<UserResponseDTO> getUserPoint(Long userId) {
+		if(userId <= 0){
+			throw new CustomException(NOT_EXIST_USER);
+		}
         return new ResponseApi<>(createUser(userId).toResponseDTO());
     }
 
@@ -67,6 +80,9 @@ public class MockService {
 
     // 유저 보유 쿠폰 조회
     public ResponseApi<UserCouponResponseDTO> getUserCoupon(Long userId) {
+		if(userId <= 0){
+			throw new CustomException(NOT_EXIST_USER);
+		}
         User user = createUser(userId);
         Coupon coupon = createCoupon(null);
         UserCouponResponseDTO result = createUserCoupon(user, coupon,

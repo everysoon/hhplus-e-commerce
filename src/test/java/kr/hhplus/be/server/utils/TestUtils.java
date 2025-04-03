@@ -46,8 +46,8 @@ public class TestUtils {
 
 	private static final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
-	public static void verifyApiResponseSuccess(ValidatableResponse response) {
-		response
+	public static ValidatableResponse verifyApiResponseSuccess(ValidatableResponse response) {
+		return response
 			.statusCode(200) // HTTP 200 확인
 			.body("success", equalTo(true)) // API 요청 성공 여부
 			.body("message", equalTo(SUCCESS_MSG)) // 기본 메시지 확인
@@ -55,25 +55,14 @@ public class TestUtils {
 			.body("data", notNullValue()); // 데이터가 null이 아닌지 확인
 	}
 
-	public static void verifyApiResponseError(ValidatableResponse response, ErrorCode errorCode) {
-		response
+	public static ValidatableResponse verifyApiResponseError(ValidatableResponse response, ErrorCode errorCode) {
+		return response
 			.statusCode(errorCode.getStatusCode()) // HTTP 200 확인
 			.body("success", equalTo(false)) // API 요청 성공 여부
 			.body("message", equalTo(errorCode.getMessage())) // 기본 메시지 확인
 			.body("processCode", equalTo(errorCode.getProcessCode())); // 성공 코드 확인
 	}
 
-//	public static <T> T parseResponse(Response response, Class<T> clazz) {
-//		try {
-//			String json = response.getBody().asString();
-//			ResponseApi<T> responseApi = objectMapper.readValue(json, new TypeReference<ResponseApi<T>>() {
-//			});
-//			log.info("### parseResponse : {}", responseApi.getData());
-//			return objectMapper.convertValue(responseApi.getData(), clazz);
-//		} catch (Exception e) {
-//			throw new RuntimeException("응답 파싱 오류", e);
-//		}
-//	}
 	public static <T> T parseResponse(Response response, TypeReference<ResponseApi<T>> typeReference) {
 		try {
 			String json = response.getBody().asString();

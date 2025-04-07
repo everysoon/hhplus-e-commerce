@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import kr.hhplus.be.server.ResponseApi;
 import kr.hhplus.be.server.config.swagger.SwaggerErrorExample;
-import kr.hhplus.be.server.config.swagger.SwaggerSuccessExample;
 import kr.hhplus.be.server.dto.product.ProductResponseDTO;
 import kr.hhplus.be.server.service.MockService;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +25,6 @@ public class ProductController {
     private final MockService mockService;
 
     @GetMapping("/{productId}")
-    @SwaggerSuccessExample(responseType = ProductResponseDTO.class)
     @SwaggerErrorExample({
         NOT_EXIST_PRODUCT
     })
@@ -38,7 +36,6 @@ public class ProductController {
     }
 
     @GetMapping("/popular")
-    @SwaggerSuccessExample(responseType = ProductResponseDTO.class)
     public ResponseEntity<ResponseApi<List<ProductResponseDTO>>> findAllPopularProducts() {
         return ResponseEntity.ok(mockService.findAllPopularProducts());
     }

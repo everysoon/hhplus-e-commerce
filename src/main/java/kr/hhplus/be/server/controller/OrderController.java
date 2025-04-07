@@ -4,11 +4,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import kr.hhplus.be.server.ResponseApi;
 import kr.hhplus.be.server.config.swagger.SwaggerErrorExample;
-import kr.hhplus.be.server.config.swagger.SwaggerSuccessExample;
 import kr.hhplus.be.server.dto.order.OrderRequestDTO;
 import kr.hhplus.be.server.dto.order.OrderResponseDTO;
 import kr.hhplus.be.server.service.MockOrderService;
-import kr.hhplus.be.server.service.MockService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,7 +24,6 @@ public class OrderController {
     private final MockOrderService mockService;
 
     @PostMapping
-    @SwaggerSuccessExample(responseType =  OrderResponseDTO.class)
     @SwaggerErrorExample({
         NOT_EXIST_COUPON,
 		INVALID_COUPON,

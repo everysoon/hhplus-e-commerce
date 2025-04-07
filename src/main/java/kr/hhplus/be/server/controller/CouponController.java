@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.hhplus.be.server.ResponseApi;
 import kr.hhplus.be.server.config.swagger.SwaggerErrorExample;
-import kr.hhplus.be.server.config.swagger.SwaggerSuccessExample;
 import kr.hhplus.be.server.dto.user.UserCouponResponseDTO;
 import kr.hhplus.be.server.service.MockService;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +23,6 @@ public class CouponController {
     private final MockService mockService;
 
     @PostMapping("/{userId}")
-    @SwaggerSuccessExample(responseType =  UserCouponResponseDTO.class)
     @SwaggerErrorExample({
         COUPON_SOLD_OUT,
 		NOT_EXIST_USER,

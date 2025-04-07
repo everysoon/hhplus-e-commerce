@@ -22,87 +22,63 @@ import static kr.hhplus.be.server.config.swagger.ErrorCode.HANDLE_ERROR;
 
 @Configuration
 @OpenAPIDefinition(
-    info = @io.swagger.v3.oas.annotations.info.Info(
-        title = "HHPlus E-Commerce Service API",
-        version = "1.0.0"
-    ),
-    servers = @io.swagger.v3.oas.annotations.servers.Server(
-        url = "http://localhost:8223"
-    )
+	info = @io.swagger.v3.oas.annotations.info.Info(
+		title = "HHPlus E-Commerce Service API",
+		version = "1.0.0"
+	),
+	servers = @io.swagger.v3.oas.annotations.servers.Server(
+		url = "http://localhost:8223"
+	)
 )
 public class SwaggerConfig {
 
-    private static final List<ErrorCode> DEFAULT_ERROR_CODES = List.of(
-        CUSTOM_INTERNAL_SERVER_ERROR,
-        CUSTOM_METHOD_NOT_ALLOWED
-    );
+	private static final List<ErrorCode> DEFAULT_ERROR_CODES = List.of(
+		CUSTOM_INTERNAL_SERVER_ERROR,
+		CUSTOM_METHOD_NOT_ALLOWED
+	);
 
-    @Bean
-    public OperationCustomizer customizer() {
-        return (operation, handlerMethod) -> {
-            Optional.ofNullable(handlerMethod.getMethodAnnotation(SwaggerErrorExample.class))
-                .ifPresent(
-                    swaggerErrorExample -> settingExamples(operation, swaggerErrorExample.value()));
-            Optional.ofNullable(handlerMethod.getMethodAnnotation(SwaggerSuccessExample.class))
-                .ifPresent(swaggerSuccessExample -> settingSuccessExample(operation,
-                    swaggerSuccessExample.responseType()));
-            return operation;
-        };
-    }
+	@Bean
+	public OperationCustomizer customizer() {
+		return (operation, handlerMethod) -> {
+			Optional.ofNullable(handlerMethod.getMethodAnnotation(SwaggerErrorExample.class))
+				.ifPresent(
+					swaggerErrorExample -> settingExamples(operation, swaggerErrorExample.value()));
+			return operation;
+		};
+	}
 
-    private void settingExamples(Operation operation, ErrorCode[] swaggerErrorCodes) {
-        List<ErrorCode> errorCodes = new ArrayList<>(DEFAULT_ERROR_CODES);
-        errorCodes.addAll(Arrays.asList(swaggerErrorCodes));
+	private void settingExamples(Operation operation, ErrorCode[] swaggerErrorCodes) {
+		List<ErrorCode> errorCodes = new ArrayList<>(DEFAULT_ERROR_CODES);
+		errorCodes.addAll(Arrays.asList(swaggerErrorCodes));
 
-        Map<Integer, List<ExampleHolder>> groupedExamples = errorCodes.stream()
-            .map(this::createExampleHolder)
-            .collect(Collectors.groupingBy(ExampleHolder::getCode));
+		Map<Integer, List<ExampleHolder>> groupedExamples = errorCodes.stream()
+			.map(this::createExampleHolder)
+			.collect(Collectors.groupingBy(ExampleHolder::getCode));
 
-        addExamplesToResponses(operation.getResponses(), groupedExamples);
-    }
+		addExamplesToResponses(operation.getResponses(), groupedExamples);
+	}
 
-    private ExampleHolder createExampleHolder(ErrorCode code) {
-        return ExampleHolder.builder()
-            .holder(createExample(code))
-            .code(code.getStatusCode())
-            .name(code.name())
-            .build();
-    }
+	private ExampleHolder createExampleHolder(ErrorCode code) {
+		return ExampleHolder.builder()
+			.holder(createExample(code))
+			.code(code.getStatusCode())
+			.name(code.name())
+			.build();
+	}
 
+	private Example createExample(ErrorCode type) {
+		return new Example().value(
+			new ResponseApi<>(false, type.getMessage(), new Object()));
+	}
 
-    private void settingSuccessExample(Operation operation, Class<?> responseType) {
-        ApiResponses responses = operation.getResponses();
-        MediaType mediaType = new MediaType();
+	private void addExamplesToResponses(ApiResponses responses,
+		Map<Integer, List<ExampleHolder>> exampleHolders) {
+		exampleHolders.forEach((status, holders) -> {
+			MediaType mediaType = new MediaType();
+			holders.forEach(holder -> mediaType.addExamples(holder.getName(), holder.getHolder()));
 
-        Example successExample = new Example().value(
-            new ResponseApi<>(true, "요청이 성공했습니다.", "1", createMockResponse(responseType)));
-        mediaType.addExamples("SuccessResponse", successExample);
-
-        responses.addApiResponse("200", new ApiResponse().description("성공적인 응답")
-            .content(new Content().addMediaType("application/json", mediaType)));
-    }
-
-    private Object createMockResponse(Class<?> responseType) {
-        try {
-            return responseType.getDeclaredConstructor().newInstance(); // 기본 생성자로 Mock 객체 생성
-        } catch (Exception e) {
-            return new Object(); // 실패 시 빈 객체 반환
-        }
-    }
-
-    private Example createExample(ErrorCode type) {
-        return new Example().value(
-            new ResponseApi<>(false, type.getMessage(), type.getProcessCode(), new Object()));
-    }
-
-    private void addExamplesToResponses(ApiResponses responses,
-        Map<Integer, List<ExampleHolder>> exampleHolders) {
-        exampleHolders.forEach((status, holders) -> {
-            MediaType mediaType = new MediaType();
-            holders.forEach(holder -> mediaType.addExamples(holder.getName(), holder.getHolder()));
-
-            responses.addApiResponse(status.toString(), new ApiResponse().content(
-                new Content().addMediaType("application/json", mediaType)));
-        });
-    }
+			responses.addApiResponse(status.toString(), new ApiResponse().content(
+				new Content().addMediaType("application/json", mediaType)));
+		});
+	}
 }

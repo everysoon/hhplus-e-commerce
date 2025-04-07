@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.math.BigDecimal;
 import kr.hhplus.be.server.ResponseApi;
 import kr.hhplus.be.server.config.swagger.SwaggerErrorExample;
-import kr.hhplus.be.server.config.swagger.SwaggerSuccessExample;
 import kr.hhplus.be.server.dto.user.UserCouponResponseDTO;
 import kr.hhplus.be.server.dto.user.UserResponseDTO;
 import kr.hhplus.be.server.service.MockService;
@@ -28,7 +27,6 @@ public class UserController {
     private final MockService mockService;
 
     @GetMapping("/{userId}/point")
-    @SwaggerSuccessExample(responseType =  UserResponseDTO.class)
     @SwaggerErrorExample({
 		NOT_EXIST_USER
     })
@@ -40,7 +38,6 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/coupon")
-    @SwaggerSuccessExample(responseType =  UserCouponResponseDTO.class)
     @SwaggerErrorExample({
 		NOT_EXIST_USER
     })
@@ -51,7 +48,6 @@ public class UserController {
         return ResponseEntity.ok(mockService.getUserCoupon(userId));
     }
 
-    @SwaggerSuccessExample(responseType =  UserResponseDTO.class)
     @PostMapping("/{userId}/point")
     @SwaggerErrorExample({
 		NOT_EXIST_USER,

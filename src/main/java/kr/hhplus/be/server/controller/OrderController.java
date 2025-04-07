@@ -4,12 +4,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import kr.hhplus.be.server.ResponseApi;
+import kr.hhplus.be.server.application.order.facade.OrderFacade;
+import kr.hhplus.be.server.application.order.service.OrderService;
 import kr.hhplus.be.server.config.swagger.SwaggerErrorExample;
-import kr.hhplus.be.server.dto.order.OrderRequestDTO;
-import kr.hhplus.be.server.dto.order.OrderResponseDTO;
-import kr.hhplus.be.server.service.MockOrderService;
+import kr.hhplus.be.server.application.order.dto.OrderRequestDTO;
+import kr.hhplus.be.server.application.order.dto.OrderResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,9 +24,9 @@ import static kr.hhplus.be.server.config.swagger.ErrorCode.*;
 @Tag(name="주문",description = "주문 관련 API")
 @RequiredArgsConstructor
 public class OrderController {
-    private final MockOrderService mockService;
+	private final OrderFacade orderFacade;
 
-    @PostMapping
+	@PostMapping
     @SwaggerErrorExample({
         NOT_EXIST_COUPON,
 		INVALID_COUPON,
@@ -40,6 +42,7 @@ public class OrderController {
     public ResponseEntity<ResponseApi<OrderResponseDTO>> order(
        @Valid @RequestBody OrderRequestDTO dto
     ) {
-        return ResponseEntity.ok(mockService.order(dto));
+        return ResponseEntity.ok(ResponseApi.of(orderFacade.order(dto)));
     }
+
 }

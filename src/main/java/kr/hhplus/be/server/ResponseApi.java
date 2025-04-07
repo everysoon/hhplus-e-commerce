@@ -17,6 +17,9 @@ public class ResponseApi<T> {
     private String processCode;
     private T data;
 
+	public static <T> ResponseApi<T> of(T data) {
+		return new ResponseApi<>(data);
+	}
     public ResponseApi(boolean success, String message, T data) {
         this.success = success;
         this.message = message;

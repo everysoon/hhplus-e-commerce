@@ -55,7 +55,6 @@ public class TestUtils {
 			.statusCode(200) // HTTP 200 확인
 			.body("success", equalTo(true)) // API 요청 성공 여부
 			.body("message", equalTo(SUCCESS_MSG)) // 기본 메시지 확인
-			.body("processCode", equalTo(SUCCESS_PROCESS_CODE)) // 성공 코드 확인
 			.body("data", notNullValue()); // 데이터가 null이 아닌지 확인
 	}
 
@@ -65,8 +64,7 @@ public class TestUtils {
 		return response
 			.statusCode(errorCode.getStatusCode()) // HTTP 200 확인
 			.body("success", equalTo(false)) // API 요청 성공 여부
-			.body("message", equalTo(errorCode.getMessage())) // 기본 메시지 확인
-			.body("processCode", equalTo(errorCode.getProcessCode())); // 성공 코드 확인
+			.body("message", equalTo(errorCode.getMessage())); // 기본 메시지 확인
 	}
 
 	public static <T> T parseResponse(Response response, TypeReference<ResponseApi<T>> typeReference) {

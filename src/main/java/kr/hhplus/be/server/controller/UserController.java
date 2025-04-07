@@ -5,10 +5,11 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.math.BigDecimal;
 import kr.hhplus.be.server.ResponseApi;
+import kr.hhplus.be.server.application.user.UserService;
+import kr.hhplus.be.server.application.user.dto.UserOrderResponseDTO;
 import kr.hhplus.be.server.config.swagger.SwaggerErrorExample;
-import kr.hhplus.be.server.dto.user.UserCouponResponseDTO;
-import kr.hhplus.be.server.dto.user.UserResponseDTO;
-import kr.hhplus.be.server.service.MockService;
+import kr.hhplus.be.server.application.user.dto.UserCouponResponseDTO;
+import kr.hhplus.be.server.application.user.dto.UserResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +27,7 @@ import static kr.hhplus.be.server.config.swagger.ErrorCode.*;
 @RequiredArgsConstructor
 public class UserController {
 
-	private final MockService mockService;
+	private final UserService userService;
 
 	@GetMapping("/{userId}/point")
 	@Operation(description = "유저 보유 포인트 조회")
@@ -37,7 +38,7 @@ public class UserController {
 		@Parameter(description = "유저 ID", required = true)
 		@PathVariable Long userId
 	) {
-		return ResponseEntity.ok(mockService.getUserPoint(userId));
+		return ResponseEntity.ok(ResponseApi.of(userService.getUserPoint(userId)));
 	}
 
 	@GetMapping("/{userId}/coupon")
@@ -49,7 +50,7 @@ public class UserController {
 		@Parameter(description = "유저 ID", required = true)
 		@PathVariable Long userId
 	) {
-		return ResponseEntity.ok(mockService.getUserCoupon(userId));
+		return ResponseEntity.ok(ResponseApi.of(userService.getUserCoupon(userId)));
 	}
 
 	@PostMapping("/{userId}/coupon")
@@ -63,7 +64,7 @@ public class UserController {
 		@Parameter(description = "유저 ID", required = true)
 		@PathVariable Long userId
 	) {
-		return ResponseEntity.ok(mockService.issueCoupon(userId));
+		return ResponseEntity.ok(ResponseApi.of(userService.issueCoupon(userId)));
 	}
 
 	@PostMapping("/{userId}/point")
@@ -78,6 +79,28 @@ public class UserController {
 		@Parameter(description = "포인트 충전량", required = true)
 		@RequestParam Integer price
 	) {
-		return ResponseEntity.ok(mockService.chargePoint(userId, new BigDecimal(price)));
+		return ResponseEntity.ok(ResponseApi.of(userService.chargePoint(userId,new BigDecimal(price))));
+	}
+	@PostMapping("/{userId}/put")
+	@SwaggerErrorExample({
+		NOT_EXIST_USER,
+		INSUFFICIENT_POINTS
+	})
+	@Operation(description = "유저 포인트 사용")
+	public ResponseEntity<ResponseApi<UserResponseDTO>> usePoint(
+		@Parameter(description = "유저 ID", required = true)
+		@PathVariable Long userId,
+		@Parameter(description = "포인트 사용량", required = true)
+		@RequestParam Integer price
+	) {
+		return ResponseEntity.ok(ResponseApi.of(userService.usePoint(userId,new BigDecimal(price))));
+	}
+	@GetMapping("/{userId}/orders")
+	@Operation(description = "사용자 주문 목록 조회")
+	public ResponseEntity<ResponseApi<UserOrderResponseDTO>> getOrders(
+		@Parameter(description = "유저 ID", required = true)
+		@PathVariable Long userId
+	){
+		return ResponseEntity.ok(ResponseApi.of(userService.getOrders(userId)));
 	}
 }

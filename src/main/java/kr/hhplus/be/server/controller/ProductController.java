@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
@@ -25,6 +26,7 @@ public class ProductController {
     private final MockService mockService;
 
     @GetMapping("/{productId}")
+	@Operation(description = "상품 ID로 해당 상품 조회")
     @SwaggerErrorExample({
         NOT_EXIST_PRODUCT
     })
@@ -36,6 +38,7 @@ public class ProductController {
     }
 
     @GetMapping("/popular")
+	@Operation(description = "인기 상품 조회")
     public ResponseEntity<ResponseApi<List<ProductResponseDTO>>> findAllPopularProducts() {
         return ResponseEntity.ok(mockService.findAllPopularProducts());
     }

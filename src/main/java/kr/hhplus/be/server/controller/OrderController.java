@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import kr.hhplus.be.server.ResponseApi;
@@ -35,6 +36,7 @@ public class OrderController {
         LOCK_ACQUISITION_FAIL,
 		NOT_EXIST_ORDER_ITEM
     })
+	@Operation(description = "상품 주문")
     public ResponseEntity<ResponseApi<OrderResponseDTO>> order(
        @Valid @RequestBody OrderRequestDTO dto
     ) {

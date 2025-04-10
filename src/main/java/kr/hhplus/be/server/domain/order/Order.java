@@ -30,6 +30,7 @@ public class Order {
 	}
 
 	public void applyCoupon(Coupon coupon) {
+		if(coupon == null) return;
 		this.orderCoupons.add(new OrderCoupon(this, coupon));
 		calculateTotalDiscount();
 	}

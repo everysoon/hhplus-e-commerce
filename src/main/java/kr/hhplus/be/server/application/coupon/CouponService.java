@@ -11,7 +11,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CouponService {
 	private final CouponRepository couponRepository;
-	public Coupon findById(UUID id){
-		return  couponRepository.findById(id);
+
+	public Coupon findById(UUID id) {
+		return couponRepository.findById(id);
 	}
 }

@@ -1,12 +1,13 @@
 package kr.hhplus.be.server.domain.user;
 
-import java.time.LocalDateTime;
-import java.util.EnumSet;
 import kr.hhplus.be.server.domain.coupon.Coupon;
 import kr.hhplus.be.server.domain.coupon.CouponStatus;
 import kr.hhplus.be.server.infra.user.entity.UserCouponEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
+import java.time.LocalDateTime;
+import java.util.EnumSet;
 
 @Getter
 @AllArgsConstructor
@@ -17,10 +18,15 @@ public class UserCoupon {
 	private final CouponStatus status;
 	private Integer remainingStock;
 	private LocalDateTime issuedAt;
-	public boolean isValid(){
-		return EnumSet.of(CouponStatus.PENDING, CouponStatus.ISSUED).contains(this.status);
+
+	public boolean isValid() {
+
+		return EnumSet.of(CouponStatus.PENDING, CouponStatus.ISSUED).contains(this.status)
+			&& !coupon.isExpired()
+			&& !coupon.isOlderThan7Days();
 	}
-	public static UserCoupon from(UserCouponEntity entity){
+
+	public static UserCoupon from(UserCouponEntity entity) {
 		return new UserCoupon(
 			entity.getId(),
 			User.from(entity.getUserEntity()),

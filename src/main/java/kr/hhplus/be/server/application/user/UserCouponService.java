@@ -17,6 +17,7 @@ public class UserCouponService {
 	public List<UserCoupon> findByUserId(Long userId) {
 		return userCouponRepository.findByUserId(userId);
 	}
+
 	public Boolean existsByUserIdAndCouponId(CouponValidCommand command) {
 		return userCouponRepository.existsByUserIdAndCouponId(command.userId(),command.couponIds());
 	}

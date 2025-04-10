@@ -25,4 +25,9 @@ public class ProductRepositoryImpl implements ProductRepository {
 	public List<Product> findPopularAll() {
 		return List.of();
 	}
+
+	@Override
+	public Product save(Product product) {
+		return null;
+	}
 }

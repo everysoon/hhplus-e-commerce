@@ -1,12 +1,12 @@
 package kr.hhplus.be.server.domain.product;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import kr.hhplus.be.server.application.product.dto.ProductResponseDTO;
 import kr.hhplus.be.server.infra.product.entity.Category;
 import kr.hhplus.be.server.infra.product.entity.ProductEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
@@ -30,5 +30,8 @@ public class Product {
 			entity.getStatus(),
 			entity.getCreatedAt()
 		);
+	}
+	public void decreaseStock(Integer amount) {
+		this.stock -= amount;
 	}
 }

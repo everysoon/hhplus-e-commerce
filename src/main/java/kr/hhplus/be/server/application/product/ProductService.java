@@ -20,11 +20,13 @@ public class ProductService {
 		return productRepository.findAll(command);
 	}
 
-	public List<Product> findAllPopularProducts() {
+	public List<Product> findPopularAll() {
 		return productRepository.findPopularAll();
 	}
 
-	public Product decrease() {
-		return null;
+	public Product decrease(Long productId,Integer amount) {
+		Product product = findById(productId);
+		product.decreaseStock(amount);
+		return productRepository.save(product);
 	}
 }

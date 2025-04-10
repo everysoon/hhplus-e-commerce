@@ -12,4 +12,6 @@ public interface ProductRepository {
 	List<Product> findAll(ProductSearchCommand command);
 
 	List<Product> findPopularAll();
+
+	Product save(Product product);
 }

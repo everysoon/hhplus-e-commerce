@@ -48,8 +48,8 @@ public class ProductController {
 
 	@GetMapping("/popular")
 	@Operation(description = "인기 상품 조회 - 최근 3일간 판매량 많은 순")
-	public ResponseEntity<ResponseApi<List<ProductDTO.ProductResponse>>> findAllPopularProducts() {
-		List<ProductDTO.ProductResponse> products = productService.findAllPopularProducts()
+	public ResponseEntity<ResponseApi<List<ProductDTO.ProductResponse>>> findPopularAll() {
+		List<ProductDTO.ProductResponse> products = productService.findPopularAll()
 			.stream().map(ProductDTO.ProductResponse::from).toList();
 		return ResponseEntity.ok(ResponseApi.of(products));
 	}

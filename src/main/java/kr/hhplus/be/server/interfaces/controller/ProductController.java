@@ -4,16 +4,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.hhplus.be.server.ResponseApi;
+import kr.hhplus.be.server.application.product.ProductSearchCommand;
 import kr.hhplus.be.server.application.product.ProductService;
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.interfaces.dto.ProductDTO;
 import kr.hhplus.be.server.support.config.swagger.SwaggerErrorExample;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -42,14 +40,14 @@ public class ProductController {
 
 	@GetMapping
 	@Operation(description = "상품 필터링 목록 조회")
-	public ResponseEntity<ResponseApi<List<ProductDTO.ProductResponse>>> findAll() {
-		List<ProductDTO.ProductResponse> products = productService.findAll()
+	public ResponseEntity<ResponseApi<List<ProductDTO.ProductResponse>>> findAll(@ModelAttribute ProductSearchCommand command) {
+		List<ProductDTO.ProductResponse> products = productService.findAll(command)
 			.stream().map(ProductDTO.ProductResponse::from).toList();
 		return ResponseEntity.ok(ResponseApi.of(products));
 	}
 
 	@GetMapping("/popular")
-	@Operation(description = "인기 상품 조회 - ")
+	@Operation(description = "인기 상품 조회 - 최근 3일간 판매량 많은 순")
 	public ResponseEntity<ResponseApi<List<ProductDTO.ProductResponse>>> findAllPopularProducts() {
 		List<ProductDTO.ProductResponse> products = productService.findAllPopularProducts()
 			.stream().map(ProductDTO.ProductResponse::from).toList();

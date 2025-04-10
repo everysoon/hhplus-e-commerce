@@ -67,7 +67,7 @@ public class UserController {
 		@Parameter(description = "유저 ID", required = true)
 		@PathVariable Long userId
 	) {
-		return ResponseEntity.ok(ResponseApi.of(userService.issueCoupon(userId)));
+		return ResponseEntity.ok(ResponseApi.of(userFacade.issueCoupon(userId)));
 	}
 
 	@PostMapping("/{userId}/point")

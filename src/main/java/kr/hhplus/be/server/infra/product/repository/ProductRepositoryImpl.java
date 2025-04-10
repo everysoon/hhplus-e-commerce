@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.infra.product.repository;
 
+import kr.hhplus.be.server.application.product.ProductSearchCommand;
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.product.repository.ProductRepository;
 import org.springframework.stereotype.Repository;
@@ -15,9 +16,10 @@ public class ProductRepositoryImpl implements ProductRepository {
 	}
 
 	@Override
-	public List<Product> findAll() {
+	public List<Product> findAll(ProductSearchCommand command) {
 		return List.of();
 	}
+
 
 	@Override
 	public List<Product> findPopularAll() {

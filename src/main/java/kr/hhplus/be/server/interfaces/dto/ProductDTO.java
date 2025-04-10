@@ -7,7 +7,7 @@ import kr.hhplus.be.server.infra.product.entity.Category;
 import java.math.BigDecimal;
 
 public class ProductDTO {
-	public static record ProductResponse(
+	public record ProductResponse(
 		Long id,
 		String productName,
 		Category category,

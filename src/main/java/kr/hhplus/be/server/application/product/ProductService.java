@@ -16,8 +16,8 @@ public class ProductService {
 		return productRepository.findById(productId);
 	}
 
-	public List<Product> findAll() {
-		return productRepository.findAll();
+	public List<Product> findAll(ProductSearchCommand command) {
+		return productRepository.findAll(command);
 	}
 
 	public List<Product> findAllPopularProducts() {

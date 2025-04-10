@@ -5,5 +5,5 @@ import java.util.UUID;
 
 public interface CouponRepository {
 	Optional<Coupon> findById(UUID id);
-	Boolean isAvailableById(UUID id);
+	Coupon save(Coupon coupon);
 }

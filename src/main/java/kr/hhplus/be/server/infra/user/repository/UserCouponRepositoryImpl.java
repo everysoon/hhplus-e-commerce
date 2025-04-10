@@ -25,4 +25,9 @@ public class UserCouponRepositoryImpl implements UserCouponRepository {
 		return 0;
 	}
 
+	@Override
+	public UserCoupon save(UserCoupon coupon) {
+		return null;
+	}
+
 }

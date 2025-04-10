@@ -17,7 +17,7 @@ public class Coupon {
 	private final CouponType type;
 	private final String description;
 	private final BigDecimal discount;
-	private final Integer stock;
+	private Integer stock;
 	private final LocalDateTime expiredAt;
 	private final LocalDateTime createdAt;
 
@@ -42,8 +42,11 @@ public class Coupon {
 				.divide(BigDecimal.valueOf(100));
 		};
 	}
-	public boolean isOutOfSock(){
-		return this.stock <= 0;
+	public void decreaseStock(){
+		this.stock-=1;
+	}
+	public boolean isOutOfStock(){
+		return getStock() <= 0;
 	}
 	public boolean isExpired(){
 		return expiredAt.isBefore(LocalDateTime.now());

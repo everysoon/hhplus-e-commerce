@@ -17,7 +17,7 @@ public class CouponService {
 	public Coupon findById(UUID id) {
 		return couponRepository.findById(id).orElseThrow(()->new CustomException(ErrorCode.NOT_EXIST_COUPON));
 	}
-	public Boolean isAvailableById(UUID id){
-		return couponRepository.isAvailableById(id);
+	public Coupon save(Coupon coupon) {
+		return couponRepository.save(coupon);
 	}
 }

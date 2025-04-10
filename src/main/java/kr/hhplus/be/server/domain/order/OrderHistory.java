@@ -15,5 +15,4 @@ public class OrderHistory {
 	private final Long orderId;
 	private final OrderStatus status;
 	private final LocalDateTime createdAt;
-
 }

@@ -13,6 +13,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class Order {
+
 	private final Long id;
 	private final Long userId;
 	private final Long paymentId;
@@ -20,6 +21,18 @@ public class Order {
 	private BigDecimal totalPrice;
 	private BigDecimal totalDiscount;
 	private final LocalDateTime orderedAt;
+
+//	public static Order create(Long userId, List<OrderItem> orderItems, List<OrderCoupon> coupons) {
+//		return new Order(
+//			null,
+//			userId,
+//			null,
+//			coupons,
+//			BigDecimal.ZERO,
+//			BigDecimal.ZERO,
+//			LocalDateTime.now()
+//		);
+//	}
 
 	public BigDecimal getTotalPrice() {
 		return this.totalPrice.subtract(this.totalDiscount);

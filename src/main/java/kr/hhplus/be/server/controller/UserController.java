@@ -4,12 +4,17 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.math.BigDecimal;
+import java.util.List;
 import kr.hhplus.be.server.ResponseApi;
+import kr.hhplus.be.server.application.user.UserFacade;
 import kr.hhplus.be.server.application.user.UserService;
 import kr.hhplus.be.server.application.user.dto.UserOrderResponseDTO;
 import kr.hhplus.be.server.config.swagger.SwaggerErrorExample;
 import kr.hhplus.be.server.application.user.dto.UserCouponResponseDTO;
 import kr.hhplus.be.server.application.user.dto.UserResponseDTO;
+import kr.hhplus.be.server.domain.order.OrderDetail;
+import kr.hhplus.be.server.domain.user.User;
+import kr.hhplus.be.server.domain.user.UserCoupon;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,6 +33,7 @@ import static kr.hhplus.be.server.config.swagger.ErrorCode.*;
 public class UserController {
 
 	private final UserService userService;
+	private final UserFacade userFacade;
 
 	@GetMapping("/{userId}/point")
 	@Operation(description = "유저 보유 포인트 조회")
@@ -38,7 +44,8 @@ public class UserController {
 		@Parameter(description = "유저 ID", required = true)
 		@PathVariable Long userId
 	) {
-		return ResponseEntity.ok(ResponseApi.of(userService.getUserPoint(userId)));
+		User user = userService.getUserPoint(userId);
+		return ResponseEntity.ok(ResponseApi.of(UserResponseDTO.from(user)));
 	}
 
 	@GetMapping("/{userId}/coupon")
@@ -50,7 +57,9 @@ public class UserController {
 		@Parameter(description = "유저 ID", required = true)
 		@PathVariable Long userId
 	) {
-		return ResponseEntity.ok(ResponseApi.of(userService.getUserCoupon(userId)));
+		List<UserCouponResponseDTO> userCoupons = userService.getUserCoupon(userId)
+			.stream().map(UserCouponResponseDTO::from);
+		return ResponseEntity.ok(ResponseApi.of(userCoupons));
 	}
 
 	@PostMapping("/{userId}/coupon")
@@ -101,6 +110,8 @@ public class UserController {
 		@Parameter(description = "유저 ID", required = true)
 		@PathVariable Long userId
 	){
-		return ResponseEntity.ok(ResponseApi.of(userService.getOrders(userId)));
+		OrderDetail orders = userFacade.getOrders(userId);
+		// dto
+		return ResponseEntity.ok(ResponseApi.of(null));
 	}
 }

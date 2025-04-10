@@ -2,17 +2,18 @@ package kr.hhplus.be.server.application.user.dto;
 
 import java.util.List;
 import kr.hhplus.be.server.application.coupon.dto.CouponResponseDTO;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import kr.hhplus.be.server.domain.user.UserCoupon;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-public class UserCouponResponseDTO {
 
-	private Long userId;
-	private List<CouponResponseDTO> conpons;
+public record UserCouponResponseDTO(
+	Long userId,
+	List<CouponResponseDTO> coupons
+) {
+	public static UserCouponResponseDTO of(Long userId, List<UserCoupon> userCoupons) {
+		List<CouponResponseDTO> couponDTOs = userCoupons.stream()
+			.map(CouponResponseDTO::from) // Coupon → CouponResponseDTO
+			.toList();
+
+		return new UserCouponResponseDTO(userId, couponDTOs);
+	}
 }

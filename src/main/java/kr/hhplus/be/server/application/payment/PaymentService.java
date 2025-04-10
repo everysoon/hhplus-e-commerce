@@ -5,6 +5,15 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class PaymentService {
+public class PaymentService implements PaymentUseCase {
 
+	@Override
+	public void pay() {
+
+	}
+
+	@Override
+	public void cancel() {
+
+	}
 }

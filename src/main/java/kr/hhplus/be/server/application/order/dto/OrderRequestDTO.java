@@ -10,13 +10,14 @@ import java.util.List;
 import java.util.UUID;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class OrderRequestDTO {
-    @NotNull
-    private Long userId;
-    @NotNull
-    private List<OrderProductRequestDTO> products;
-    private List<UUID> couponId;
+
+	@NotNull
+	Long userId;
+	@NotNull
+	List<OrderProductRequestDTO> products;
+	List<UUID> couponId;
 }

@@ -31,7 +31,6 @@ public class CouponEntity {
     @JoinColumn(name = "order_id")
     private OrderEntity orderEntity;
     @Column(nullable = false)
-	@Builder.Default
     private BigDecimal discount = BigDecimal.ZERO; // Fixed 일땐 할인 금액 (원), Percent 일땐 할인 비율 (1 ~ 100)
 
     @Column(nullable = false)

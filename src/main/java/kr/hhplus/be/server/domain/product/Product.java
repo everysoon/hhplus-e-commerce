@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import kr.hhplus.be.server.application.product.dto.ProductResponseDTO;
 import kr.hhplus.be.server.infra.product.entity.Category;
+import kr.hhplus.be.server.infra.product.entity.ProductEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -18,15 +19,16 @@ public class Product {
 	private BigDecimal price;
 	private ProductStatus status;
 	private LocalDateTime createdAt;
-	public ProductResponseDTO toResponseDTO(){
-		return ProductResponseDTO.builder()
-			.id(id)
-			.productName(productName)
-			.stock(stock)
-			.description(description)
-			.price(price)
-			.status(status)
-			.category(category)
-			.build();
+	public static Product from(ProductEntity entity) {
+		return new Product(
+			entity.getId(),
+			entity.getProductName(),
+			entity.getStock(),
+			entity.getCategory(),
+			entity.getDescription(),
+			entity.getPrice(),
+			entity.getStatus(),
+			entity.getCreatedAt()
+		);
 	}
 }

@@ -13,19 +13,17 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-public class OrderResponseDTO {
-    private Long userId;
-	private Long orderId;
-    private List<OrderItemDTO> orderInfo;
-    private PaymentMethod paymentMethod;
-    private PaymentStatus paymentStatus;
-    private BigDecimal totalPrice;
-    private BigDecimal couponDiscountAmount;
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
-    private LocalDateTime orderedAt;
-    private OrderStatus status;
+
+public record OrderResponseDTO (
+	Long userId,
+	Long orderId,
+	List<OrderItemResponse> orderItems,
+	PaymentMethod paymentMethod,
+	PaymentStatus paymentStatus,
+	BigDecimal totalPrice,
+	BigDecimal couponDiscountAmount,
+	LocalDateTime orderedAt,
+	OrderStatus orderStatus
+){
+
 }

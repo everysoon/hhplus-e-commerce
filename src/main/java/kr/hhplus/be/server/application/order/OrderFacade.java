@@ -40,7 +40,7 @@ public class OrderFacade {
 	private final UserService userService;
 	private final OrderCouponService orderCouponService;
 
-	public PlaceOrderResult order(RequestOrderCommand command) {
+	public PlaceOrderResult order(RequestOrderCriteria command) {
 		User user = userService.get(command.userId());
 		// 상품 조회
 		List<OrderItem> orderItems = getOrderItems(command);
@@ -72,7 +72,7 @@ public class OrderFacade {
 		);
 	}
 
-	private List<OrderItem> getOrderItems(RequestOrderCommand command) {
+	private List<OrderItem> getOrderItems(RequestOrderCriteria command) {
 		return command.orderItems().stream()
 			.map(itemCommand -> {
 				Product product = productService.findById(itemCommand.productId());

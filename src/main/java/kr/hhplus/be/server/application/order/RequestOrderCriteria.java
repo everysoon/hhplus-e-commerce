@@ -12,19 +12,19 @@ import java.util.List;
 import java.util.UUID;
 
 @Validated
-public record RequestOrderCommand(
+public record RequestOrderCriteria(
 	@NotNull Long userId,
 	@NotNull List<Item> orderItems,
 	List<UUID> couponIds,
 	PaymentMethod paymentMethod
 
 ) {
-	public static RequestOrderCommand from(OrderDTO.OrderRequest dto) {
+	public static RequestOrderCriteria from(OrderDTO.OrderRequest dto) {
 		List<Item> items = dto.getProducts().stream()
 			.map(p -> new Item(p.getProductId(), p.getQuantity()))
 			.toList();
 
-		return new RequestOrderCommand(dto.getUserId(), items, dto.getCouponId(),PaymentMethod.POINTS);
+		return new RequestOrderCriteria(dto.getUserId(), items, dto.getCouponId(),PaymentMethod.POINTS);
 	}
 	public CouponValidCommand toCouponValidCommand(){
 		return CouponValidCommand.of(userId(),couponIds());

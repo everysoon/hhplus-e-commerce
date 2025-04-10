@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import kr.hhplus.be.server.ResponseApi;
 import kr.hhplus.be.server.application.order.PlaceOrderResult;
-import kr.hhplus.be.server.application.order.RequestOrderCommand;
+import kr.hhplus.be.server.application.order.RequestOrderCriteria;
 import kr.hhplus.be.server.application.order.OrderFacade;
 import kr.hhplus.be.server.interfaces.dto.OrderDTO;
 import kr.hhplus.be.server.support.config.swagger.SwaggerErrorExample;
@@ -41,7 +41,7 @@ public class OrderController {
     public ResponseEntity<ResponseApi<OrderDTO.OrderResponse>> order(
        @Valid @RequestBody OrderDTO.OrderRequest dto
     ) {
-		RequestOrderCommand command = RequestOrderCommand.from(dto);
+		RequestOrderCriteria command = RequestOrderCriteria.from(dto);
 		PlaceOrderResult result = orderFacade.order(command);
 		return ResponseEntity.ok(ResponseApi.of(OrderDTO.OrderResponse.of(result)));
     }

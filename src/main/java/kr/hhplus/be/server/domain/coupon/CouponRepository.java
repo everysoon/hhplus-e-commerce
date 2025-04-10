@@ -1,7 +1,9 @@
 package kr.hhplus.be.server.domain.coupon;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public interface CouponRepository {
-	Coupon findById(UUID id);
+	Optional<Coupon> findById(UUID id);
+	Boolean isAvailableById(UUID id);
 }

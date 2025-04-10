@@ -1,9 +1,20 @@
 package kr.hhplus.be.server.interfaces.controller;
 
+import static kr.hhplus.be.server.support.config.swagger.ErrorCode.COUPON_SOLD_OUT;
+import static kr.hhplus.be.server.support.config.swagger.ErrorCode.DUPLICATE_COUPON_CLAIM;
+import static kr.hhplus.be.server.support.config.swagger.ErrorCode.INSUFFICIENT_POINTS;
+import static kr.hhplus.be.server.support.config.swagger.ErrorCode.INVALID_CHARGE_AMOUNT;
+import static kr.hhplus.be.server.support.config.swagger.ErrorCode.NOT_EXIST_USER;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.UUID;
 import kr.hhplus.be.server.ResponseApi;
+import kr.hhplus.be.server.application.coupon.IssueCouponCommand;
+import kr.hhplus.be.server.application.coupon.IssuedCouponResult;
 import kr.hhplus.be.server.application.user.UserFacade;
 import kr.hhplus.be.server.application.user.UserService;
 import kr.hhplus.be.server.domain.user.User;
@@ -13,12 +24,12 @@ import kr.hhplus.be.server.interfaces.dto.UserDTO;
 import kr.hhplus.be.server.support.config.swagger.SwaggerErrorExample;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.math.BigDecimal;
-import java.util.List;
-
-import static kr.hhplus.be.server.support.config.swagger.ErrorCode.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/users")
@@ -63,11 +74,15 @@ public class UserController {
 		NOT_EXIST_USER,
 		DUPLICATE_COUPON_CLAIM
 	})
-	public ResponseEntity<ResponseApi<UserCouponDTO.Response>> issueCoupon(
+	public ResponseEntity<ResponseApi<UserCouponDTO.IssuedResponse>> issueCoupon(
 		@Parameter(description = "유저 ID", required = true)
-		@PathVariable Long userId
+		@PathVariable Long userId,
+		@Parameter(description = "쿠폰 UUID", required = true)
+		@RequestParam UUID couponId
 	) {
-		return ResponseEntity.ok(ResponseApi.of(userFacade.issueCoupon(userId)));
+		IssueCouponCommand command = IssueCouponCommand.of(userId,couponId);
+		IssuedCouponResult issuedCouponResult = userFacade.issueCoupon(command);
+		return ResponseEntity.ok(ResponseApi.of(UserCouponDTO.IssuedResponse.from(issuedCouponResult)));
 	}
 
 	@PostMapping("/{userId}/point")

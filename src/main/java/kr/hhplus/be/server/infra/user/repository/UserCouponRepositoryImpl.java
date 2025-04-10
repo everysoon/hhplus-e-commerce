@@ -1,11 +1,11 @@
 package kr.hhplus.be.server.infra.user.repository;
 
-import java.util.UUID;
+import java.util.List;
+import kr.hhplus.be.server.application.coupon.CouponValidCommand;
+import kr.hhplus.be.server.application.coupon.IssueCouponCommand;
 import kr.hhplus.be.server.domain.user.UserCoupon;
 import kr.hhplus.be.server.domain.user.repository.UserCouponRepository;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 public class UserCouponRepositoryImpl implements UserCouponRepository {
@@ -16,7 +16,13 @@ public class UserCouponRepositoryImpl implements UserCouponRepository {
 	}
 
 	@Override
-	public Boolean existsByUserIdAndCouponId(Long userId, List<UUID> couponIds) {
+	public Boolean existsByUserIdAndCouponId(CouponValidCommand command) {
 		return null;
 	}
+
+	@Override
+	public long countCouponByUserId(IssueCouponCommand command) {
+		return 0;
+	}
+
 }

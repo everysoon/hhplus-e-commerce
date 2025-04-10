@@ -69,7 +69,7 @@ class UserCouponServiceTest {
 		Long userId = 1L;
 		List<UUID> couponIds = List.of(UUID.randomUUID());
 		CouponValidCommand command = new CouponValidCommand(userId,couponIds);
-		Mockito.when(userCouponRepository.existsByUserIdAndCouponId(userId, couponIds))
+		Mockito.when(userCouponRepository.existsByUserIdAndCouponId(command))
 			.thenReturn(true);
 
 		// when
@@ -77,7 +77,7 @@ class UserCouponServiceTest {
 
 		// then
 		assertTrue(exists);
-		verify(userCouponRepository).existsByUserIdAndCouponId(userId, couponIds);
+		verify(userCouponRepository).existsByUserIdAndCouponId(command);
 	}
 	@Test
 	void 유저_쿠폰_사용_테스트(){

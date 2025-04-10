@@ -1,9 +1,9 @@
 package kr.hhplus.be.server.domain.user.repository;
 
-import kr.hhplus.be.server.domain.user.UserCoupon;
-
 import java.util.List;
-import java.util.UUID;
+import kr.hhplus.be.server.application.coupon.CouponValidCommand;
+import kr.hhplus.be.server.application.coupon.IssueCouponCommand;
+import kr.hhplus.be.server.domain.user.UserCoupon;
 
 public interface UserCouponRepository {
 	List<UserCoupon> findByUserId(Long userId);
@@ -13,5 +13,7 @@ public interface UserCouponRepository {
     WHERE uc.user.id = :userId
     AND uc.coupon.uuid IN :couponUuids
 	""")**/
-	Boolean existsByUserIdAndCouponId(Long userId, List<UUID> couponIds);
+	Boolean existsByUserIdAndCouponId(CouponValidCommand command);
+	long countCouponByUserId(IssueCouponCommand command);
+	UserCoupon save(UserCoupon coupon);
 }

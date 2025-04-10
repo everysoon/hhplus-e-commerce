@@ -42,6 +42,9 @@ public class Coupon {
 				.divide(BigDecimal.valueOf(100));
 		};
 	}
+	public boolean isOutOfSock(){
+		return this.stock <= 0;
+	}
 	public boolean isExpired(){
 		return expiredAt.isBefore(LocalDateTime.now());
 	}

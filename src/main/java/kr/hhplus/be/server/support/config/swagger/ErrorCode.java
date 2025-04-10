@@ -30,6 +30,7 @@ public enum ErrorCode {
 	COUPON_ISSUED_FAIL(BAD_REQUEST.value(),"쿠폰 발급에 대한 동시성 에러가 발생했습니다."),
 	DUPLICATE_COUPON_CLAIM(BAD_REQUEST.value(),"이미 쿠폰을 받은 발급자 입니다."),
 	INVALID_USER_COUPON(BAD_REQUEST.value(),"해당 쿠폰이 사용자 권한이 아닙니다."),
+	COUPON_EXPIRED(BAD_REQUEST.value(),"만료된 쿠폰에 대한 요청입니다."),
 
     // point
     INSUFFICIENT_POINTS(BAD_REQUEST.value(),"사용 가능한 포인트가 부족합니다."),

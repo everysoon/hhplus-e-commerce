@@ -28,7 +28,7 @@ public class CouponDTO {
 		UUID couponId,
 		CouponType couponType,
 		String description,
-		Integer remainingStock,
+//		Integer remainingStock,
 		CouponStatus couponStatus,
 		LocalDateTime issuedAt,
 		LocalDateTime expiredAt
@@ -38,7 +38,6 @@ public class CouponDTO {
 				userCoupon.getCoupon().getId(),
 				userCoupon.getCoupon().getType(),
 				userCoupon.getCoupon().getDescription(),
-				userCoupon.getRemainingStock(),
 				userCoupon.getStatus(),
 				userCoupon.getIssuedAt(),
 				userCoupon.getCoupon().getExpiredAt()

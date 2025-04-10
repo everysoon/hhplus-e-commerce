@@ -19,10 +19,8 @@ public class UserCoupon {
 	private LocalDateTime issuedAt;
 
 	public boolean isValid() {
-
 		return EnumSet.of(CouponStatus.PENDING, CouponStatus.ISSUED).contains(this.status)
-			&& !coupon.isExpired()
-			&& !coupon.isOlderThan7Days();
+			&& !coupon.isExpired();
 	}
 	public static UserCoupon of(User user,Coupon coupon) {
 		return new UserCoupon(null,user,coupon,CouponStatus.ISSUED,LocalDateTime.now());

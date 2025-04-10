@@ -26,7 +26,7 @@ public class User {
 	}
 
 	public void use(BigDecimal price) {
-		if(price.compareTo(this.point) <= 0) {
+		if(this.point.compareTo(price) <= 0) {
 			throw new CustomException(ErrorCode.INSUFFICIENT_POINTS);
 		}
 		this.point = this.point.subtract(price);

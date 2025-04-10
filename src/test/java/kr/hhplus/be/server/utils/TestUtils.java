@@ -6,17 +6,15 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 import kr.hhplus.be.server.ResponseApi;
-import kr.hhplus.be.server.config.swagger.ErrorCode;
+import kr.hhplus.be.server.support.config.swagger.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.function.Executable;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 import java.util.UUID;
 
-import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 

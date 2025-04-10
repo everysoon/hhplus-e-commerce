@@ -2,19 +2,14 @@ package kr.hhplus.be.server.application.order.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import kr.hhplus.be.server.application.order.command.OrderCommand;
-import kr.hhplus.be.server.application.order.dto.OrderRequestDTO;
-import kr.hhplus.be.server.domain.coupon.Coupon;
+
+import kr.hhplus.be.server.application.order.OrderCommand;
 import kr.hhplus.be.server.domain.order.Order;
-import kr.hhplus.be.server.domain.order.OrderHistory;
 import kr.hhplus.be.server.domain.order.OrderItem;
 import kr.hhplus.be.server.domain.order.repository.OrderHistoryRepository;
 import kr.hhplus.be.server.domain.order.repository.OrderRepository;
 import kr.hhplus.be.server.domain.product.Product;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 @Service

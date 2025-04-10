@@ -1,9 +1,11 @@
 package kr.hhplus.be.server.support.config.swagger;
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
-import static org.springframework.http.HttpStatus.*;
 
 @Getter
 @AllArgsConstructor
@@ -20,7 +22,7 @@ public enum ErrorCode {
     // product
     OUT_OF_STOCK(BAD_REQUEST.value(),"상품이 품절 상태 입니다."),
     NOT_EXIST_PRODUCT(BAD_REQUEST.value(),"해당 상품이 존재하지 않습니다."),
-
+	INVALID_QUANTITY(BAD_REQUEST.value(),"잘못된 수량입니다."),
     // coupon
     NOT_EXIST_COUPON(BAD_REQUEST.value(),"해당 쿠폰을 찾을 수 없습니다."),
     COUPON_SOLD_OUT(BAD_REQUEST.value(),"선착순 마감으로 쿠폰 재고가 존재하지않습니다."),
@@ -39,6 +41,8 @@ public enum ErrorCode {
 	NOT_EXIST_ORDER_ITEM(BAD_REQUEST.value(),"주문 상품이 존재하지 않습니다."),
     CUSTOM_METHOD_NOT_ALLOWED(METHOD_NOT_ALLOWED.value(), "지원하지 않은 요청입니다. 요청 정보를 다시 확인해 주시기 바랍니다."),
     CUSTOM_INTERNAL_SERVER_ERROR(INTERNAL_SERVER_ERROR.value(),"예상하지 않은 에러가 발생하였습니다. 관리자에게 문의해 주세요."),
+	// payment
+	PAYMENT_FAIL(BAD_REQUEST.value(),"결제가 실패했습니다.")
 	;
     private final int statusCode;
     private final String message;

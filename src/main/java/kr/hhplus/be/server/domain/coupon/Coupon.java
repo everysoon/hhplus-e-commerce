@@ -33,7 +33,7 @@ public class Coupon {
 		);
 	}
 	public BigDecimal getDiscountAmount(BigDecimal price) {
-		if (this.isExpired() || isOlderThan7Days()) {
+		if (this.isExpired()) {
 			throw new CustomException(ErrorCode.INVALID_COUPON);
 		}
 		return switch (this.type) {
@@ -41,12 +41,6 @@ public class Coupon {
 			case PERCENT -> price.multiply(this.discount)
 				.divide(BigDecimal.valueOf(100));
 		};
-	}
-	public void use(){
-
-	}
-	public boolean isOlderThan7Days(){
-		return createdAt.plusDays(7).isBefore(LocalDateTime.now());
 	}
 	public boolean isExpired(){
 		return expiredAt.isBefore(LocalDateTime.now());

@@ -55,7 +55,6 @@ public class OrderDTO {
 	@Data
 	@NoArgsConstructor
 	@AllArgsConstructor
-	@Builder
 	public class OrderItemRequest {
 		@NotNull
 		Long productId;

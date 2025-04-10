@@ -1,5 +1,13 @@
 package kr.hhplus.be.server.application.order;
 
+import static kr.hhplus.be.server.support.config.swagger.ErrorCode.INVALID_COUPON;
+import static kr.hhplus.be.server.support.config.swagger.ErrorCode.INVALID_QUANTITY;
+import static kr.hhplus.be.server.support.config.swagger.ErrorCode.OUT_OF_STOCK;
+import static kr.hhplus.be.server.support.config.swagger.ErrorCode.PAYMENT_FAIL;
+
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import kr.hhplus.be.server.application.coupon.UseCouponCommand;
 import kr.hhplus.be.server.application.order.service.OrderCouponService;
 import kr.hhplus.be.server.application.order.service.OrderItemService;
@@ -14,6 +22,7 @@ import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.order.OrderCoupon;
 import kr.hhplus.be.server.domain.order.OrderItem;
 import kr.hhplus.be.server.domain.payment.Payment;
+import kr.hhplus.be.server.domain.payment.PaymentStatus;
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.product.ProductStatus;
 import kr.hhplus.be.server.domain.user.User;
@@ -21,13 +30,6 @@ import kr.hhplus.be.server.domain.user.UserCoupon;
 import kr.hhplus.be.server.support.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import static kr.hhplus.be.server.support.config.swagger.ErrorCode.INVALID_COUPON;
-import static kr.hhplus.be.server.support.config.swagger.ErrorCode.OUT_OF_STOCK;
 
 @Component
 @RequiredArgsConstructor
@@ -57,7 +59,9 @@ public class OrderFacade {
 		user.use(order.getTotalPrice());
 		// 결제 시도
 		Payment payment = paymentService.pay(RequestPaymentCommand.of(order.getTotalPrice(),order,criteria.paymentMethod()));
-
+		if(payment.getStatus() == PaymentStatus.FAILED){
+			throw new CustomException(PAYMENT_FAIL);
+		}
 		// Order에 결제 추가
 		order.setPayment(payment);
 		// 주문 저장
@@ -72,6 +76,7 @@ public class OrderFacade {
 	}
 
 	private void useCoupon(User user, List<Coupon> coupons, Order order) {
+		if(coupons.isEmpty()) return;
 		userCouponService.use(UseCouponCommand.of(user, coupons));
 		List<OrderCoupon> orderCoupons = orderCouponService.saveAll(SaveOrderCouponCommand.of(order,coupons));
 		order.setOrderCoupons(orderCoupons);
@@ -81,8 +86,11 @@ public class OrderFacade {
 
 		List<OrderItem> orderItems = command.orderItems().stream()
 			.map(itemCommand -> {
+				if(itemCommand.quantity() <= 0){
+					throw new CustomException(INVALID_QUANTITY);
+				}
 				Product product = productService.findById(itemCommand.productId());
-				if (product.getStatus() == ProductStatus.OUT_OF_STOCK) {
+				if (product.getStatus() == ProductStatus.OUT_OF_STOCK || product.getStock() <= 0) {
 					throw new CustomException(OUT_OF_STOCK);
 				}
 				return OrderItem.create(product, itemCommand.quantity());

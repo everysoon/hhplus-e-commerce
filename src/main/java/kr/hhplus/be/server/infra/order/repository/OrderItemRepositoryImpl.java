@@ -13,4 +13,9 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
 	public List<OrderItem> findByOrderId(Long orderId) {
 		return List.of();
 	}
+
+	@Override
+	public List<OrderItem> saveAll(List<OrderItem> orderItems) {
+		return List.of();
+	}
 }

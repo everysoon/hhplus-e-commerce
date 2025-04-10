@@ -13,4 +13,9 @@ public class OrderHistoryRepositoryImpl implements OrderHistoryRepository {
 	public List<OrderHistory> findByUserId(Long userId) {
 		return List.of();
 	}
+
+	@Override
+	public OrderHistory save(OrderHistory orderHistory) {
+		return null;
+	}
 }

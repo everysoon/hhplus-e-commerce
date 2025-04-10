@@ -1,15 +1,15 @@
 package kr.hhplus.be.server.domain.order;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import kr.hhplus.be.server.domain.coupon.Coupon;
 import kr.hhplus.be.server.domain.payment.Payment;
 import kr.hhplus.be.server.domain.product.Product;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @AllArgsConstructor
@@ -26,14 +26,29 @@ public class Order {
 	private final LocalDateTime orderedAt;
 
 	public BigDecimal getTotalPrice() {
+		if(this.totalDiscount == null) {return this.totalPrice;}
 		return this.totalPrice.subtract(this.totalDiscount);
 	}
 
 	public void applyCoupon(Coupon coupon) {
-		if(coupon == null) return;
+		if (coupon == null) {
+			return;
+		}
+		if(this.orderCoupons == null) {
+			this.orderCoupons = new ArrayList<>();
+		}
 		this.orderCoupons.add(new OrderCoupon(this, coupon));
 		calculateTotalDiscount();
 	}
+
+	public void applyCoupon(List<Coupon> coupons) {
+		if(this.orderCoupons == null) {
+			this.orderCoupons = new ArrayList<>();
+		}
+		this.orderCoupons = coupons.stream().map(coupon -> new OrderCoupon(this, coupon)).toList();
+		calculateTotalDiscount();
+	}
+
 	public static Order create(Long userId) {
 		return new Order(
 			null,
@@ -45,14 +60,16 @@ public class Order {
 			LocalDateTime.now()
 		);
 	}
+
 	public void calculateTotalPrice(List<OrderItem> orderItems) {
-		this.totalPrice =  orderItems.stream()
+		this.totalPrice = orderItems.stream()
 			.map(OrderItem::getProduct)
 			.map(Product::getPrice)
 			.reduce(BigDecimal.ZERO, BigDecimal::add);
 	}
+
 	public void calculateTotalDiscount() {
-		this.totalDiscount =orderCoupons.stream()
+		this.totalDiscount = orderCoupons.stream()
 			.map(OrderCoupon::getDiscountAmount)
 			.reduce(BigDecimal.ZERO, BigDecimal::add);
 	}

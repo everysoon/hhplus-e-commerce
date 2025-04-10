@@ -4,11 +4,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import kr.hhplus.be.server.ResponseApi;
+import kr.hhplus.be.server.application.order.PlaceOrderResult;
+import kr.hhplus.be.server.application.order.RequestOrderCommand;
 import kr.hhplus.be.server.application.order.OrderFacade;
 import kr.hhplus.be.server.interfaces.dto.OrderDTO;
 import kr.hhplus.be.server.support.config.swagger.SwaggerErrorExample;
-
-import kr.hhplus.be.server.application.order.dto.OrderResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,7 +41,9 @@ public class OrderController {
     public ResponseEntity<ResponseApi<OrderDTO.OrderResponse>> order(
        @Valid @RequestBody OrderDTO.OrderRequest dto
     ) {
-        return ResponseEntity.ok(ResponseApi.of(orderFacade.order(dto)));
+		RequestOrderCommand command = RequestOrderCommand.from(dto);
+		PlaceOrderResult result = orderFacade.order(command);
+		return ResponseEntity.ok(ResponseApi.of(OrderDTO.OrderResponse.of(result)));
     }
 
 }

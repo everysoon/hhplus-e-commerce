@@ -1,11 +1,13 @@
 package kr.hhplus.be.server.domain.user;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import kr.hhplus.be.server.application.user.dto.UserResponseDTO;
 import kr.hhplus.be.server.infra.user.entity.UserEntity;
+import kr.hhplus.be.server.support.common.exception.CustomException;
+import kr.hhplus.be.server.support.config.swagger.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
@@ -24,6 +26,9 @@ public class User {
 	}
 
 	public void use(BigDecimal price) {
+		if(price.compareTo(this.point) <= 0) {
+			throw new CustomException(ErrorCode.INSUFFICIENT_POINTS);
+		}
 		this.point = this.point.subtract(price);
 	}
 

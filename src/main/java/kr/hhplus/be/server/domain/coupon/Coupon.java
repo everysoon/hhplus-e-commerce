@@ -1,14 +1,14 @@
 package kr.hhplus.be.server.domain.coupon;
 
+import kr.hhplus.be.server.infra.coupon.entity.CouponEntity;
+import kr.hhplus.be.server.support.common.exception.CustomException;
+import kr.hhplus.be.server.support.config.swagger.ErrorCode;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
-import kr.hhplus.be.server.domain.user.User;
-import kr.hhplus.be.server.domain.user.UserCoupon;
-import kr.hhplus.be.server.infra.coupon.entity.CouponEntity;
-import kr.hhplus.be.server.infra.user.entity.UserCouponEntity;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
@@ -33,17 +33,19 @@ public class Coupon {
 		);
 	}
 	public BigDecimal getDiscountAmount(BigDecimal price) {
-		if (this.isValid()) {
-			return BigDecimal.ZERO; // 만료된 쿠폰은 할인 없음
+		if (this.isExpired() || isOlderThan7Days()) {
+			throw new CustomException(ErrorCode.INVALID_COUPON);
 		}
-
 		return switch (this.type) {
 			case FIXED -> this.discount;
 			case PERCENT -> price.multiply(this.discount)
 				.divide(BigDecimal.valueOf(100));
 		};
 	}
-	public boolean isValid(){
+	public boolean isOlderThan7Days(){
+		return createdAt.plusDays(7).isBefore(LocalDateTime.now());
+	}
+	public boolean isExpired(){
 		return expiredAt.isBefore(LocalDateTime.now());
 	}
 }

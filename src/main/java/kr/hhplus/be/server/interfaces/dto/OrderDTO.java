@@ -1,7 +1,8 @@
 package kr.hhplus.be.server.interfaces.dto;
 
 import jakarta.validation.constraints.NotNull;
-import kr.hhplus.be.server.domain.order.OrderStatus;
+import kr.hhplus.be.server.application.order.PlaceOrderResult;
+import kr.hhplus.be.server.domain.order.OrderItem;
 import kr.hhplus.be.server.domain.payment.PaymentMethod;
 import kr.hhplus.be.server.domain.payment.PaymentStatus;
 import lombok.AllArgsConstructor;
@@ -34,11 +35,22 @@ public class OrderDTO {
 		PaymentMethod paymentMethod,
 		PaymentStatus paymentStatus,
 		BigDecimal totalPrice,
-		BigDecimal couponDiscountAmount,
-		LocalDateTime orderedAt,
-		OrderStatus orderStatus
+		BigDecimal totalDiscount,
+		LocalDateTime orderedAt
 	) {
-
+		public static OrderResponse of(PlaceOrderResult result) {
+			return new OrderResponse(
+				result.userId(),
+				result.orderItems().stream()
+					.map(OrderItem::getProduct)
+					.map(ProductDTO.ProductResponse::from).toList(),
+				result.payment().getPaymentMethod(),
+				result.payment().getStatus(),
+				result.order().getTotalPrice(),
+				result.order().getTotalDiscount(),
+				result.order().getOrderedAt()
+			);
+		}
 	}
 	@Data
 	@NoArgsConstructor
@@ -53,9 +65,9 @@ public class OrderDTO {
 	public record OrderItemResponse(
 		ProductDTO.ProductResponse item,
 		Long orderId,
-		OrderStatus status,
 		LocalDateTime createdAt
 	){}
+
 //	public record OrderItemResponse(
 //		@NotNull List<Item> orderItems,
 //		List<UUID> couponIds

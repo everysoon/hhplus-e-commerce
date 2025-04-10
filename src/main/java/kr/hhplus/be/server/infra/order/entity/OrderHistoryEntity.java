@@ -1,10 +1,7 @@
 package kr.hhplus.be.server.infra.order.entity;
 
 import jakarta.persistence.*;
-import kr.hhplus.be.server.domain.order.OrderStatus;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
@@ -23,8 +20,7 @@ public class OrderHistoryEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private OrderEntity orderEntity;
-    @Column(nullable = false)
-    private OrderStatus status;
+	private String description;
     @CreatedDate
     @Column(nullable = false)
     private LocalDateTime createdAt;

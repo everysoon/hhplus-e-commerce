@@ -33,9 +33,6 @@ public class UserCouponEntity {
     private CouponEntity couponEntity;
 
     @Column(nullable = false)
-    private Integer remainingStock; // 쿠폰이 사용되거나 만료되면 갱신
-
-    @Column(nullable = false)
     @CreatedDate
     private LocalDateTime issuedAt;
 

@@ -15,8 +15,7 @@ public class UserCoupon {
 	private final Long id;
 	private final User user;
 	private final Coupon coupon;
-	private final CouponStatus status;
-	private Integer remainingStock;
+	private CouponStatus status;
 	private LocalDateTime issuedAt;
 
 	public boolean isValid() {
@@ -25,14 +24,19 @@ public class UserCoupon {
 			&& !coupon.isExpired()
 			&& !coupon.isOlderThan7Days();
 	}
-
+	public static UserCoupon of(User user,Coupon coupon) {
+		return new UserCoupon(null,user,coupon,CouponStatus.ISSUED,LocalDateTime.now());
+	}
+	public UserCoupon use(){
+		this.status =  CouponStatus.USED;
+		return this;
+	}
 	public static UserCoupon from(UserCouponEntity entity) {
 		return new UserCoupon(
 			entity.getId(),
 			User.from(entity.getUserEntity()),
 			Coupon.from(entity.getCouponEntity()),
 			entity.getStatus(),
-			entity.getRemainingStock(),
 			entity.getIssuedAt()
 		);
 	}

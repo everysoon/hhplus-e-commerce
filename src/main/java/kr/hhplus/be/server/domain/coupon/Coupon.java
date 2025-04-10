@@ -42,6 +42,9 @@ public class Coupon {
 				.divide(BigDecimal.valueOf(100));
 		};
 	}
+	public void use(){
+
+	}
 	public boolean isOlderThan7Days(){
 		return createdAt.plusDays(7).isBefore(LocalDateTime.now());
 	}

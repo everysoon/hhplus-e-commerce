@@ -21,7 +21,9 @@ public class UserCouponService {
 	public Boolean existsByUserIdAndCouponId(CouponValidCommand command) {
 		return userCouponRepository.existsByUserIdAndCouponId(command.userId(),command.couponIds());
 	}
-	public void use(UseCouponCommand command) {
-
+	public List<UserCoupon> use(UseCouponCommand command) {
+		return command.getUserCoupons()
+			.stream().peek(UserCoupon::use)
+			.toList();
 	}
 }

@@ -1,0 +1,28 @@
+root = true # 이 파일이 최상위 설정 파일임을 명시
+
+[*]
+# [encoding-utf8]
+charset = utf-8
+
+# [newline-lf]
+end_of_line = lf #  Git에서 Windows/Linux 간 개행 문자 문제 방지
+
+# [newline-eof]
+insert_final_newline = true # 마지막 줄 끝에 개행 추가
+
+[*.bat]
+end_of_line = crlf
+
+[*.java]
+# [indentation-tab]
+indent_style = tab # 들여쓰기 스타일 (space 또는 tab)
+
+# [4-spaces-tab]
+indent_size = 4
+tab_width = 4
+
+# [no-trailing-spaces]
+trim_trailing_whitespace = true # 불필요한 공백 제거
+
+[line-length-120]
+max_line_length = 120

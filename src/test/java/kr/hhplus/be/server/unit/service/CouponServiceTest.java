@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 import kr.hhplus.be.server.application.coupon.CouponService;
 import kr.hhplus.be.server.domain.coupon.Coupon;
@@ -39,7 +40,7 @@ class CouponServiceTest {
 			LocalDateTime.now().plusDays(7),
 			LocalDateTime.now()
 		);
-		Mockito.when(couponRepository.findById(couponId)).thenReturn(expectedCoupon);
+		Mockito.when(couponRepository.findById(couponId)).thenReturn(Optional.of(expectedCoupon));
 
 		// when
 		Coupon result = couponService.findById(couponId);

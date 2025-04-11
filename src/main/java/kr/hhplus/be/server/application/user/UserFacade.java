@@ -42,17 +42,19 @@ public class UserFacade {
 
 	public IssuedCouponResult issueCoupon(IssueCouponCommand command) {
 		long issuedCoupons = userCouponService.countCouponByUserId(command);
-		if (issuedCoupons >= 0) {
+		if (issuedCoupons > 0) {
 			throw new CustomException(DUPLICATE_COUPON_CLAIM);
 		}
 		Coupon coupon = couponService.findById(command.couponId());
-		if(coupon.isOutOfSock()){
+		if(coupon.isOutOfStock()){
 			throw new CustomException(COUPON_SOLD_OUT);
 		}
 		if(coupon.isExpired()){
 			throw new CustomException(COUPON_EXPIRED);
 		}
 		User user = userService.get(command.userId());
+		coupon.decreaseStock();
+		couponService.save(coupon);
 		UserCoupon userCoupon = UserCoupon.of(user, coupon);
 		userCouponService.save(userCoupon);
 

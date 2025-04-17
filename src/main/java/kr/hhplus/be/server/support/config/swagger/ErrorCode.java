@@ -27,10 +27,13 @@ public enum ErrorCode {
     NOT_EXIST_COUPON(BAD_REQUEST.value(),"해당 쿠폰을 찾을 수 없습니다."),
     COUPON_SOLD_OUT(BAD_REQUEST.value(),"선착순 마감으로 쿠폰 재고가 존재하지않습니다."),
 	INVALID_COUPON(BAD_REQUEST.value(),"유효하지 않은 쿠폰입니다."),
+	EXPIRED_COUPON(BAD_REQUEST.value(),"사용기간이 지난 쿠폰입니다."),
+	INVALID_EXPIRED_COUPON_DATE(BAD_REQUEST.value(),"쿠폰 만료일이 발행일 이전입니다."),
 	COUPON_ISSUED_FAIL(BAD_REQUEST.value(),"쿠폰 발급에 대한 동시성 에러가 발생했습니다."),
 	DUPLICATE_COUPON_CLAIM(BAD_REQUEST.value(),"이미 쿠폰을 받은 발급자 입니다."),
 	INVALID_USER_COUPON(BAD_REQUEST.value(),"해당 쿠폰이 사용자 권한이 아닙니다."),
 	COUPON_EXPIRED(BAD_REQUEST.value(),"만료된 쿠폰에 대한 요청입니다."),
+	INVALID_COUPON_QUANTITY(BAD_REQUEST.value(),"발행 수량은 남은 수량보다 적을 수 없습니다."),
 
     // point
     INSUFFICIENT_POINTS(BAD_REQUEST.value(),"사용 가능한 포인트가 부족합니다."),

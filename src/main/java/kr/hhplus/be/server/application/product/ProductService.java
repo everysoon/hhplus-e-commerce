@@ -1,15 +1,16 @@
 package kr.hhplus.be.server.application.product;
 
+import java.util.List;
+import kr.hhplus.be.server.domain.order.OrderItem;
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class ProductService {
+
 	private final ProductRepository productRepository;
 
 	public Product findById(Long productId) {
@@ -24,9 +25,12 @@ public class ProductService {
 		return productRepository.findPopularAll();
 	}
 
-	public Product decrease(Long productId,Integer amount) {
-		Product product = findById(productId);
-		product.decreaseStock(amount);
-		return productRepository.save(product);
+	public List<Product> decreaseStock(List<OrderItem> orderItems) {
+		return orderItems.stream().map(o -> {
+			Product product = findById(o.getProductId());
+			product.decreaseStock(o.getQuantity());
+			return productRepository.save(product);
+		}).toList();
+
 	}
 }

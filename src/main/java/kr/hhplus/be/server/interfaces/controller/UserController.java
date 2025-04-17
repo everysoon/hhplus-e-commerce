@@ -15,10 +15,11 @@ import java.util.UUID;
 import kr.hhplus.be.server.ResponseApi;
 import kr.hhplus.be.server.application.coupon.IssueCouponCommand;
 import kr.hhplus.be.server.application.coupon.IssuedCouponResult;
+import kr.hhplus.be.server.application.point.PointService;
 import kr.hhplus.be.server.application.user.UserFacade;
 import kr.hhplus.be.server.application.user.UserService;
 import kr.hhplus.be.server.domain.user.User;
-import kr.hhplus.be.server.domain.user.UserCoupon;
+import kr.hhplus.be.server.domain.coupon.UserCoupon;
 import kr.hhplus.be.server.interfaces.dto.UserCouponDTO;
 import kr.hhplus.be.server.interfaces.dto.UserDTO;
 import kr.hhplus.be.server.support.config.swagger.SwaggerErrorExample;
@@ -39,6 +40,7 @@ public class UserController {
 
 	private final UserService userService;
 	private final UserFacade userFacade;
+	private final PointService pointService;
 
 	@GetMapping("/{userId}/point")
 	@Operation(description = "유저 보유 포인트 조회")
@@ -97,7 +99,7 @@ public class UserController {
 		@Parameter(description = "포인트 충전량", required = true)
 		@RequestParam Integer price
 	) {
-		User user = userService.chargePoint(userId, new BigDecimal(price));
+		User user = pointService.chargePoint(userId, new BigDecimal(price));
 		return ResponseEntity.ok(ResponseApi.of(UserDTO.UserResponse.from(user)));
 	}
 	@PostMapping("/{userId}/put")
@@ -112,7 +114,7 @@ public class UserController {
 		@Parameter(description = "포인트 사용량", required = true)
 		@RequestParam Integer price
 	) {
-		User user = userService.usePoint(userId, new BigDecimal(price));
+		User user = pointService.usePoint(userId, new BigDecimal(price));
 		return ResponseEntity.ok(ResponseApi.of(UserDTO.UserResponse.from(user)));
 	}
 //	@GetMapping("/{userId}/orders")

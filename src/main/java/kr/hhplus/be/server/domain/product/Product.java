@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 @AllArgsConstructor
 public class Product {
+
 	private final Long id;
 	private String productName;
 	private Integer stock;
@@ -19,6 +20,7 @@ public class Product {
 	private BigDecimal price;
 	private ProductStatus status;
 	private LocalDateTime createdAt;
+
 	public static Product from(ProductEntity entity) {
 		return new Product(
 			entity.getId(),
@@ -31,6 +33,7 @@ public class Product {
 			entity.getCreatedAt()
 		);
 	}
+
 	public void decreaseStock(Integer amount) {
 		this.stock -= amount;
 	}

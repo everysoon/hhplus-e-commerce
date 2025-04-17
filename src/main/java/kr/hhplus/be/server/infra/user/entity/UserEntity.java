@@ -27,9 +27,6 @@ public class UserEntity {
      * address, city, zipcode, detailedAddress의 Address 객체로 보완해도 좋음
      * */
     private String address;
-    @Column(nullable = false)
-    private String password;
-
     @CreatedDate
     @Column(nullable = false)
     private LocalDateTime createdAt;

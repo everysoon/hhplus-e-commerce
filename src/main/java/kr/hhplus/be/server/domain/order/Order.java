@@ -2,10 +2,9 @@ package kr.hhplus.be.server.domain.order;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import kr.hhplus.be.server.domain.coupon.Coupon;
-import kr.hhplus.be.server.domain.payment.Payment;
 import kr.hhplus.be.server.domain.product.Product;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,11 +16,10 @@ public class Order {
 
 	private final Long id;
 	private final Long userId;
-	@Setter
-	private Payment payment;
-	@Setter
-	private List<OrderCoupon> orderCoupons;
+	private List<UUID> couponIds;
+	private List<OrderItem> orderItems;
 	private BigDecimal totalPrice;
+	@Setter
 	private BigDecimal totalDiscount;
 	private final LocalDateTime orderedAt;
 
@@ -29,48 +27,24 @@ public class Order {
 		if(this.totalDiscount == null) {return this.totalPrice;}
 		return this.totalPrice.subtract(this.totalDiscount);
 	}
-
-	public void applyCoupon(Coupon coupon) {
-		if (coupon == null) {
+	public void applyCoupon(List<Coupon> coupons) {
+		if(coupons == null || coupons.isEmpty()) {
 			return;
 		}
-		if(this.orderCoupons == null) {
-			this.orderCoupons = new ArrayList<>();
-		}
-		this.orderCoupons.add(new OrderCoupon(this, coupon));
-		calculateTotalDiscount();
+		calculateTotalDiscount(coupons);
 	}
 
-	public void applyCoupon(List<Coupon> coupons) {
-		if(this.orderCoupons == null) {
-			this.orderCoupons = new ArrayList<>();
-		}
-		this.orderCoupons = coupons.stream().map(coupon -> new OrderCoupon(this, coupon)).toList();
-		calculateTotalDiscount();
-	}
-
-	public static Order create(Long userId) {
-		return new Order(
-			null,
-			userId,
-			null,
-			null,
-			BigDecimal.ZERO,
-			BigDecimal.ZERO,
-			LocalDateTime.now()
-		);
-	}
-
-	public void calculateTotalPrice(List<OrderItem> orderItems) {
-		this.totalPrice = orderItems.stream()
-			.map(OrderItem::getProduct)
+	public void calculateTotalPrice(List<Product> products) {
+		if(products == null || products.isEmpty()) {return;}
+		this.totalPrice = products.stream()
 			.map(Product::getPrice)
 			.reduce(BigDecimal.ZERO, BigDecimal::add);
 	}
 
-	public void calculateTotalDiscount() {
-		this.totalDiscount = orderCoupons.stream()
-			.map(OrderCoupon::getDiscountAmount)
+	public void calculateTotalDiscount(List<Coupon> usedCoupons) {
+		if(usedCoupons == null || usedCoupons.isEmpty()) {return;}
+		this.totalDiscount = usedCoupons.stream()
+			.map(Coupon::getDiscountAmount)
 			.reduce(BigDecimal.ZERO, BigDecimal::add);
 	}
 }

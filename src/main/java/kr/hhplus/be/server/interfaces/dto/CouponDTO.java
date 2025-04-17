@@ -3,7 +3,7 @@ package kr.hhplus.be.server.interfaces.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import kr.hhplus.be.server.domain.coupon.CouponStatus;
 import kr.hhplus.be.server.domain.coupon.CouponType;
-import kr.hhplus.be.server.domain.user.UserCoupon;
+import kr.hhplus.be.server.domain.coupon.UserCoupon;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

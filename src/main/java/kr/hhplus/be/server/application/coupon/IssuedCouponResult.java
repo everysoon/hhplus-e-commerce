@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import kr.hhplus.be.server.domain.coupon.CouponStatus;
 import kr.hhplus.be.server.domain.coupon.CouponType;
-import kr.hhplus.be.server.domain.user.UserCoupon;
+import kr.hhplus.be.server.domain.coupon.UserCoupon;
 
 public record IssuedCouponResult (
 	Long userId,

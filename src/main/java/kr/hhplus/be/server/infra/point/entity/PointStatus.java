@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.infra.user.entity;
+package kr.hhplus.be.server.infra.point.entity;
 
 public enum PointStatus {
     CHARGED,

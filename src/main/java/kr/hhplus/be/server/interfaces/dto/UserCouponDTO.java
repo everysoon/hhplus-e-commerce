@@ -6,7 +6,7 @@ import java.util.UUID;
 import kr.hhplus.be.server.application.coupon.IssuedCouponResult;
 import kr.hhplus.be.server.domain.coupon.CouponStatus;
 import kr.hhplus.be.server.domain.coupon.CouponType;
-import kr.hhplus.be.server.domain.user.UserCoupon;
+import kr.hhplus.be.server.domain.coupon.UserCoupon;
 
 import java.util.List;
 

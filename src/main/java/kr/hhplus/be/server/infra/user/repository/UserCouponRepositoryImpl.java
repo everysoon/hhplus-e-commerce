@@ -3,7 +3,7 @@ package kr.hhplus.be.server.infra.user.repository;
 import java.util.List;
 import kr.hhplus.be.server.application.coupon.CouponValidCommand;
 import kr.hhplus.be.server.application.coupon.IssueCouponCommand;
-import kr.hhplus.be.server.domain.user.UserCoupon;
+import kr.hhplus.be.server.domain.coupon.UserCoupon;
 import kr.hhplus.be.server.domain.user.repository.UserCouponRepository;
 import org.springframework.stereotype.Repository;
 

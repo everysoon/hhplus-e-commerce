@@ -1,15 +1,15 @@
 package kr.hhplus.be.server.application.payment;
 
-import kr.hhplus.be.server.domain.order.Order;
-import kr.hhplus.be.server.domain.payment.PaymentMethod;
-
 import java.math.BigDecimal;
+import kr.hhplus.be.server.domain.order.Order;
+import kr.hhplus.be.server.domain.payment.Payment;
+import kr.hhplus.be.server.domain.payment.PaymentMethod;
 
 public record RequestPaymentCommand(
 	String MID,
 	BigDecimal price,
 	String merchantKey,
-	Order order,
+	Long orderId,
 	PaymentMethod paymentMethod
 ) {
 	public static RequestPaymentCommand of(BigDecimal price,Order order,PaymentMethod paymentMethod) {
@@ -17,8 +17,19 @@ public record RequestPaymentCommand(
 			"MID_SOON_STORE",
 			price,
 			"SECRET_MERCHANT_KEY",
-			order,
+			order.getId(),
 			paymentMethod
+		);
+	}
+	public CreatePaymentHistoryCommand toCreatePaymentCommand(Payment payment, String transactionId) {
+		return new CreatePaymentHistoryCommand(
+			"MID_SOON_STORE",
+			price,
+			"SECRET_MERCHANT_KEY",
+			orderId,
+			paymentMethod,
+			payment,
+			transactionId
 		);
 	}
 	public String combineAll(String token){

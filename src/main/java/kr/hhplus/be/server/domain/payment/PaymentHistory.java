@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.domain.payment;
 
+import kr.hhplus.be.server.application.payment.CreatePaymentHistoryCommand;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -9,22 +10,29 @@ import java.time.LocalDateTime;
 @Getter
 @AllArgsConstructor
 public class PaymentHistory {
+
 	private final Long id;
+	private final Long orderId;
 	private final Payment payment;
 	private final PaymentStatus status;
-	private final BigDecimal amount;
-	private final String description;
+	private final BigDecimal price;
+	private String description;
 	private final LocalDateTime createdAt;
 	private final String transactionId;
-	public static PaymentHistory of(Payment payment,String transactionId) {
+
+	public static PaymentHistory of(CreatePaymentHistoryCommand command){
 		return new PaymentHistory(
 			null,
-			payment,
-			payment.getStatus(),
-			payment.getOrder().getTotalDiscount(),
+			command.orderId(),
+			command.payment(),
+			command.payment().getStatus(),
+			command.price(),
 			null,
 			LocalDateTime.now(),
-			transactionId
+			command.transactionId()
 		);
+	}
+	public void setDescription(String description) {
+		this.description = description;
 	}
 }

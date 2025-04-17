@@ -1,26 +1,30 @@
 package kr.hhplus.be.server.domain.payment;
 
-import kr.hhplus.be.server.domain.order.Order;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import kr.hhplus.be.server.application.payment.RequestPaymentCommand;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
-import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
 public class Payment {
+
 	private final Long id;
 	private PaymentMethod paymentMethod;
 	private final LocalDateTime createdAt;
-	private final Order order;
+	private final Long orderId;
+	private BigDecimal price;
 	private PaymentStatus status;
-	public static Payment of(Order order, PaymentMethod paymentMethod) {
+
+	public static Payment of(RequestPaymentCommand command) {
 		return new Payment(
 			null,
-			paymentMethod,
+			command.paymentMethod(),
 			LocalDateTime.now(),
-			order,
+			command.orderId(),
+			command.price(),
 			PaymentStatus.COMPLETED
-			);
+		);
 	}
 }

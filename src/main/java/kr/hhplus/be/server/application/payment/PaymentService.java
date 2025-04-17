@@ -12,18 +12,22 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class PaymentService {
+
 	private final PaymentClient paymentClient;
 	private final PaymentRepository paymentRepository;
 	private final PaymentHistoryRepository paymentHistoryRepository;
 
 	public Payment pay(RequestPaymentCommand command) {
+		// client 통신
 		String token = paymentClient.getToken(PaymentDTO.TokenRequest.from(command));
-		String transactionId =  paymentClient.send(PaymentDTO.PaymentRequest.from(command, token));
-		Payment payment =  Payment.of(command.order(),command.paymentMethod());
-		PaymentHistory history = PaymentHistory.of(payment,transactionId);
-		paymentHistoryRepository.save(history);
+		String transactionId = paymentClient.send(PaymentDTO.PaymentRequest.from(command, token));
+		// create payment + payment history
+		Payment payment = Payment.of(command);
+		CreatePaymentHistoryCommand payloadCommand = command.toCreatePaymentCommand(payment,
+			transactionId);
+		// save
+		paymentHistoryRepository.save(PaymentHistory.of(payloadCommand));
 		paymentRepository.save(payment);
-
 		return payment;
 	}
 

@@ -10,10 +10,13 @@ import java.time.LocalDateTime;
 public class OrderHistory {
 	private final Long id;
 	private final Long orderId;
-	private final LocalDateTime createdAt;
 	private String description;
+	private final LocalDateTime createdAt;
 
 	public static OrderHistory of(Order order, String description) {
-		return new OrderHistory(null, order.getId(), LocalDateTime.now(), description);
+		return new OrderHistory(null, order.getId(), description, LocalDateTime.now());
+	}
+	public static OrderHistory of(Order order) {
+		return new OrderHistory(null, order.getId(), "", LocalDateTime.now());
 	}
 }

@@ -1,14 +1,13 @@
 package kr.hhplus.be.server.domain.coupon;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import kr.hhplus.be.server.infra.coupon.entity.CouponEntity;
 import kr.hhplus.be.server.support.common.exception.CustomException;
 import kr.hhplus.be.server.support.config.swagger.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Getter
 @AllArgsConstructor
@@ -16,8 +15,9 @@ public class Coupon {
 	private final UUID id;
 	private final CouponType type;
 	private final String description;
-	private final BigDecimal discount;
-	private Integer stock;
+	private final BigDecimal discountAmount;
+	private int initialQuantity;
+	private int remainingQuantity;
 	private final LocalDateTime expiredAt;
 	private final LocalDateTime createdAt;
 
@@ -26,29 +26,44 @@ public class Coupon {
 			entity.getId(),
 			entity.getType(),
 			entity.getDescription(),
-			entity.getDiscount(),
-			entity.getStock(),
+			entity.getDiscountAmount(),
+			entity.getInitialQuantity(),
+			entity.getRemainingQuantity(),
 			entity.getExpiredAt(),
-			entity.getCreatedAt()
+			entity.getIssuedAt()
 		);
 	}
+	public Coupon issue(){
+		validateStock();
+		validExpired();
+		decreaseStock();
+		return this;
+	}
 	public BigDecimal getDiscountAmount(BigDecimal price) {
-		if (this.isExpired()) {
-			throw new CustomException(ErrorCode.INVALID_COUPON);
-		}
+		validExpired();
 		return switch (this.type) {
-			case FIXED -> this.discount;
-			case PERCENT -> price.multiply(this.discount)
+			case FIXED -> this.discountAmount;
+			case PERCENT -> price.multiply(this.discountAmount)
 				.divide(BigDecimal.valueOf(100));
 		};
 	}
 	public void decreaseStock(){
-		this.stock-=1;
+		if(this.remainingQuantity <= 0){
+			throw new CustomException(ErrorCode.COUPON_SOLD_OUT);
+		}
+		this.remainingQuantity-=1;
 	}
-	public boolean isOutOfStock(){
-		return getStock() <= 0;
+	public void validateStock() {
+		if (this.initialQuantity < this.remainingQuantity) {
+			throw new CustomException(ErrorCode.INVALID_COUPON_QUANTITY);
+		}
 	}
-	public boolean isExpired(){
-		return expiredAt.isBefore(LocalDateTime.now());
+	public void validExpired(){
+		if(expiredAt.isBefore(LocalDateTime.now())){
+			throw new CustomException(ErrorCode.EXPIRED_COUPON);
+		}
+		if(expiredAt.isBefore(createdAt)){
+			throw new CustomException(ErrorCode.INVALID_EXPIRED_COUPON_DATE);
+		}
 	}
 }

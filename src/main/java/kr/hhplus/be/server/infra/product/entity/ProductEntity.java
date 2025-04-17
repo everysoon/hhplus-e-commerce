@@ -20,12 +20,17 @@ public class ProductEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false)
 	private Long id;
+
 	private String productName;
+
 	@Column(nullable = false)
 	private Integer stock;
+
 	@Column(nullable = false)
 	private Category category;
+
 	private String description;
+
 	@Column(nullable = false)
 	private BigDecimal price = BigDecimal.ZERO;
 	/**
@@ -35,6 +40,7 @@ public class ProductEntity {
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private ProductStatus status;
+
 	@CreatedDate
 	@Column(nullable = false)
 	private LocalDateTime createdAt;

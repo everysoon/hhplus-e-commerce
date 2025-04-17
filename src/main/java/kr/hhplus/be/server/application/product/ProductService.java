@@ -17,9 +17,12 @@ public class ProductService {
 	public Product findById(Long productId) {
 		return productRepository.findById(productId);
 	}
+
 	public List<Product> orderItemToProduct(List<OrderItem> orderItems) {
-		return orderItems.stream().map(OrderItem::getProductId).map(productRepository::findById).toList();
+		return orderItems.stream().map(OrderItem::getProductId).map(productRepository::findById)
+			.toList();
 	}
+
 	public List<Product> searchFilter(ProductSearchCommand command) {
 		return productRepository.searchFilter(command);
 	}
@@ -27,13 +30,15 @@ public class ProductService {
 	public List<Product> findPopularAll(ProductTopSellingCommand command) {
 		return productRepository.findPopularAll(command);
 	}
-	public List<Product> increaseStock(List<OrderItem> orderItems){
+
+	public List<Product> increaseStock(List<OrderItem> orderItems) {
 		return orderItems.stream().map(o -> {
 			Product product = findById(o.getProductId());
 			product.increaseStock(o.getQuantity());
 			return productRepository.save(product);
 		}).toList();
 	}
+
 	public List<Product> decreaseStock(List<OrderItem> orderItems) {
 		return orderItems.stream().map(o -> {
 			Product product = findById(o.getProductId());

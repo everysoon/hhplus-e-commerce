@@ -1,25 +1,27 @@
-package kr.hhplus.be.server.application.user;
+package kr.hhplus.be.server.application.coupon;
 
 import jakarta.transaction.Transactional;
-import kr.hhplus.be.server.application.coupon.CouponService;
-import kr.hhplus.be.server.application.coupon.IssueCouponCommand;
-import kr.hhplus.be.server.application.coupon.UserCouponDetailResult;
-import kr.hhplus.be.server.application.point.PointService;
+import java.util.List;
+import kr.hhplus.be.server.application.user.UserService;
 import kr.hhplus.be.server.domain.coupon.Coupon;
 import kr.hhplus.be.server.domain.coupon.UserCoupon;
-import kr.hhplus.be.server.domain.point.Point;
 import kr.hhplus.be.server.domain.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 @Component
 @RequiredArgsConstructor
-public class UserFacade {
+public class CouponFacade {
+
 	private final UserService userService;
 	private final CouponService couponService;
-	private final PointService pointService;
+
+	public List<UserCouponDetailResult> getUserCoupons(Long userId) {
+		return couponService.findUserCouponByUserId(userId).stream().map(uc -> {
+			Coupon coupon = couponService.findCouponById(uc.getCouponId());
+			return UserCouponDetailResult.of(uc, coupon);
+		}).toList();
+	}
 
 	@Transactional
 	public UserCouponDetailResult issueCoupon(IssueCouponCommand command) {
@@ -36,14 +38,4 @@ public class UserFacade {
 		return UserCouponDetailResult.of(userCoupon, coupon);
 	}
 
-	public Point getUserPoint(Long userId) {
-		return pointService.getUserPoint(userId);
-	}
-
-	public List<UserCouponDetailResult> getUserCoupons(Long userId) {
-		return couponService.findUserCouponByUserId(userId).stream().map(uc -> {
-			Coupon coupon = couponService.findCouponById(uc.getCouponId());
-			return UserCouponDetailResult.of(uc, coupon);
-		}).toList();
-	}
 }

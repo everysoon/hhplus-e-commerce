@@ -25,6 +25,7 @@ public class OrderService {
 		BigDecimal totalPrice = command.orderItems().stream().map(
 			OrderItem::getUnitPrice
 		).reduce(BigDecimal.ZERO, BigDecimal::add);
+
 		BigDecimal totalDiscount = command.coupons().stream().map(
 			c -> c.getDiscountAmount(totalPrice)
 		).reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -40,19 +41,23 @@ public class OrderService {
 		);
 
 	}
-	public List<OrderHistory> findHistoryByUserId(Long userId){
+
+	public List<OrderHistory> findHistoryByUserId(Long userId) {
 		return orderHistoryRepository.findByUserId(userId);
 	}
+
 	public Order findById(Long orderId) {
 		return orderRepository.findById(orderId);
 	}
+
 	public Order save(Order order) {
 		OrderHistory history = OrderHistory.of(order);
 		orderHistoryRepository.save(history);
 		return orderRepository.save(order);
 	}
+
 	public void cancel(Order order) {
-		OrderHistory history = OrderHistory.of(order,"CANCEL");
+		OrderHistory history = OrderHistory.of(order, "CANCEL");
 		orderHistoryRepository.save(history);
 	}
 }

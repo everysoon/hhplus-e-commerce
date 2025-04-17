@@ -1,60 +1,54 @@
 package kr.hhplus.be.server.interfaces.controller;
 
+import static kr.hhplus.be.server.support.config.swagger.ErrorCode.COUPON_SOLD_OUT;
+import static kr.hhplus.be.server.support.config.swagger.ErrorCode.DUPLICATE_COUPON_CLAIM;
+import static kr.hhplus.be.server.support.config.swagger.ErrorCode.NOT_EXIST_USER;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
+import java.util.UUID;
 import kr.hhplus.be.server.ResponseApi;
+import kr.hhplus.be.server.application.coupon.CouponFacade;
 import kr.hhplus.be.server.application.coupon.IssueCouponCommand;
 import kr.hhplus.be.server.application.coupon.UserCouponDetailResult;
-import kr.hhplus.be.server.application.user.UserFacade;
-import kr.hhplus.be.server.domain.point.Point;
 import kr.hhplus.be.server.interfaces.dto.UserCouponDTO;
-import kr.hhplus.be.server.interfaces.dto.UserDTO;
+import kr.hhplus.be.server.interfaces.dto.UserCouponDTO.CouponDetailResponse;
 import kr.hhplus.be.server.support.config.swagger.SwaggerErrorExample;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.UUID;
-
-import static kr.hhplus.be.server.support.config.swagger.ErrorCode.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/users")
-@Tag(name = "유저", description = "유저 관련 API")
+@RequestMapping("/api/coupons")
+@Tag(name = "쿠폰", description = "쿠폰 발급 및 조회 API")
 @RequiredArgsConstructor
-public class UserController {
-	private final UserFacade userFacade;
+public class CouponController {
 
-	@GetMapping("/{userId}/point")
-	@Operation(description = "유저 보유 포인트 조회")
-	@SwaggerErrorExample({
-		NOT_EXIST_USER
-	})
-	public ResponseEntity<ResponseApi<UserDTO.UserResponse>> getUserPoint(
-		@Parameter(description = "유저 ID", required = true)
-		@PathVariable Long userId
-	) {
-		Point point = userFacade.getUserPoint(userId);
-		return ResponseEntity.ok(ResponseApi.of(UserDTO.UserResponse.from(point)));
-	}
+	private final CouponFacade couponFacade;
 
-	@GetMapping("/{userId}/coupon")
+	@GetMapping("/{userId}")
 	@Operation(description = "유저 보유 쿠폰 조회")
 	@SwaggerErrorExample({
 		NOT_EXIST_USER
 	})
-	public ResponseEntity<ResponseApi<List<UserCouponDTO.CouponDetailResponse>>> getUserCoupons(
+	public ResponseEntity<ResponseApi<List<CouponDetailResponse>>> getUserCoupons(
 		@Parameter(description = "유저 ID", required = true)
 		@PathVariable Long userId
 	) {
-		List<UserCouponDetailResult> result = userFacade.getUserCoupons(userId);
-		List<UserCouponDTO.CouponDetailResponse> response = result.stream().map(UserCouponDTO.CouponDetailResponse::from).toList();
+		List<UserCouponDetailResult> result = couponFacade.getUserCoupons(userId);
+		List<UserCouponDTO.CouponDetailResponse> response = result.stream()
+			.map(UserCouponDTO.CouponDetailResponse::from).toList();
 		return ResponseEntity.ok(ResponseApi.of(response));
 	}
 
-	@PostMapping("/{userId}/coupon")
+	@PostMapping("/{userId}")
 	@Operation(description = "유저 쿠폰 발급")
 	@SwaggerErrorExample({
 		COUPON_SOLD_OUT,
@@ -68,7 +62,7 @@ public class UserController {
 		@RequestParam UUID couponId
 	) {
 		IssueCouponCommand command = IssueCouponCommand.of(userId, couponId);
-		UserCouponDetailResult result = userFacade.issueCoupon(command);
+		UserCouponDetailResult result = couponFacade.issueCoupon(command);
 		return ResponseEntity.ok(ResponseApi.of(UserCouponDTO.CouponDetailResponse.from(result)));
 	}
 }

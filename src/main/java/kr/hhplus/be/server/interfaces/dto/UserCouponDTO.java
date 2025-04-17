@@ -1,14 +1,12 @@
 package kr.hhplus.be.server.interfaces.dto;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 import kr.hhplus.be.server.application.coupon.UserCouponDetailResult;
 import kr.hhplus.be.server.domain.coupon.Coupon;
 import kr.hhplus.be.server.domain.coupon.CouponStatus;
 import kr.hhplus.be.server.domain.coupon.CouponType;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
 
 public class UserCouponDTO {
 
@@ -26,7 +24,7 @@ public class UserCouponDTO {
 	}
 
 	public record CouponDetailResponse(Long userId,
-								 UUID couponId,
+								 String couponId,
 								 CouponStatus status,
 								 LocalDateTime issuedAt,
 								 CouponType type,

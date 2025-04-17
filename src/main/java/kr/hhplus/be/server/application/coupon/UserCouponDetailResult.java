@@ -1,17 +1,15 @@
 package kr.hhplus.be.server.application.coupon;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import kr.hhplus.be.server.domain.coupon.Coupon;
 import kr.hhplus.be.server.domain.coupon.CouponStatus;
 import kr.hhplus.be.server.domain.coupon.CouponType;
 import kr.hhplus.be.server.domain.coupon.UserCoupon;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.UUID;
-
 public record UserCouponDetailResult(
 	Long userId,
-	UUID couponId,
+	String couponId,
 	CouponStatus status,
 	LocalDateTime issuedAt,
 	CouponType type,

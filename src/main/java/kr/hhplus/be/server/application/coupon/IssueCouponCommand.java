@@ -1,13 +1,12 @@
 package kr.hhplus.be.server.application.coupon;
 
 import java.util.List;
-import java.util.UUID;
 
 public record IssueCouponCommand(
 	Long userId,
-	UUID couponId
+	String couponId
 ){
-	public static IssueCouponCommand of(Long userId, UUID couponId) {
+	public static IssueCouponCommand of(Long userId, String couponId) {
 		return new IssueCouponCommand(userId,couponId);
 	}
 	public CouponValidCommand toCouponValidCommand() {

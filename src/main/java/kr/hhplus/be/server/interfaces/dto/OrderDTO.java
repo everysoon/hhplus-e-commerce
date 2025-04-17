@@ -2,6 +2,9 @@ package kr.hhplus.be.server.interfaces.dto;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 import kr.hhplus.be.server.application.order.CancelOrderResult;
 import kr.hhplus.be.server.application.order.OrderDetailResult;
 import kr.hhplus.be.server.application.order.OrderInfoResult;
@@ -13,11 +16,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
-
 public class OrderDTO {
 	@Data
 	@NoArgsConstructor
@@ -28,7 +26,7 @@ public class OrderDTO {
 		Long userId;
 		@NotNull
 		List<OrderItemRequest> products;
-		List<UUID> couponId;
+		List<String> couponId;
 	}
 
 	public record CancelResponse(

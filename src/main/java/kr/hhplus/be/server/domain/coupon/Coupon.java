@@ -1,18 +1,16 @@
 package kr.hhplus.be.server.domain.coupon;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import kr.hhplus.be.server.support.common.exception.CustomException;
 import kr.hhplus.be.server.support.config.swagger.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.UUID;
-
 @Getter
 @AllArgsConstructor
 public class Coupon {
-	private final UUID id;
+	private final String id;
 	private final CouponType type;
 	private final String description;
 	private final BigDecimal discountAmount;

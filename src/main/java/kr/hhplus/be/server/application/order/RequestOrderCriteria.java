@@ -16,7 +16,7 @@ import java.util.UUID;
 public record RequestOrderCriteria(
 	@NotNull Long userId,
 	@NotNull List<Item> orderItems,
-	List<UUID> couponIds,
+	List<String> couponIds,
 	PaymentMethod paymentMethod
 
 ) {

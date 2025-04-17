@@ -1,13 +1,11 @@
 package kr.hhplus.be.server.domain.order;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @AllArgsConstructor
@@ -15,7 +13,7 @@ public class Order {
 
 	private final Long id;
 	private final Long userId;
-	private List<UUID> couponIds;
+	private List<String> couponIds;
 	private List<OrderItem> orderItems;
 	private BigDecimal totalPrice;
 	@Setter

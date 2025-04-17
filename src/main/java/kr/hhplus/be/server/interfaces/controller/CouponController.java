@@ -59,7 +59,7 @@ public class CouponController {
 		@Parameter(description = "유저 ID", required = true)
 		@PathVariable Long userId,
 		@Parameter(description = "쿠폰 UUID", required = true)
-		@RequestParam UUID couponId
+		@RequestParam String couponId
 	) {
 		IssueCouponCommand command = IssueCouponCommand.of(userId, couponId);
 		UserCouponDetailResult result = couponFacade.issueCoupon(command);

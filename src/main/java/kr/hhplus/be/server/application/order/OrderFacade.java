@@ -1,5 +1,9 @@
 package kr.hhplus.be.server.application.order;
 
+import static kr.hhplus.be.server.support.config.swagger.ErrorCode.INVALID_QUANTITY;
+import static kr.hhplus.be.server.support.config.swagger.ErrorCode.UNAUTHORIZED_ORDER_ACCESS;
+
+import java.util.List;
 import kr.hhplus.be.server.application.coupon.CouponService;
 import kr.hhplus.be.server.application.coupon.CouponValidCommand;
 import kr.hhplus.be.server.application.coupon.UseCouponCommand;
@@ -23,12 +27,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.UUID;
-
-import static kr.hhplus.be.server.support.config.swagger.ErrorCode.INVALID_QUANTITY;
-import static kr.hhplus.be.server.support.config.swagger.ErrorCode.UNAUTHORIZED_ORDER_ACCESS;
 
 @Component
 @RequiredArgsConstructor
@@ -135,7 +133,7 @@ public class OrderFacade {
 		return orderItemService.saveAll(orderItems);
 	}
 
-	private List<Coupon> validateCoupons(Long userId, List<UUID> couponIds) {
+	private List<Coupon> validateCoupons(Long userId, List<String> couponIds) {
 		logger.info("### validateCoupons parameter : userId : {}, couponIds :{}", userId, couponIds);
 		if (couponIds == null || couponIds.isEmpty()) {
 			return List.of();

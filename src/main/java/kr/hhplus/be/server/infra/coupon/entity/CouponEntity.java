@@ -19,9 +19,8 @@ import java.util.UUID;
 public class CouponEntity {
 
 	@Id
-	@GeneratedValue(generator = "UUID")
-	@Column(updatable = false, nullable = false)
-	private UUID id;
+	@Column(updatable = false, nullable = false, length = 36)
+	private String id;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
@@ -42,8 +41,10 @@ public class CouponEntity {
 	@CreatedDate
 	@Column(nullable = false)
 	private LocalDateTime issuedAt;
-	public CouponEntity(CouponType type, String description, BigDecimal discountAmount, int initialQuantity, int remainingQuantity) {
-		this.id = UUID.randomUUID();
+
+	public CouponEntity(CouponType type, String description, BigDecimal discountAmount,
+		int initialQuantity, int remainingQuantity) {
+		this.id = UUID.randomUUID().toString();
 		this.type = type;
 		this.description = description;
 		this.discountAmount = discountAmount;
@@ -52,6 +53,7 @@ public class CouponEntity {
 		this.expiredAt = LocalDateTime.now().plusDays(7);
 		this.issuedAt = LocalDateTime.now();
 	}
+
 	public static CouponEntity from(Coupon coupon) {
 		return new CouponEntity(
 			coupon.getType(),
@@ -61,7 +63,8 @@ public class CouponEntity {
 			coupon.getRemainingQuantity()
 		);
 	}
-	public Coupon toDomain(){
+
+	public Coupon toDomain() {
 		return new Coupon(
 			this.id,
 			this.type,

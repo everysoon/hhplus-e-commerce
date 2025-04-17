@@ -1,20 +1,18 @@
 package kr.hhplus.be.server.domain.coupon;
 
+import java.time.LocalDateTime;
 import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.support.common.exception.CustomException;
 import kr.hhplus.be.server.support.config.swagger.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
 @Getter
 @AllArgsConstructor
 public class UserCoupon {
 	private final Long id;
 	private final Long userId;
-	private final UUID couponId;
+	private final String couponId;
 	private CouponStatus status;
 	private LocalDateTime issuedAt;
 

@@ -11,7 +11,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RequiredArgsConstructor
 public class UserRepositoryImpl implements UserRepository {
+
 	private final UserJpaRepository userJpaRepository;
+
 	@Override
 	public User findById(Long userId) {
 		return userJpaRepository.findById(userId)

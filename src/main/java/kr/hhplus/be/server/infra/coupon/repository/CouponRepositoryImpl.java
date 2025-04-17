@@ -1,5 +1,7 @@
 package kr.hhplus.be.server.infra.coupon.repository;
 
+import java.util.List;
+import java.util.Optional;
 import kr.hhplus.be.server.domain.coupon.Coupon;
 import kr.hhplus.be.server.domain.coupon.CouponRepository;
 import kr.hhplus.be.server.infra.coupon.entity.CouponEntity;
@@ -8,17 +10,13 @@ import kr.hhplus.be.server.support.config.swagger.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
 @Repository
 @RequiredArgsConstructor
 public class CouponRepositoryImpl implements CouponRepository {
 	private final CouponJpaRepository couponJpaRepository;
 
 	@Override
-	public Optional<Coupon> findById(UUID id) {
+	public Optional<Coupon> findById(String id) {
 		return Optional.of(couponJpaRepository.findById(id)
 			.orElseThrow(()->new CustomException(ErrorCode.NOT_EXIST_COUPON))
 			.toDomain()
@@ -31,7 +29,7 @@ public class CouponRepositoryImpl implements CouponRepository {
 	}
 
 	@Override
-	public List<Coupon> validateCoupons(List<UUID> couponIds) {
+	public List<Coupon> validateCoupons(List<String> couponIds) {
 		List<Coupon> coupons = couponIds.stream()
 			.map(couponJpaRepository::findById)
 			.flatMap(Optional::stream)
@@ -40,5 +38,10 @@ public class CouponRepositoryImpl implements CouponRepository {
 
 		coupons.forEach(Coupon::isValid);
 		return coupons;
+	}
+
+	@Override
+	public List<Coupon> findAll() {
+		return couponJpaRepository.findAll().stream().map(CouponEntity::toDomain).toList();
 	}
 }

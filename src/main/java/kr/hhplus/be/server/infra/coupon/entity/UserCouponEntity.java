@@ -1,14 +1,19 @@
 package kr.hhplus.be.server.infra.coupon.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import kr.hhplus.be.server.domain.coupon.CouponStatus;
 import kr.hhplus.be.server.domain.coupon.UserCoupon;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Getter
 @Entity
@@ -23,7 +28,7 @@ public class UserCouponEntity {
 
 	private Long userId;
 
-	private UUID couponId;
+	private String couponId;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
@@ -31,7 +36,7 @@ public class UserCouponEntity {
 
 	private LocalDateTime issuedAt;
 
-	public UserCouponEntity(Long userId,UUID couponId, CouponStatus status) {
+	public UserCouponEntity(Long userId,String couponId, CouponStatus status) {
 		this.userId = userId;
 		this.couponId = couponId;
 		this.status = status;

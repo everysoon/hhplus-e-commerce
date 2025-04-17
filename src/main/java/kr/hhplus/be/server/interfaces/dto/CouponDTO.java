@@ -1,6 +1,8 @@
 package kr.hhplus.be.server.interfaces.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import kr.hhplus.be.server.domain.coupon.Coupon;
 import kr.hhplus.be.server.domain.coupon.CouponStatus;
 import kr.hhplus.be.server.domain.coupon.CouponType;
@@ -8,10 +10,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 public class CouponDTO {
 	@Data
@@ -26,7 +24,7 @@ public class CouponDTO {
 		private LocalDateTime expiredAt;
 	}
 	public record OrderCouponResponse(
-		UUID couponId,
+		String couponId,
 		CouponType couponType,
 		String couponDescription,
 		BigDecimal discountAmount,
@@ -43,7 +41,7 @@ public class CouponDTO {
 		}
 	}
 	public record IssuedResponse(
-		UUID couponId,
+		String couponId,
 		CouponType couponType,
 		String description,
 //		Integer remainingStock,

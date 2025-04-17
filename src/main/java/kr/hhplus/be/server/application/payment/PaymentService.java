@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.application.payment;
 
+import jakarta.transaction.Transactional;
 import kr.hhplus.be.server.application.dataplatform.PaymentClient;
 import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.payment.Payment;
@@ -7,8 +8,6 @@ import kr.hhplus.be.server.domain.payment.PaymentHistory;
 import kr.hhplus.be.server.domain.payment.repository.PaymentHistoryRepository;
 import kr.hhplus.be.server.domain.payment.repository.PaymentRepository;
 import kr.hhplus.be.server.interfaces.dto.PaymentDTO;
-import kr.hhplus.be.server.support.common.exception.CustomException;
-import kr.hhplus.be.server.support.config.swagger.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,8 +21,9 @@ public class PaymentService {
 	private final PaymentRepository paymentRepository;
 	private final PaymentHistoryRepository paymentHistoryRepository;
 
+	@Transactional
 	public Payment pay(RequestPaymentCommand command) {
-		try {
+//		try {
 			// client 통신
 			String token = paymentClient.getToken(PaymentDTO.TokenRequest.from(command));
 			String transactionId = paymentClient.send(PaymentDTO.PaymentRequest.from(command, token));
@@ -33,12 +33,13 @@ public class PaymentService {
 			// save
 			saveWithHistory(payment,PaymentHistory.of(payloadCommand));
 			return payment;
-		} catch (Exception e) {
-			logger.error("결제 처리 중 예상치 못한 오류", e);
-			throw new CustomException(ErrorCode.PAYMENT_FAIL);
-		}
+//		} catch (Exception e) {
+//			logger.error("결제 처리 중 예상치 못한 오류", e);
+//			throw new CustomException(ErrorCode.PAYMENT_FAIL);
+//		}
 	}
 
+	@Transactional
 	public Payment cancel(Order order) {
 		// client 통신
 		Payment payment = paymentRepository.findByOrderId(order.getId());
@@ -52,7 +53,7 @@ public class PaymentService {
 		return payment;
 	}
 	public void saveWithHistory(Payment payment,PaymentHistory paymentHistory) {
-		paymentHistoryRepository.save(paymentHistory);
 		paymentRepository.save(payment);
+		paymentHistoryRepository.save(paymentHistory);
 	}
 }

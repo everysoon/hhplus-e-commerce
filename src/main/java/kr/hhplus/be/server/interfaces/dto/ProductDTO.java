@@ -7,6 +7,23 @@ import kr.hhplus.be.server.infra.product.entity.Category;
 import java.math.BigDecimal;
 
 public class ProductDTO {
+	public record OrderItemDetailResponse(
+		Long productId,
+		String productName,
+		Category category,
+		String prodDescription,
+		BigDecimal unitPrice
+	){
+		public static OrderItemDetailResponse of(Product product){
+			return new OrderItemDetailResponse(
+				product.getId(),
+				product.getProductName(),
+				product.getCategory(),
+				product.getDescription(),
+				product.getPrice()
+			);
+		}
+	}
 	public record ProductResponse(
 		Long id,
 		String productName,

@@ -1,28 +1,20 @@
 package kr.hhplus.be.server.infra.order.entity;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.Column;
-import jakarta.persistence.ConstraintMode;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ForeignKey;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import kr.hhplus.be.server.domain.order.Order;
+import kr.hhplus.be.server.domain.order.OrderItem;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Entity
@@ -45,7 +37,7 @@ public class OrderEntity {
 		)
 	)
 	@Column(name = "user_coupon_id")
-	private List<Long> usedUserCouponIds = new ArrayList<>();
+	private List<UUID> usedUserCouponIds = new ArrayList<>();
 
 	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<OrderItemEntity> orderItems = new ArrayList<>();
@@ -61,4 +53,36 @@ public class OrderEntity {
 	@CreatedDate
 	@Column(nullable = false)
 	private LocalDateTime orderedAt;
+
+	public OrderEntity(Long userId, List<UUID> usedUserCouponIds, List<OrderItem> orderItems, BigDecimal totalPrice, BigDecimal totalDiscount, LocalDateTime orderedAt) {
+		this.userId = userId;
+		this.usedUserCouponIds = usedUserCouponIds;
+		this.orderItems = orderItems.stream().map(OrderItemEntity::from).toList();
+		this.totalPrice = totalPrice;
+		this.totalDiscount = totalDiscount;
+		this.orderedAt = orderedAt;
+	}
+
+	public Order toDomain() {
+		return new Order(
+			this.id,
+			this.userId,
+			this.usedUserCouponIds,
+			this.orderItems.stream().map(OrderItemEntity::toDomain).toList(),
+			this.totalPrice,
+			this.totalDiscount,
+			this.orderedAt
+		);
+	}
+
+	public static OrderEntity from(Order order) {
+		return new OrderEntity(
+			order.getUserId(),
+			order.getCouponIds(),
+			order.getOrderItems(),
+			order.getTotalPrice(),
+			order.getTotalDiscount(),
+			order.getOrderedAt()
+		);
+	}
 }

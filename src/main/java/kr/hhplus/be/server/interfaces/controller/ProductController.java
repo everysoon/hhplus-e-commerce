@@ -6,13 +6,18 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.hhplus.be.server.ResponseApi;
 import kr.hhplus.be.server.application.product.ProductSearchCommand;
 import kr.hhplus.be.server.application.product.ProductService;
+import kr.hhplus.be.server.application.product.ProductTopSellingCommand;
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.interfaces.dto.ProductDTO;
 import kr.hhplus.be.server.support.config.swagger.SwaggerErrorExample;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static kr.hhplus.be.server.support.config.swagger.ErrorCode.NOT_EXIST_PRODUCT;
@@ -40,16 +45,21 @@ public class ProductController {
 
 	@GetMapping
 	@Operation(description = "상품 필터링 목록 조회")
-	public ResponseEntity<ResponseApi<List<ProductDTO.ProductResponse>>> findAll(@ModelAttribute ProductSearchCommand command) {
-		List<ProductDTO.ProductResponse> products = productService.findAll(command)
+	public ResponseEntity<ResponseApi<List<ProductDTO.ProductResponse>>> searchFilter(@ModelAttribute ProductSearchCommand command) {
+		List<ProductDTO.ProductResponse> products = productService.searchFilter(command)
 			.stream().map(ProductDTO.ProductResponse::from).toList();
 		return ResponseEntity.ok(ResponseApi.of(products));
 	}
 
 	@GetMapping("/popular")
-	@Operation(description = "인기 상품 조회 - 최근 3일간 판매량 많은 순")
-	public ResponseEntity<ResponseApi<List<ProductDTO.ProductResponse>>> findPopularAll() {
-		List<ProductDTO.ProductResponse> products = productService.findPopularAll()
+	@Operation(description = "인기 상품 조회 - 날짜 지정 판매량 많은 순 (default 최근 3일 5개)")
+	public ResponseEntity<ResponseApi<List<ProductDTO.ProductResponse>>> findPopularAll(
+		@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDateTime startDate,
+		@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDateTime endDate,
+		@PageableDefault(size = 5, page = 0) Pageable pageable
+	) {
+		ProductTopSellingCommand command = new ProductTopSellingCommand(startDate, endDate, pageable);
+		List<ProductDTO.ProductResponse> products = productService.findPopularAll(command)
 			.stream().map(ProductDTO.ProductResponse::from).toList();
 		return ResponseEntity.ok(ResponseApi.of(products));
 	}

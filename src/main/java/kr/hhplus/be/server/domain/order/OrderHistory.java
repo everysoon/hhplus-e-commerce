@@ -9,14 +9,14 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class OrderHistory {
 	private final Long id;
-	private final Long orderId;
+	private final Order order;
 	private String description;
 	private final LocalDateTime createdAt;
 
 	public static OrderHistory of(Order order, String description) {
-		return new OrderHistory(null, order.getId(), description, LocalDateTime.now());
+		return new OrderHistory(null, order, description, LocalDateTime.now());
 	}
 	public static OrderHistory of(Order order) {
-		return new OrderHistory(null, order.getId(), "", LocalDateTime.now());
+		return new OrderHistory(null, order, "", LocalDateTime.now());
 	}
 }

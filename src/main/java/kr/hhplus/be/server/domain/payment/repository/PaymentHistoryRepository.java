@@ -7,5 +7,5 @@ import java.util.List;
 public interface PaymentHistoryRepository {
 	PaymentHistory save(PaymentHistory paymentHistory);
 	List<PaymentHistory> findByUserId(Long userId);
-	PaymentHistory findByTransactionId(Long transactionId);
+	PaymentHistory findByTransactionId(String transactionId);
 }

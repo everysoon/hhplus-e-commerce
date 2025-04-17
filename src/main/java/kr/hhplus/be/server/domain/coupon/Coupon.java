@@ -1,13 +1,13 @@
 package kr.hhplus.be.server.domain.coupon;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.UUID;
-import kr.hhplus.be.server.infra.coupon.entity.CouponEntity;
 import kr.hhplus.be.server.support.common.exception.CustomException;
 import kr.hhplus.be.server.support.config.swagger.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Getter
 @AllArgsConstructor
@@ -21,18 +21,7 @@ public class Coupon {
 	private final LocalDateTime expiredAt;
 	private final LocalDateTime createdAt;
 
-	public static Coupon from(CouponEntity entity){
-		return new Coupon(
-			entity.getId(),
-			entity.getType(),
-			entity.getDescription(),
-			entity.getDiscountAmount(),
-			entity.getInitialQuantity(),
-			entity.getRemainingQuantity(),
-			entity.getExpiredAt(),
-			entity.getIssuedAt()
-		);
-	}
+
 	public Coupon issue(){
 		validateStock();
 		validExpired();
@@ -65,5 +54,9 @@ public class Coupon {
 		if(expiredAt.isBefore(createdAt)){
 			throw new CustomException(ErrorCode.INVALID_EXPIRED_COUPON_DATE);
 		}
+	}
+	public void isValid(){
+		this.validateStock();
+		this.validExpired();
 	}
 }

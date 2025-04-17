@@ -1,14 +1,14 @@
 package kr.hhplus.be.server.interfaces.dto;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.UUID;
-import kr.hhplus.be.server.application.coupon.IssuedCouponResult;
+import kr.hhplus.be.server.application.coupon.UserCouponDetailResult;
+import kr.hhplus.be.server.domain.coupon.Coupon;
 import kr.hhplus.be.server.domain.coupon.CouponStatus;
 import kr.hhplus.be.server.domain.coupon.CouponType;
-import kr.hhplus.be.server.domain.coupon.UserCoupon;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 public class UserCouponDTO {
 
@@ -16,17 +16,16 @@ public class UserCouponDTO {
 		Long userId,
 		List<CouponDTO.IssuedResponse> coupons
 	) {
-
-		public static Response of(Long userId, List<UserCoupon> userCoupons) {
-			List<CouponDTO.IssuedResponse> couponDTOs = userCoupons.stream()
-				.map(CouponDTO.IssuedResponse::from) // Coupon → CouponResponseDTO
+		public static Response of(Long userId, List<Coupon> coupons,CouponStatus status) {
+			List<CouponDTO.IssuedResponse> couponDTOs = coupons.stream()
+				.map(c->CouponDTO.IssuedResponse.from(c,status)) // Coupon → CouponResponseDTO
 				.toList();
 
 			return new Response(userId, couponDTOs);
 		}
 	}
 
-	public record IssuedResponse(Long userId,
+	public record CouponDetailResponse(Long userId,
 								 UUID couponId,
 								 CouponStatus status,
 								 LocalDateTime issuedAt,
@@ -35,16 +34,16 @@ public class UserCouponDTO {
 								 BigDecimal discount,
 								 LocalDateTime expired) {
 
-		public static IssuedResponse from(IssuedCouponResult ucr) {
-			return new IssuedResponse(
-				ucr.userId(),
-				ucr.couponId(),
-				ucr.status(),
-				ucr.issuedAt(),
-				ucr.type(),
-				ucr.description(),
-				ucr.discount(),
-				ucr.expired()
+		public static CouponDetailResponse from(UserCouponDetailResult result) {
+			return new CouponDetailResponse(
+				result.userId(),
+				result.couponId(),
+				result.status(),
+				result.issuedAt(),
+				result.type(),
+				result.description(),
+				result.discount(),
+				result.expired()
 			);
 		}
 	}

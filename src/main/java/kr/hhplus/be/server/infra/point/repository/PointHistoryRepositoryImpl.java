@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.infra.user.repository;
+package kr.hhplus.be.server.infra.point.repository;
 
 import kr.hhplus.be.server.domain.point.PointHistory;
 import kr.hhplus.be.server.domain.user.repository.PointHistoryRepository;

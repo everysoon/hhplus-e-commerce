@@ -1,11 +1,9 @@
 package kr.hhplus.be.server.support.config.swagger;
 
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
+import static org.springframework.http.HttpStatus.*;
 
 @Getter
 @AllArgsConstructor
@@ -25,6 +23,8 @@ public enum ErrorCode {
 	INVALID_QUANTITY(BAD_REQUEST.value(),"잘못된 수량입니다."),
     // coupon
     NOT_EXIST_COUPON(BAD_REQUEST.value(),"해당 쿠폰을 찾을 수 없습니다."),
+    USED_COUPON(BAD_REQUEST.value(),"이미 사용된 쿠폰이므로 사용할 수 없습니다."),
+    REVOKED_COUPON(BAD_REQUEST.value(),"관리자나 시스템에 의해 취소된 쿠폰 입니다."),
     COUPON_SOLD_OUT(BAD_REQUEST.value(),"선착순 마감으로 쿠폰 재고가 존재하지않습니다."),
 	INVALID_COUPON(BAD_REQUEST.value(),"유효하지 않은 쿠폰입니다."),
 	EXPIRED_COUPON(BAD_REQUEST.value(),"사용기간이 지난 쿠폰입니다."),
@@ -38,17 +38,23 @@ public enum ErrorCode {
     // point
     INSUFFICIENT_POINTS(BAD_REQUEST.value(),"사용 가능한 포인트가 부족합니다."),
 	INVALID_CHARGE_AMOUNT(BAD_REQUEST.value(),"충전 금액은 0보다 커야합니다."),
+	NOT_EXIST_POINT_BY_USER_ID(BAD_REQUEST.value(),"해당 유저 ID로 포인트 정보를 찾지 못했습니다."),
 
     // lock
     LOCK_ACQUISITION_FAIL(BAD_REQUEST.value(),"락을 획득하는데 실패했습니다. 다시 시도해주세요."),
+
 	// order
 	NOT_EXIST_ORDER_ITEM(BAD_REQUEST.value(),"주문 상품이 존재하지 않습니다."),
     CUSTOM_METHOD_NOT_ALLOWED(METHOD_NOT_ALLOWED.value(), "지원하지 않은 요청입니다. 요청 정보를 다시 확인해 주시기 바랍니다."),
     CUSTOM_INTERNAL_SERVER_ERROR(INTERNAL_SERVER_ERROR.value(),"예상하지 않은 에러가 발생하였습니다. 관리자에게 문의해 주세요."),
+
 	// payment
-	PAYMENT_FAIL(BAD_REQUEST.value(),"결제가 실패했습니다.")
+	PAYMENT_FAIL(BAD_REQUEST.value(),"결제가 실패했습니다."),
+	NOT_EXIST_PAYMENT_BY_TX_ID(BAD_REQUEST.value(),"해당 트랜잭션 ID로 결제 내역을 조회할 수 없습니다."),
+	EXTERNAL_PAYMENT_API_ERROR(BAD_REQUEST.value(),"외부 결제 API에서 오류가 발생했습니다.")
 	;
     private final int statusCode;
     private final String message;
 
 }
+

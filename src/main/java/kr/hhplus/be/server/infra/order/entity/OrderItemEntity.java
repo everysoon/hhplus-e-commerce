@@ -1,19 +1,13 @@
 package kr.hhplus.be.server.infra.order.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.ConstraintMode;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ForeignKey;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import java.math.BigDecimal;
+import jakarta.persistence.*;
+import kr.hhplus.be.server.domain.order.Order;
+import kr.hhplus.be.server.domain.order.OrderItem;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
 
 @Getter
 @Entity
@@ -36,4 +30,27 @@ public class OrderItemEntity {
 
 	@Column(nullable = false)
 	private Integer quantity;
+	public OrderItemEntity(Long productId, Order order,BigDecimal unitPrice, Integer quantity) {
+		this.productId = productId;
+		this.order = OrderEntity.from(order);
+		this.unitPrice = unitPrice;
+		this.quantity = quantity;
+	}
+	public static OrderItemEntity from(OrderItem orderItem) {
+		return new OrderItemEntity(
+			orderItem.getProductId(),
+			orderItem.getOrder(),
+			orderItem.getUnitPrice(),
+			orderItem.getQuantity()
+		);
+	}
+	public OrderItem toDomain() {
+		return new OrderItem(
+			this.id,
+			this.productId,
+			this.order.toDomain(),
+			this.quantity,
+			this.unitPrice
+		);
+	}
 }

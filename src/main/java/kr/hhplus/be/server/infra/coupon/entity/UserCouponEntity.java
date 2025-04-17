@@ -1,23 +1,14 @@
 package kr.hhplus.be.server.infra.coupon.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.ConstraintMode;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ForeignKey;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import kr.hhplus.be.server.domain.coupon.CouponStatus;
-import kr.hhplus.be.server.infra.user.entity.UserEntity;
+import kr.hhplus.be.server.domain.coupon.UserCoupon;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Getter
 @Entity
@@ -30,18 +21,36 @@ public class UserCouponEntity {
 	@Column(nullable = false)
 	private Long id;
 
-	@Column(nullable = false)
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-	private UserEntity user;
+	private Long userId;
 
-	@Column(nullable = false)
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "coupon_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-	private CouponEntity coupon;
+	private UUID couponId;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private CouponStatus status;
 
+	private LocalDateTime issuedAt;
+
+	public UserCouponEntity(Long userId,UUID couponId, CouponStatus status) {
+		this.userId = userId;
+		this.couponId = couponId;
+		this.status = status;
+		this.issuedAt = LocalDateTime.now();
+	}
+	public static UserCouponEntity from (UserCoupon uc){
+		return new UserCouponEntity(
+			uc.getUserId(),
+			uc.getCouponId(),
+			uc.getStatus()
+		);
+	}
+	public UserCoupon toDomain(){
+		return new UserCoupon(
+			this.id,
+			this.userId,
+			this.couponId,
+			this.status,
+			this.issuedAt
+		);
+	}
 }

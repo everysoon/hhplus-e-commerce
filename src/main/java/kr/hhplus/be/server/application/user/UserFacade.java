@@ -1,45 +1,49 @@
 package kr.hhplus.be.server.application.user;
 
-import static kr.hhplus.be.server.support.config.swagger.ErrorCode.DUPLICATE_COUPON_CLAIM;
-
 import jakarta.transaction.Transactional;
-import java.util.List;
 import kr.hhplus.be.server.application.coupon.CouponService;
 import kr.hhplus.be.server.application.coupon.IssueCouponCommand;
-import kr.hhplus.be.server.application.coupon.IssuedCouponResult;
+import kr.hhplus.be.server.application.coupon.UserCouponDetailResult;
+import kr.hhplus.be.server.application.point.PointService;
 import kr.hhplus.be.server.domain.coupon.Coupon;
 import kr.hhplus.be.server.domain.coupon.UserCoupon;
+import kr.hhplus.be.server.domain.point.Point;
 import kr.hhplus.be.server.domain.user.User;
-import kr.hhplus.be.server.support.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
 public class UserFacade {
 	private final UserService userService;
 	private final CouponService couponService;
+	private final PointService pointService;
 
 	@Transactional
-	public IssuedCouponResult issueCoupon(IssueCouponCommand command) {
+	public UserCouponDetailResult issueCoupon(IssueCouponCommand command) {
 		// 쿠폰 중복 발급인지 확인
-		long issuedCoupons = couponService.countCouponByUserId(command);
-		if (issuedCoupons > 0) {
-			throw new CustomException(DUPLICATE_COUPON_CLAIM);
-		}
+		couponService.validateDuplicateIssued(command);
 
 		Coupon coupon = couponService.findCouponById(command.couponId());
 		coupon.issue();
 
 		User user = userService.get(command.userId());
 
-		UserCoupon userCoupon = UserCoupon.of(user, coupon);
-		couponService.saveUserCoupon(userCoupon);
+		UserCoupon userCoupon = couponService.issueByUser(UserCoupon.of(user, coupon));
 
-		return IssuedCouponResult.of(userCoupon);
+		return UserCouponDetailResult.of(userCoupon, coupon);
 	}
 
-	public List<UserCoupon> getUserCoupons(Long userId) {
-		return couponService.findMineByUserId(userId);
+	public Point getUserPoint(Long userId) {
+		return pointService.getUserPoint(userId);
+	}
+
+	public List<UserCouponDetailResult> getUserCoupons(Long userId) {
+		return couponService.findUserCouponByUserId(userId).stream().map(uc -> {
+			Coupon coupon = couponService.findCouponById(uc.getCouponId());
+			return UserCouponDetailResult.of(uc, coupon);
+		}).toList();
 	}
 }

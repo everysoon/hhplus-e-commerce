@@ -1,10 +1,12 @@
 package kr.hhplus.be.server.interfaces.dto;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import kr.hhplus.be.server.application.order.OrderDetailResult;
+import kr.hhplus.be.server.application.order.OrderInfoResult;
 import kr.hhplus.be.server.application.order.PlaceOrderResult;
-import kr.hhplus.be.server.domain.order.OrderItem;
 import kr.hhplus.be.server.domain.payment.PaymentMethod;
-import kr.hhplus.be.server.domain.payment.PaymentStatus;
+import kr.hhplus.be.server.infra.payment.entity.PaymentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,7 +23,6 @@ public class OrderDTO {
 	@AllArgsConstructor
 	@Builder
 	public static class OrderRequest {
-
 		@NotNull
 		Long userId;
 		@NotNull
@@ -41,14 +42,38 @@ public class OrderDTO {
 		public static OrderResponse of(PlaceOrderResult result) {
 			return new OrderResponse(
 				result.userId(),
-				result.orderItems().stream()
-					.map(OrderItem::getProduct)
+				result.products().stream()
 					.map(ProductDTO.ProductResponse::from).toList(),
 				result.payment().getPaymentMethod(),
 				result.payment().getStatus(),
 				result.order().getTotalPrice(),
 				result.order().getTotalDiscount(),
 				result.order().getOrderedAt()
+			);
+		}
+	}
+	public record UserOrderResponse(
+		Long userId,
+		List<OrderDetailResponse> orderInfos
+	){
+		public static UserOrderResponse of(OrderInfoResult result){
+			return new UserOrderResponse(
+				result.userId(),
+				result.results().stream().map(OrderDetailResponse::of).toList()
+			);
+		}
+	}
+	public record OrderDetailResponse(
+		Long orderId,
+		List<ProductDTO.OrderItemDetailResponse>  orderItems,
+		List<CouponDTO.OrderCouponResponse> coupons
+
+	){
+		public static OrderDetailResponse of(OrderDetailResult result){
+			return new OrderDetailResponse(
+				result.orderId(),
+				result.productList().stream().map(ProductDTO.OrderItemDetailResponse::of).toList(),
+				result.coupons().stream().map(CouponDTO.OrderCouponResponse::of).toList()
 			);
 		}
 	}
@@ -59,13 +84,16 @@ public class OrderDTO {
 		@NotNull
 		Long productId;
 		@NotNull
+		@Min(1)
 		Integer quantity;
 	}
 	public record OrderItemResponse(
 		ProductDTO.ProductResponse item,
 		Long orderId,
 		LocalDateTime createdAt
-	){}
+	){
+
+	}
 
 //	public record OrderItemResponse(
 //		@NotNull List<Item> orderItems,

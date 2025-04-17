@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.infra.product.entity;
 
 import jakarta.persistence.*;
+import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.product.ProductStatus;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -33,10 +34,7 @@ public class ProductEntity {
 
 	@Column(nullable = false)
 	private BigDecimal price = BigDecimal.ZERO;
-	/**
-	 * stock이 0인 경우 status를 out_of_stock로 자동으로 설정되도록 로직을 추가하거나, 상태를 관리할 때 재고를 기반으로 상태를 관리하는 로직을
-	 * 추가하자
-	 */
+
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private ProductStatus status;
@@ -44,4 +42,35 @@ public class ProductEntity {
 	@CreatedDate
 	@Column(nullable = false)
 	private LocalDateTime createdAt;
+	public ProductEntity(String productName, Integer stock, Category category, String description, BigDecimal price,ProductStatus status) {
+		this.productName = productName;
+		this.stock = stock;
+		this.category = category;
+		this.description = description;
+		this.price = price;
+		this.status = status;
+		this.createdAt = LocalDateTime.now();
+	}
+	public static ProductEntity from (Product product){
+		return new ProductEntity(
+			product.getProductName(),
+			product.getStock(),
+			product.getCategory(),
+			product.getDescription(),
+			product.getPrice(),
+			product.getStatus()
+		);
+	}
+	public Product toDomain(){
+		return new Product(
+			this.id,
+			this.productName,
+			this.stock,
+			this.category,
+			this.description,
+			this.price,
+			this.status,
+			this.createdAt
+		);
+	}
 }

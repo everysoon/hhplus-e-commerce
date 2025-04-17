@@ -1,7 +1,8 @@
 package kr.hhplus.be.server.domain.product;
 
 import kr.hhplus.be.server.infra.product.entity.Category;
-import kr.hhplus.be.server.infra.product.entity.ProductEntity;
+import kr.hhplus.be.server.support.common.exception.CustomException;
+import kr.hhplus.be.server.support.config.swagger.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -21,20 +22,18 @@ public class Product {
 	private ProductStatus status;
 	private LocalDateTime createdAt;
 
-	public static Product from(ProductEntity entity) {
-		return new Product(
-			entity.getId(),
-			entity.getProductName(),
-			entity.getStock(),
-			entity.getCategory(),
-			entity.getDescription(),
-			entity.getPrice(),
-			entity.getStatus(),
-			entity.getCreatedAt()
-		);
-	}
-
 	public void decreaseStock(Integer amount) {
+		if(this.stock <= 0){
+			throw new CustomException(ErrorCode.OUT_OF_STOCK);
+		}
 		this.stock -= amount;
+		if(this.stock == 0){
+			this.status = ProductStatus.OUT_OF_STOCK;
+		}
+	}
+	public void validateOrderable(){
+		if(this.status ==ProductStatus.OUT_OF_STOCK || this.stock <=0){
+			throw new CustomException(ErrorCode.OUT_OF_STOCK);
+		}
 	}
 }

@@ -1,33 +1,51 @@
 package kr.hhplus.be.server.infra.user.repository;
 
-import java.util.List;
 import kr.hhplus.be.server.application.coupon.CouponValidCommand;
 import kr.hhplus.be.server.application.coupon.IssueCouponCommand;
 import kr.hhplus.be.server.domain.coupon.UserCoupon;
 import kr.hhplus.be.server.domain.user.repository.UserCouponRepository;
+import kr.hhplus.be.server.infra.coupon.entity.UserCouponEntity;
+import kr.hhplus.be.server.support.common.exception.CustomException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-@Repository
-public class UserCouponRepositoryImpl implements UserCouponRepository {
+import java.util.List;
 
+import static kr.hhplus.be.server.support.config.swagger.ErrorCode.*;
+
+@Repository
+@RequiredArgsConstructor
+public class UserCouponRepositoryImpl implements UserCouponRepository {
+	private final UserCouponJpaRepository userCouponJpaRepository;
 	@Override
 	public List<UserCoupon> findByUserId(Long userId) {
-		return List.of();
+		return userCouponJpaRepository.findByUserId(userId).stream().map(UserCouponEntity::toDomain).toList();
 	}
 
 	@Override
-	public Boolean existsByUserIdAndCouponId(CouponValidCommand command) {
-		return null;
+	public void validateUserCoupons(CouponValidCommand command) {
+		List<UserCouponEntity> userCoupons = userCouponJpaRepository.findByUserIdAndCouponIds(command.userId(), command.couponIds());
+		if(userCoupons.size() != command.couponIds().size()) {
+			throw new CustomException(INVALID_USER_COUPON);
+		}
+		userCoupons.stream().map(UserCouponEntity::toDomain).forEach(userCoupon -> {
+			if(!userCoupon.isValid()){
+				throw new  CustomException(USED_COUPON);
+			}
+		});
 	}
 
 	@Override
-	public long countCouponByUserId(IssueCouponCommand command) {
-		return 0;
+	public void validateDuplicateIssued(IssueCouponCommand command) {
+		List<UserCouponEntity> userCoupons= userCouponJpaRepository.findByUserIdAndCouponIds(command.userId(),List.of(command.couponId()));
+		if(!userCoupons.isEmpty()){
+			throw new CustomException(DUPLICATE_COUPON_CLAIM);
+		}
 	}
 
 	@Override
 	public UserCoupon save(UserCoupon coupon) {
-		return null;
+		return userCouponJpaRepository.save(UserCouponEntity.from(coupon)).toDomain();
 	}
 
 }

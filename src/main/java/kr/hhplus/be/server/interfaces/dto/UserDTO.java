@@ -1,6 +1,6 @@
 package kr.hhplus.be.server.interfaces.dto;
 
-import kr.hhplus.be.server.domain.user.User;
+import kr.hhplus.be.server.domain.point.Point;
 
 import java.math.BigDecimal;
 
@@ -12,13 +12,13 @@ public class UserDTO {
 		String address,
 		String email
 	){
-		public static UserResponse from(User user) {
+		public static UserResponse from(Point point) {
 			return new UserResponse(
-				user.getId(),
-				user.getPoint(),
-				user.getName(),
-				user.getAddress(),
-				user.getEmail()
+				point.getUser().getId(),
+				point.getBalance(),
+				point.getUser().getName(),
+				point.getUser().getAddress(),
+				point.getUser().getEmail()
 			);
 		}
 	}

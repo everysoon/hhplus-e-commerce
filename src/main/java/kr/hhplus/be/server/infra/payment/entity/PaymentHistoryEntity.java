@@ -1,26 +1,16 @@
 package kr.hhplus.be.server.infra.payment.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.ConstraintMode;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ForeignKey;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import kr.hhplus.be.server.domain.payment.PaymentStatus;
+import kr.hhplus.be.server.domain.payment.Payment;
+import kr.hhplus.be.server.domain.payment.PaymentHistory;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Getter
 @Entity
@@ -48,5 +38,37 @@ public class PaymentHistoryEntity {
 	@NotNull
 	private BigDecimal price = BigDecimal.ZERO; // 환불액, 또는 결제액
 	private String description; // 실패,환불 사유 명
+	private String transactionId;
 
+	public PaymentHistoryEntity(Payment payment, Long orderId, PaymentStatus status, String description, String transactionId) {
+		this.payment = PaymentEntity.from(payment);
+		this.orderId = orderId;
+		this.status = status;
+		this.createdAt = LocalDateTime.now();
+		this.description = description;
+		this.transactionId = transactionId;
+	}
+
+	public static PaymentHistoryEntity from(PaymentHistory history) {
+		return new PaymentHistoryEntity(
+			history.getPayment(),
+			history.getOrderId(),
+			history.getStatus(),
+			history.getDescription(),
+			history.getTransactionId()
+		);
+	}
+
+	public PaymentHistory toDomain() {
+		return new PaymentHistory(
+			this.id,
+			this.orderId,
+			this.payment.toDomain(),
+			this.status,
+			this.price,
+			this.description,
+			this.createdAt,
+			this.payment.getTransactionId()
+		);
+	}
 }

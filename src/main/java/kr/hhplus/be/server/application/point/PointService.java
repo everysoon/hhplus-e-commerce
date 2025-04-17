@@ -16,17 +16,19 @@ public class PointService {
 	private final PointRepository pointRepository;
 	private final PointHistoryRepository pointHistoryRepository;
 
-	public void charge(UpdatePointCommand.Charge command) {
+	public PointHistory charge(UpdatePointCommand.Charge command) {
 		PointHistory history = PointHistory.from(command);
 		pointRepository.findByUserId(command.getUser().getId())
 			.ifPresentOrElse(
 				newPoint -> newPoint.charge(command.getAmount()),
 				() -> pointRepository.save(Point.from(command))
 			);
-		pointHistoryRepository.save(history);
+		return pointHistoryRepository.save(history);
 	}
-
-	public void use(UpdatePointCommand.Use command) {
+	public Point getUserPoint(Long userId) {
+		return pointRepository.findByUserId(userId).orElseThrow(()->new CustomException(ErrorCode.NOT_EXIST_POINT_BY_USER_ID));
+	}
+	public PointHistory use(UpdatePointCommand.Use command) {
 		PointHistory history = PointHistory.from(command);
 		pointRepository.findByUserId(command.getUser().getId())
 			.ifPresentOrElse(
@@ -35,6 +37,6 @@ public class PointService {
 					throw new CustomException(ErrorCode.INSUFFICIENT_POINTS);
 				}
 			);
-		pointHistoryRepository.save(history);
+		return pointHistoryRepository.save(history);
 	}
 }

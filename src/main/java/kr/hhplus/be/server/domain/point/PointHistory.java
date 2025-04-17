@@ -1,11 +1,12 @@
 package kr.hhplus.be.server.domain.point;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import kr.hhplus.be.server.application.point.UpdatePointCommand;
 import kr.hhplus.be.server.infra.point.entity.PointStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor

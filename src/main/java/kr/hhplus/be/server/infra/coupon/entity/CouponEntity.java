@@ -1,20 +1,16 @@
 package kr.hhplus.be.server.infra.coupon.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.UUID;
+import jakarta.persistence.*;
+import kr.hhplus.be.server.domain.coupon.Coupon;
 import kr.hhplus.be.server.domain.coupon.CouponType;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Getter
 @Entity
@@ -33,10 +29,6 @@ public class CouponEntity {
 
 	private String description;
 
-//	@ManyToOne(fetch = FetchType.LAZY)
-//	@JoinColumn(name = "order_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-//	private OrderEntity order;
-
 	@Column(nullable = false)
 	private BigDecimal discountAmount = BigDecimal.ZERO; // Fixed 일땐 할인 금액 (원), Percent 일땐 할인 비율 (1 ~ 100)
 
@@ -50,4 +42,35 @@ public class CouponEntity {
 	@CreatedDate
 	@Column(nullable = false)
 	private LocalDateTime issuedAt;
+	public CouponEntity(CouponType type, String description, BigDecimal discountAmount, int initialQuantity, int remainingQuantity) {
+		this.id = UUID.randomUUID();
+		this.type = type;
+		this.description = description;
+		this.discountAmount = discountAmount;
+		this.initialQuantity = initialQuantity;
+		this.remainingQuantity = remainingQuantity;
+		this.expiredAt = LocalDateTime.now().plusDays(7);
+		this.issuedAt = LocalDateTime.now();
+	}
+	public static CouponEntity from(Coupon coupon) {
+		return new CouponEntity(
+			coupon.getType(),
+			coupon.getDescription(),
+			coupon.getDiscountAmount(),
+			coupon.getInitialQuantity(),
+			coupon.getRemainingQuantity()
+		);
+	}
+	public Coupon toDomain(){
+		return new Coupon(
+			this.id,
+			this.type,
+			this.description,
+			this.discountAmount,
+			this.initialQuantity,
+			this.remainingQuantity,
+			this.expiredAt,
+			this.issuedAt
+		);
+	}
 }

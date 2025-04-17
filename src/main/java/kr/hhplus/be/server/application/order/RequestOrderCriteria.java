@@ -1,8 +1,6 @@
 package kr.hhplus.be.server.application.order;
 
 import jakarta.validation.constraints.NotNull;
-import java.util.List;
-import java.util.UUID;
 import kr.hhplus.be.server.application.coupon.CouponValidCommand;
 import kr.hhplus.be.server.application.coupon.UseCouponCommand;
 import kr.hhplus.be.server.domain.coupon.Coupon;
@@ -10,6 +8,9 @@ import kr.hhplus.be.server.domain.payment.PaymentMethod;
 import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.interfaces.dto.OrderDTO;
 import org.springframework.validation.annotation.Validated;
+
+import java.util.List;
+import java.util.UUID;
 
 @Validated
 public record RequestOrderCriteria(

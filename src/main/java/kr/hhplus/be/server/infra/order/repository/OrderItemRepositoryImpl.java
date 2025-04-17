@@ -12,10 +12,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrderItemRepositoryImpl implements OrderItemRepository {
 	private final OrderItemJpaRepository orderItemJpaRepository;
-	@Override
-	public List<OrderItem> findByOrderId(Long orderId) {
-		return orderItemJpaRepository.findByOrderId(orderId).stream().map(OrderItemEntity::toDomain).toList();
-	}
 
 	@Override
 	public List<OrderItem> saveAll(List<OrderItem> orderItems) {

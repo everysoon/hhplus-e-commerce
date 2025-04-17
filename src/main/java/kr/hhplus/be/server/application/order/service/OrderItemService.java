@@ -12,9 +12,6 @@ import java.util.List;
 public class OrderItemService {
 	private final OrderItemRepository orderItemRepository;
 
-	public List<OrderItem> findByOrderId(Long orderId){
-		return orderItemRepository.findByOrderId(orderId);
-	}
 	public List<OrderItem> saveAll(List<OrderItem> orderItems) {
 		return orderItemRepository.saveAll(orderItems);
 	}

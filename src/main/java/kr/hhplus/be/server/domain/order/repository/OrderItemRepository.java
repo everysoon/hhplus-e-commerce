@@ -5,6 +5,5 @@ import kr.hhplus.be.server.domain.order.OrderItem;
 import java.util.List;
 
 public interface OrderItemRepository {
-	List<OrderItem> findByOrderId(Long orderId);
 	List<OrderItem> saveAll(List<OrderItem> orderItems);
 }

@@ -23,6 +23,9 @@ public enum ErrorCode {
     OUT_OF_STOCK(BAD_REQUEST.value(),"상품이 품절 상태 입니다."),
     NOT_EXIST_PRODUCT(BAD_REQUEST.value(),"해당 상품이 존재하지 않습니다."),
 	INVALID_QUANTITY(BAD_REQUEST.value(),"잘못된 수량입니다."),
+	INVALID_CATEGORY(BAD_REQUEST.value(),"잘못된 상품 카테고리입니다."),
+	INVALID_SORTED(BAD_REQUEST.value(),"잘못된 정렬순입니다."),
+	INVALID_SORTED_BY(BAD_REQUEST.value(),"잘못된 정렬값입니다."),
 
     // coupon
     NOT_EXIST_COUPON(BAD_REQUEST.value(),"해당 쿠폰을 찾을 수 없습니다."),
@@ -36,7 +39,6 @@ public enum ErrorCode {
 	COUPON_ISSUED_FAIL(BAD_REQUEST.value(),"쿠폰 발급에 대한 동시성 에러가 발생했습니다."),
 	DUPLICATE_COUPON_CLAIM(BAD_REQUEST.value(),"이미 쿠폰을 받은 발급자 입니다."),
 	INVALID_USER_COUPON(BAD_REQUEST.value(),"해당 쿠폰이 사용자 권한이 아닙니다."),
-	COUPON_EXPIRED(BAD_REQUEST.value(),"만료된 쿠폰에 대한 요청입니다."),
 	INVALID_COUPON_QUANTITY(BAD_REQUEST.value(),"발행 수량은 남은 수량보다 적을 수 없습니다."),
 
     // point

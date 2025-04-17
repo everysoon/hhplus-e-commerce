@@ -1,12 +1,28 @@
 package kr.hhplus.be.server.interfaces.dto;
 
+import java.math.BigDecimal;
+import kr.hhplus.be.server.application.product.ProductSearchCommand;
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.product.ProductStatus;
 import kr.hhplus.be.server.infra.product.entity.Category;
-
-import java.math.BigDecimal;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 public class ProductDTO {
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public class SearchRequest{
+		private String name;
+		private String category;
+		private String sortBy;
+		private String sorted;
+		private boolean soldOut;
+		public ProductSearchCommand toCommand(){
+			return ProductSearchCommand.of(name, category, sortBy, sorted, soldOut);
+		}
+	}
 	public record OrderItemDetailResponse(
 		Long productId,
 		String productName,

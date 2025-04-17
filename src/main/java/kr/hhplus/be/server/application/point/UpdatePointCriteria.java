@@ -1,7 +1,6 @@
 package kr.hhplus.be.server.application.point;
 
 import java.math.BigDecimal;
-import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.infra.point.entity.PointStatus;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -29,9 +28,9 @@ public class UpdatePointCriteria {
 				amount
 			);
 		}
-		public UpdatePointCommand.Charge toCommand(User user) {
+		public UpdatePointCommand.Charge toCommand(Long userId) {
 			return UpdatePointCommand.Charge.of(
-				user,
+				userId,
 				amount
 			);
 		}
@@ -55,9 +54,9 @@ public class UpdatePointCriteria {
 				PointStatus.USED
 			);
 		}
-		public UpdatePointCommand.Use toCommand(User user) {
+		public UpdatePointCommand.Use toCommand(Long userId) {
 			return UpdatePointCommand.Use.of(
-				user,
+				userId,
 				amount
 			);
 		}

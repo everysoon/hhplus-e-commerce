@@ -1,5 +1,11 @@
 package kr.hhplus.be.server.infra.product.repository;
 
+import static kr.hhplus.be.server.infra.product.repository.ProductSpecification.filterCategory;
+import static kr.hhplus.be.server.infra.product.repository.ProductSpecification.filterSoldOut;
+import static kr.hhplus.be.server.infra.product.repository.ProductSpecification.nameContains;
+
+import java.time.LocalDateTime;
+import java.util.List;
 import kr.hhplus.be.server.application.product.ProductSearchCommand;
 import kr.hhplus.be.server.application.product.ProductTopSellingCommand;
 import kr.hhplus.be.server.domain.product.Product;
@@ -11,11 +17,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
-
-import java.time.LocalDateTime;
-import java.util.List;
-
-import static kr.hhplus.be.server.infra.product.repository.ProductSpecification.*;
 
 @Repository
 @RequiredArgsConstructor
@@ -50,5 +51,10 @@ public class ProductRepositoryImpl implements ProductRepository {
 	@Override
 	public Product save(Product product) {
 		return productJpaRepository.save(ProductEntity.from(product)).toDomain();
+	}
+
+	@Override
+	public List<Product> findAll() {
+		return productJpaRepository.findAll().stream().map(ProductEntity::toDomain).toList();
 	}
 }

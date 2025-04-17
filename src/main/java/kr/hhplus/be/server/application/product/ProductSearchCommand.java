@@ -7,5 +7,7 @@ public record ProductSearchCommand (
 	String sorted, // DESC, ASC
 	boolean soldOut
 ){
-
+	public static ProductSearchCommand of(String name,String category,String sortBy,String sorted,boolean soldOut){
+		return new ProductSearchCommand(name,category,sortBy,sorted,soldOut);
+	}
 }

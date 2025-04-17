@@ -27,13 +27,14 @@ public class ProductEntity {
 	@Column(nullable = false)
 	private Integer stock;
 
-	@Column(nullable = false)
+	@Column(name = "category", nullable = false)
+	@Enumerated(EnumType.STRING)
 	private Category category;
 
 	private String description;
 
 	@Column(nullable = false)
-	private BigDecimal price = BigDecimal.ZERO;
+	private BigDecimal price;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)

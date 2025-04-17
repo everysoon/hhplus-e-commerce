@@ -1,43 +1,41 @@
 package kr.hhplus.be.server.application.point;
 
-import kr.hhplus.be.server.domain.user.User;
+import java.math.BigDecimal;
 import kr.hhplus.be.server.infra.point.entity.PointStatus;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UpdatePointCommand {
 	@Getter
 	public static class Refund{
-		private final User user;
+		private final Long userId;
 		private final BigDecimal totalPrice;
-		private Refund(User user, BigDecimal totalPrice) {
-			this.user = user;
+		private Refund(Long userId, BigDecimal totalPrice) {
+			this.userId = userId;
 			this.totalPrice = totalPrice;
 		}
-		public static Refund of(User user, BigDecimal totalPrice) {
-			return new Refund(user, totalPrice);
+		public static Refund of(Long userId, BigDecimal totalPrice) {
+			return new Refund(userId, totalPrice);
 		}
 	}
 	@Getter
 	public static class Charge {
 
-		private final User user;
+		private final Long userId;
 		private final BigDecimal amount;
 		private final PointStatus status;
 
-		private Charge(User user, BigDecimal amount, PointStatus status) {
-			this.user=user;
+		private Charge(Long userId, BigDecimal amount, PointStatus status) {
+			this.userId = userId;
 			this.amount = amount;
 			this.status = status;
 		}
 
-		public static Charge of(User user, BigDecimal amount) {
+		public static Charge of(Long userId, BigDecimal amount) {
 			return new Charge(
-				user,
+				userId,
 				amount,
 				PointStatus.CHARGED
 			);
@@ -46,18 +44,18 @@ public class UpdatePointCommand {
 	@Getter
 	public static class Use {
 
-		private final User user;
+		private final Long userId;
 		private final BigDecimal amount;
 		private PointStatus status;
 
-		private Use(User user, BigDecimal amount, PointStatus status) {
-			this.user = user;
+		private Use(Long userId, BigDecimal amount, PointStatus status) {
+			this.userId = userId;
 			this.amount = amount;
 			this.status = status;
 		}
-		public static Use of(User user, BigDecimal amount) {
+		public static Use of(Long userId, BigDecimal amount) {
 			return new Use(
-				user,
+				userId,
 				amount,
 				PointStatus.USED
 			);

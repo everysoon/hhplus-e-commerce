@@ -89,7 +89,6 @@ public class TestBatchDataFactory {
 	private List<Object[]> generateBatchProducts(int batchSize) {
 		return IntStream.range(0, batchSize)
 			.mapToObj(i -> new Object[]{
-				faker.idNumber(),
 				faker.commerce().productName(),               // productName
 				faker.number().numberBetween(1, 1000),        // stock
 				faker.options().option(Category.values()).name(), // category (enum)

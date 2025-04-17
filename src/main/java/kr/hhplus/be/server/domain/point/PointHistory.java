@@ -21,7 +21,7 @@ public class PointHistory {
 	public static PointHistory from(UpdatePointCommand.Charge command) {
 		return new PointHistory(
 			null,
-			command.getUser().getId(),
+			command.getUserId(),
 			command.getStatus(),
 			command.getAmount(),
 			LocalDateTime.now()
@@ -31,7 +31,7 @@ public class PointHistory {
 	public static PointHistory from(UpdatePointCommand.Use command) {
 		return new PointHistory(
 			null,
-			command.getUser().getId(),
+			command.getUserId(),
 			command.getStatus(),
 			command.getAmount(),
 			LocalDateTime.now()

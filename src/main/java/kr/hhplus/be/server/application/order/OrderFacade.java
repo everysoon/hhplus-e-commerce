@@ -62,7 +62,7 @@ public class OrderFacade {
 		// 결제 취소
 		Payment payment = paymentService.cancel(order);
 		// 포인트 환불
-		pointService.refund(UpdatePointCommand.Refund.of(user, order.getTotalPrice()));
+		pointService.refund(UpdatePointCommand.Refund.of(user.getId(), order.getTotalPrice()));
 		// 쿠폰 상태 복원 (쿠폰 사용했으면)
 		if (!order.getCouponIds().isEmpty()) {
 			couponService.restore(UseCouponCommand.of(user.getId(), order.getCouponIds()));
@@ -95,7 +95,7 @@ public class OrderFacade {
 
 		Order order = orderService.create(CreateOrderCommand.of(orderItems, couponInfo));
 		// 유저 포인트 사용
-		pointService.use(UpdatePointCommand.Use.of(user, order.getTotalPrice()));
+		pointService.use(UpdatePointCommand.Use.of(user.getId(), order.getTotalPrice()));
 		// 결제 시도
 		Payment payment = paymentService.pay(
 			RequestPaymentCommand.of(order, criteria.paymentMethod())

@@ -9,10 +9,6 @@ import org.springframework.test.context.ActiveProfiles;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @ActiveProfiles("test")
-//@TestExecutionListeners(
-//	value = { DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class },
-//	mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS
-//)
 public class BaseIntegrationTest {
 
 }

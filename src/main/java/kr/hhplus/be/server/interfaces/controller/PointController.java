@@ -9,11 +9,10 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.math.BigDecimal;
 import kr.hhplus.be.server.ResponseApi;
-import kr.hhplus.be.server.application.point.PointFacade;
 import kr.hhplus.be.server.application.point.PointService;
-import kr.hhplus.be.server.application.point.UpdatePointCriteria;
-import kr.hhplus.be.server.application.point.UserPointResult;
+import kr.hhplus.be.server.application.point.UpdatePointCommand;
 import kr.hhplus.be.server.domain.point.Point;
+import kr.hhplus.be.server.domain.point.PointHistory;
 import kr.hhplus.be.server.interfaces.dto.PointDTO;
 import kr.hhplus.be.server.interfaces.dto.UserDTO;
 import kr.hhplus.be.server.support.config.swagger.SwaggerErrorExample;
@@ -33,7 +32,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class PointController {
 
-	private final PointFacade pointFacade;
 	private final PointService pointService;
 
 	@PostMapping("/{userId}")
@@ -48,8 +46,8 @@ public class PointController {
 		@Parameter(description = "포인트 충전량", required = true)
 		@RequestParam BigDecimal price
 	) {
-		UserPointResult result = pointFacade.charge(UpdatePointCriteria.Charge.of(userId,price));
-		return ResponseEntity.ok(ResponseApi.of(PointDTO.UserPointResponse.from(result)));
+		 PointHistory history = pointService.charge(UpdatePointCommand.Charge.of(userId,price));
+		return ResponseEntity.ok(ResponseApi.of(PointDTO.UserPointResponse.from(history)));
 	}
 	@PutMapping("/{userId}")
 	@SwaggerErrorExample({
@@ -63,8 +61,8 @@ public class PointController {
 		@Parameter(description = "포인트 사용량", required = true)
 		@RequestParam BigDecimal price
 	) {
-		UserPointResult result =pointFacade.use(UpdatePointCriteria.Use.of(userId, price));
-		return ResponseEntity.ok(ResponseApi.of(PointDTO.UserPointResponse.from(result)));
+		PointHistory pointHistory  = pointService.use(UpdatePointCommand.Use.of(userId, price));
+		return ResponseEntity.ok(ResponseApi.of(PointDTO.UserPointResponse.from(pointHistory)));
 	}
 	@GetMapping("/{userId}")
 	@Operation(description = "유저 보유 포인트 조회")

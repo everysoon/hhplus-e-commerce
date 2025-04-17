@@ -31,6 +31,9 @@ public class Product {
 			this.status = ProductStatus.OUT_OF_STOCK;
 		}
 	}
+	public void increaseStock(Integer amount) {
+		this.stock += amount;
+	}
 	public void validateOrderable(){
 		if(this.status ==ProductStatus.OUT_OF_STOCK || this.stock <=0){
 			throw new CustomException(ErrorCode.OUT_OF_STOCK);

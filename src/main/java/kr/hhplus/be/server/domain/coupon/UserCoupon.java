@@ -37,5 +37,7 @@ public class UserCoupon {
 	public boolean isValid(){
 		return this.status == CouponStatus.ISSUED;
 	}
-
+	public void restore(){
+		this.status = CouponStatus.ISSUED;
+	}
 }

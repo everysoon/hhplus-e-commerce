@@ -27,7 +27,13 @@ public class ProductService {
 	public List<Product> findPopularAll(ProductTopSellingCommand command) {
 		return productRepository.findPopularAll(command);
 	}
-
+	public List<Product> increaseStock(List<OrderItem> orderItems){
+		return orderItems.stream().map(o -> {
+			Product product = findById(o.getProductId());
+			product.increaseStock(o.getQuantity());
+			return productRepository.save(product);
+		}).toList();
+	}
 	public List<Product> decreaseStock(List<OrderItem> orderItems) {
 		return orderItems.stream().map(o -> {
 			Product product = findById(o.getProductId());

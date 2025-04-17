@@ -42,6 +42,9 @@ public class Coupon {
 		}
 		this.remainingQuantity-=1;
 	}
+	public void increaseStock(){
+		this.remainingQuantity+=1;
+	}
 	public void validateStock() {
 		if (this.initialQuantity < this.remainingQuantity) {
 			throw new CustomException(ErrorCode.INVALID_COUPON_QUANTITY);

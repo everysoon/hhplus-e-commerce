@@ -31,7 +31,7 @@ public class PaymentDTO {
 		// 결제 정보 암호화
 		private String encryptData;
 
-		public static PaymentRequest from(RequestPaymentCommand command,String token) {
+		public static PaymentRequest from(RequestPaymentCommand command, String token) {
 			return new PaymentRequest(CryptoUtil.sha256Hex(command.combineAll(token)));
 		}
 	}

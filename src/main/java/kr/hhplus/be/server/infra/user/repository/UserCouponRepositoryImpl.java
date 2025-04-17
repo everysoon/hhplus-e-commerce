@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 import static kr.hhplus.be.server.support.config.swagger.ErrorCode.*;
 
@@ -24,11 +25,11 @@ public class UserCouponRepositoryImpl implements UserCouponRepository {
 
 	@Override
 	public void validateUserCoupons(CouponValidCommand command) {
-		List<UserCouponEntity> userCoupons = userCouponJpaRepository.findByUserIdAndCouponIds(command.userId(), command.couponIds());
+		List<UserCoupon> userCoupons = findByUserIdAndCouponIds(command.userId(), command.couponIds());
 		if(userCoupons.size() != command.couponIds().size()) {
 			throw new CustomException(INVALID_USER_COUPON);
 		}
-		userCoupons.stream().map(UserCouponEntity::toDomain).forEach(userCoupon -> {
+		userCoupons.forEach(userCoupon -> {
 			if(!userCoupon.isValid()){
 				throw new  CustomException(USED_COUPON);
 			}
@@ -48,4 +49,8 @@ public class UserCouponRepositoryImpl implements UserCouponRepository {
 		return userCouponJpaRepository.save(UserCouponEntity.from(coupon)).toDomain();
 	}
 
+	@Override
+	public List<UserCoupon> findByUserIdAndCouponIds(Long userId, List<UUID> couponIds) {
+		return userCouponJpaRepository.findByUserIdAndCouponIds(userId,couponIds).stream().map(UserCouponEntity::toDomain).toList();
+	}
 }

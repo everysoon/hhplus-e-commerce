@@ -1,15 +1,27 @@
 package kr.hhplus.be.server.application.point;
 
-import java.math.BigDecimal;
 import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.infra.point.entity.PointStatus;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UpdatePointCommand {
-
+	@Getter
+	public static class Refund{
+		private final User user;
+		private final BigDecimal totalPrice;
+		private Refund(User user, BigDecimal totalPrice) {
+			this.user = user;
+			this.totalPrice = totalPrice;
+		}
+		public static Refund of(User user, BigDecimal totalPrice) {
+			return new Refund(user, totalPrice);
+		}
+	}
 	@Getter
 	public static class Charge {
 

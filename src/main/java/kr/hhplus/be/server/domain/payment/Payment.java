@@ -30,11 +30,10 @@ public class Payment {
 			transactionId
 		);
 	}
-	//	public void cancel(BigDecimal price,String description) {
-//		if(this.price.compareTo(price) > 0) {
-//			throw new CustomException();
-//		}
-//		this.price = price;
-//		this.description = description;
-//	}
+	public void cancel(BigDecimal price, String transactionId) {
+		this.price = price;
+		this.transactionId = transactionId;
+		this.status = PaymentStatus.CANCELED;
+	}
+
 }

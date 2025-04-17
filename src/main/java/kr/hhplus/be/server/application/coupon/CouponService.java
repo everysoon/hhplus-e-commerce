@@ -25,7 +25,13 @@ public class CouponService {
 		logger.info("### findUserCouponByUserId parameter : {}", userId);
 		return userCouponRepository.findByUserId(userId);
 	}
-
+	public void restore(UseCouponCommand command){
+		logger.info("### restore parameter : {}",command.toString());
+		List<UUID> couponIds = command.coupons().stream().map(Coupon::getId).toList();
+		List<UserCoupon> userCoupons = userCouponRepository.findByUserIdAndCouponIds(command.user().getId(), couponIds);
+		userCoupons.forEach(UserCoupon::restore);
+		command.coupons().forEach(Coupon::increaseStock);
+	}
 	public List<Coupon> validateUserCoupons(CouponValidCommand command) {
 		logger.info("### validateUserCoupons parameter : {}",command.toString());
 		userCouponRepository.validateUserCoupons(command);

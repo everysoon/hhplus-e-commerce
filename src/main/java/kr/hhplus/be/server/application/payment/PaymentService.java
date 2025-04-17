@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.application.payment;
 
 import kr.hhplus.be.server.application.dataplatform.PaymentClient;
+import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.payment.Payment;
 import kr.hhplus.be.server.domain.payment.PaymentHistory;
 import kr.hhplus.be.server.domain.payment.repository.PaymentHistoryRepository;
@@ -30,8 +31,7 @@ public class PaymentService {
 			Payment payment = Payment.of(command,transactionId);
 			CreatePaymentHistoryCommand payloadCommand = command.toCreatePaymentCommand(payment);
 			// save
-			paymentHistoryRepository.save(PaymentHistory.of(payloadCommand));
-			paymentRepository.save(payment);
+			saveWithHistory(payment,PaymentHistory.of(payloadCommand));
 			return payment;
 		} catch (Exception e) {
 			logger.error("결제 처리 중 예상치 못한 오류", e);
@@ -39,7 +39,20 @@ public class PaymentService {
 		}
 	}
 
-	public Payment cancel() {
-		return null;
+	public Payment cancel(Order order) {
+		// client 통신
+		Payment payment = paymentRepository.findByOrderId(order.getId());
+		RequestPaymentCommand command = RequestPaymentCommand.of(order,payment.getPaymentMethod());
+		String token = paymentClient.getToken(PaymentDTO.TokenRequest.from(command));
+		String transactionId = paymentClient.cancel(PaymentDTO.PaymentRequest.from(command, token));
+		payment.cancel(order.getTotalPrice(),transactionId);
+		CreatePaymentHistoryCommand payloadCommand = command.toCreatePaymentCommand(payment);
+
+		saveWithHistory(payment,PaymentHistory.of(payloadCommand));
+		return payment;
+	}
+	public void saveWithHistory(Payment payment,PaymentHistory paymentHistory) {
+		paymentHistoryRepository.save(paymentHistory);
+		paymentRepository.save(payment);
 	}
 }

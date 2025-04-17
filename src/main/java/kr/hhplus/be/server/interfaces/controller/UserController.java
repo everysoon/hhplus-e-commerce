@@ -45,7 +45,7 @@ public class UserController {
 	@SwaggerErrorExample({
 		NOT_EXIST_USER
 	})
-	public ResponseEntity<ResponseApi<List<UserCouponDTO.CouponDetailResponse>>> getUserCoupon(
+	public ResponseEntity<ResponseApi<List<UserCouponDTO.CouponDetailResponse>>> getUserCoupons(
 		@Parameter(description = "유저 ID", required = true)
 		@PathVariable Long userId
 	) {

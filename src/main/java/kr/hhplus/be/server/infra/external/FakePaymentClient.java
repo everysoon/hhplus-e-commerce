@@ -21,4 +21,10 @@ public class FakePaymentClient  implements PaymentClient {
 		log.info(" ### FakePaymentClient getToken parameter : {}" ,request.toString());
 		return "";
 	}
+
+	@Override
+	public String cancel(PaymentDTO.PaymentRequest request) {
+		log.info(" ### FakePaymentClient cancel parameter : {}" ,request.toString());
+		return "";
+	}
 }

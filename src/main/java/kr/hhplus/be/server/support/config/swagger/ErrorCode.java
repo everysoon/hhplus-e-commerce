@@ -47,6 +47,8 @@ public enum ErrorCode {
 	NOT_EXIST_ORDER_ITEM(BAD_REQUEST.value(),"주문 상품이 존재하지 않습니다."),
     CUSTOM_METHOD_NOT_ALLOWED(METHOD_NOT_ALLOWED.value(), "지원하지 않은 요청입니다. 요청 정보를 다시 확인해 주시기 바랍니다."),
     CUSTOM_INTERNAL_SERVER_ERROR(INTERNAL_SERVER_ERROR.value(),"예상하지 않은 에러가 발생하였습니다. 관리자에게 문의해 주세요."),
+	NOT_EXIST_ORDER(INTERNAL_SERVER_ERROR.value(),"해당 주문ID의 주문내역이 존재하지 않습니다."),
+	UNAUTHORIZED_ORDER_ACCESS(INTERNAL_SERVER_ERROR.value(),"사용자의 주문내역이 아닙니다."),
 
 	// payment
 	PAYMENT_FAIL(BAD_REQUEST.value(),"결제가 실패했습니다."),

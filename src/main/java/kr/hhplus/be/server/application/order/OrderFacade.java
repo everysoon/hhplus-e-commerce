@@ -3,7 +3,6 @@ package kr.hhplus.be.server.application.order;
 import kr.hhplus.be.server.application.coupon.CouponService;
 import kr.hhplus.be.server.application.coupon.CouponValidCommand;
 import kr.hhplus.be.server.application.coupon.UseCouponCommand;
-import kr.hhplus.be.server.application.order.service.OrderHistoryService;
 import kr.hhplus.be.server.application.order.service.OrderItemService;
 import kr.hhplus.be.server.application.order.service.OrderService;
 import kr.hhplus.be.server.application.payment.PaymentService;
@@ -29,6 +28,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static kr.hhplus.be.server.support.config.swagger.ErrorCode.INVALID_QUANTITY;
+import static kr.hhplus.be.server.support.config.swagger.ErrorCode.UNAUTHORIZED_ORDER_ACCESS;
 
 @Component
 @RequiredArgsConstructor
@@ -41,11 +41,10 @@ public class OrderFacade {
 	private final CouponService couponService;
 	private final OrderItemService orderItemService;
 	private final UserService userService;
-	private final OrderHistoryService orderHistoryService;
 
 	public OrderInfoResult getOrders(Long userId) {
 		logger.info("### getOrders parameter : {}", userId);
-		List<OrderDetailResult> orderDetails = orderHistoryService.findByUserId(userId)
+		List<OrderDetailResult> orderDetails = orderService.findHistoryByUserId(userId)
 			.stream().map(oh -> {
 				Long orderId = oh.getOrder().getId();
 				List<Product> products = productService.orderItemToProduct(oh.getOrder().getOrderItems());
@@ -57,7 +56,32 @@ public class OrderFacade {
 		return OrderInfoResult.from(userId, orderDetails);
 	}
 
-	public void cancel() {
+	public CancelOrderResult cancel(CancelOrderCriteria criteria) {
+		logger.info("### cancel parameter : {}", criteria.toString());
+		Order order = orderService.findById(criteria.orderId());
+		// 해당 주문건이 사용자의 주문건인지
+		if (!order.getUserId().equals(criteria.userId())) {
+			throw new CustomException(UNAUTHORIZED_ORDER_ACCESS);
+		}
+		User user = userService.get(criteria.userId());
+		// 결제 취소
+		Payment payment = paymentService.cancel(order);
+		// 포인트 환불
+		pointService.refund(UpdatePointCommand.Refund.of(user, order.getTotalPrice()));
+		// 쿠폰 상태 복원 (쿠폰 사용했으면)
+		if (!order.getCouponIds().isEmpty()) {
+			List<Coupon> coupons = order.getCouponIds().stream().map(couponService::findCouponById).toList();
+			couponService.restore(UseCouponCommand.of(user, coupons));
+		}
+		// 재고 복원
+		productService.increaseStock(order.getOrderItems());
+
+		// 주문상태 변경 및 저장 - 취소
+		orderService.cancel(order);
+		return CancelOrderResult.from(
+			order,
+			payment
+		);
 	}
 
 	@Transactional

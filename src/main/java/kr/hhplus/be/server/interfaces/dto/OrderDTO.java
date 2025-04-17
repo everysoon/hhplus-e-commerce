@@ -2,6 +2,7 @@ package kr.hhplus.be.server.interfaces.dto;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import kr.hhplus.be.server.application.order.CancelOrderResult;
 import kr.hhplus.be.server.application.order.OrderDetailResult;
 import kr.hhplus.be.server.application.order.OrderInfoResult;
 import kr.hhplus.be.server.application.order.PlaceOrderResult;
@@ -30,6 +31,24 @@ public class OrderDTO {
 		List<UUID> couponId;
 	}
 
+	public record CancelResponse(
+		Long userId,
+		Long orderId,
+		Long paymentId,
+		BigDecimal totalPrice,
+		PaymentMethod method
+	) {
+		public static CancelResponse of(CancelOrderResult result) {
+			return new CancelResponse(
+				result.order().getUserId(),
+				result.order().getId(),
+				result.payment().getId(),
+				result.order().getTotalPrice(),
+				result.payment().getPaymentMethod()
+			);
+		}
+	}
+
 	public record OrderResponse(
 		Long userId,
 		List<ProductDTO.ProductResponse> orderItems,
@@ -52,24 +71,26 @@ public class OrderDTO {
 			);
 		}
 	}
+
 	public record UserOrderResponse(
 		Long userId,
 		List<OrderDetailResponse> orderInfos
-	){
-		public static UserOrderResponse of(OrderInfoResult result){
+	) {
+		public static UserOrderResponse of(OrderInfoResult result) {
 			return new UserOrderResponse(
 				result.userId(),
 				result.results().stream().map(OrderDetailResponse::of).toList()
 			);
 		}
 	}
+
 	public record OrderDetailResponse(
 		Long orderId,
-		List<ProductDTO.OrderItemDetailResponse>  orderItems,
+		List<ProductDTO.OrderItemDetailResponse> orderItems,
 		List<CouponDTO.OrderCouponResponse> coupons
 
-	){
-		public static OrderDetailResponse of(OrderDetailResult result){
+	) {
+		public static OrderDetailResponse of(OrderDetailResult result) {
 			return new OrderDetailResponse(
 				result.orderId(),
 				result.productList().stream().map(ProductDTO.OrderItemDetailResponse::of).toList(),
@@ -77,6 +98,7 @@ public class OrderDTO {
 			);
 		}
 	}
+
 	@Data
 	@NoArgsConstructor
 	@AllArgsConstructor
@@ -87,11 +109,12 @@ public class OrderDTO {
 		@Min(1)
 		Integer quantity;
 	}
+
 	public record OrderItemResponse(
 		ProductDTO.ProductResponse item,
 		Long orderId,
 		LocalDateTime createdAt
-	){
+	) {
 
 	}
 

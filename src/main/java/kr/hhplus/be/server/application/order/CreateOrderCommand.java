@@ -17,13 +17,13 @@ public record CreateOrderCommand(
 	}
 
 	public List<String> couponIdsToString() {
-		if (couponInfo == null || couponInfo.coupons().isEmpty()) {
+		if (couponInfo == null || couponInfo.coupons() == null ||couponInfo.coupons().isEmpty()) {
 			return null;
 		}
 		return couponInfo.coupons().stream().map(Coupon::getId).toList();
 	}
 	public BigDecimal getDiscountAmount(BigDecimal totalPrice) {
-		if (couponInfo == null || couponInfo.coupons().isEmpty()) {
+		if (couponInfo == null || couponInfo.coupons() == null || couponInfo.coupons().isEmpty()) {
 			return BigDecimal.ZERO;
 		}
 		return couponInfo.coupons().stream().map(

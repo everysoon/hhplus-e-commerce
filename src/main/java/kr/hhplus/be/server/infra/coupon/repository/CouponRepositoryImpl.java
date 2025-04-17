@@ -29,6 +29,12 @@ public class CouponRepositoryImpl implements CouponRepository {
 	}
 
 	@Override
+	public void updateAll(List<Coupon> coupons) {
+		List<CouponEntity> couponEntities = coupons.stream().map(CouponEntity::update).toList();
+		couponJpaRepository.saveAll(couponEntities);
+	}
+
+	@Override
 	public List<Coupon> validateCoupons(List<String> couponIds) {
 		List<Coupon> coupons = couponIds.stream()
 			.map(couponJpaRepository::findById)
@@ -36,7 +42,7 @@ public class CouponRepositoryImpl implements CouponRepository {
 			.map(CouponEntity::toDomain)
 			.toList();
 
-		coupons.forEach(Coupon::isValid);
+		coupons.forEach(Coupon::validExpired);
 		return coupons;
 	}
 

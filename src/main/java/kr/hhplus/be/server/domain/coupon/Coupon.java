@@ -26,7 +26,8 @@ public class Coupon {
 		decreaseStock();
 		return this;
 	}
-	public BigDecimal getDiscountAmount(BigDecimal price) {
+
+	public BigDecimal calculateDiscountAmount(BigDecimal price) {
 		validExpired();
 		return switch (this.type) {
 			case FIXED -> this.discountAmount;
@@ -51,9 +52,6 @@ public class Coupon {
 	public void validExpired(){
 		if(expiredAt.isBefore(LocalDateTime.now())){
 			throw new CustomException(ErrorCode.EXPIRED_COUPON);
-		}
-		if(expiredAt.isBefore(createdAt)){
-			throw new CustomException(ErrorCode.INVALID_EXPIRED_COUPON_DATE);
 		}
 	}
 	public void isValid(){

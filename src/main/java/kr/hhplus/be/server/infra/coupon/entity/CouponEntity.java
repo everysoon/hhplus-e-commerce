@@ -54,6 +54,27 @@ public class CouponEntity {
 		this.issuedAt = LocalDateTime.now();
 	}
 
+	public CouponEntity(String id, CouponType type, String description, BigDecimal discountAmount,
+		int initialQuantity, int remainingQuantity,LocalDateTime expiredAt, LocalDateTime issuedAt) {
+		this(type, description, discountAmount, initialQuantity, remainingQuantity);
+		this.id = id;
+		this.expiredAt = expiredAt;
+		this.issuedAt = issuedAt;
+	}
+
+	public static CouponEntity update(Coupon coupon) {
+		return new CouponEntity(
+			coupon.getId(),
+			coupon.getType(),
+			coupon.getDescription(),
+			coupon.getDiscountAmount(),
+			coupon.getInitialQuantity(),
+			coupon.getRemainingQuantity(),
+			coupon.getExpiredAt(),
+			coupon.getCreatedAt()
+		);
+	}
+
 	public static CouponEntity from(Coupon coupon) {
 		return new CouponEntity(
 			coupon.getType(),

@@ -36,20 +36,39 @@ public class UserCouponEntity {
 
 	private LocalDateTime issuedAt;
 
-	public UserCouponEntity(Long userId,String couponId, CouponStatus status) {
+	public UserCouponEntity(Long userId, String couponId, CouponStatus status) {
 		this.userId = userId;
 		this.couponId = couponId;
 		this.status = status;
 		this.issuedAt = LocalDateTime.now();
 	}
-	public static UserCouponEntity from (UserCoupon uc){
+
+	public UserCouponEntity(Long id, Long userId, String couponId, CouponStatus status,
+		LocalDateTime issuedAt) {
+		this(userId, couponId, status);
+		this.id = id;
+		this.issuedAt = issuedAt;
+	}
+
+	public static UserCouponEntity update(UserCoupon uc) {
+		return new UserCouponEntity(
+			uc.getId(),
+			uc.getUserId(),
+			uc.getCouponId(),
+			uc.getStatus(),
+			uc.getIssuedAt()
+		);
+	}
+
+	public static UserCouponEntity from(UserCoupon uc) {
 		return new UserCouponEntity(
 			uc.getUserId(),
 			uc.getCouponId(),
 			uc.getStatus()
 		);
 	}
-	public UserCoupon toDomain(){
+
+	public UserCoupon toDomain() {
 		return new UserCoupon(
 			this.id,
 			this.userId,

@@ -34,6 +34,7 @@ dependencyManagement {
 
 dependencies {
     // Spring
+    implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
@@ -48,15 +49,10 @@ dependencies {
     testImplementation("org.testcontainers:mysql")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("org.junit.jupiter:junit-jupiter")
+
     // RestAssured (API 테스트용)
     testImplementation("io.rest-assured:rest-assured:5.4.0")
 
-
-    // Spring boot 3.x 이상 QueryDsl
-//	implementation("com.querydsl:querydsl-jpa:5.0.0:jakarta")
-//	annotationProcessor("com.querydsl:querydsl-apt:5.0.0:jakarta")
-//	annotationProcessor("jakarta.annotation:jakarta.annotation-api")
-//	annotationProcessor("jakarta.persistence:jakarta.persistence-api")
     // swagger
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
 
@@ -66,6 +62,6 @@ dependencies {
     testCompileOnly("org.projectlombok:lombok:1.18.34")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.34")
 
-
+    testImplementation("net.datafaker:datafaker:2.0.2")
 }
 

@@ -1,12 +1,11 @@
 package kr.hhplus.be.server.application.order;
 
 import static kr.hhplus.be.server.support.config.swagger.ErrorCode.INVALID_QUANTITY;
-import static kr.hhplus.be.server.support.config.swagger.ErrorCode.UNAUTHORIZED_ORDER_ACCESS;
 
 import java.util.List;
 import kr.hhplus.be.server.application.coupon.CouponService;
-import kr.hhplus.be.server.application.coupon.CouponValidCommand;
 import kr.hhplus.be.server.application.coupon.UseCouponCommand;
+import kr.hhplus.be.server.application.coupon.UseCouponInfo;
 import kr.hhplus.be.server.application.order.service.OrderItemService;
 import kr.hhplus.be.server.application.order.service.OrderService;
 import kr.hhplus.be.server.application.payment.PaymentService;
@@ -31,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @RequiredArgsConstructor
 public class OrderFacade {
+
 	private final Logger logger = LoggerFactory.getLogger(OrderFacade.class);
 	private final OrderService orderService;
 	private final PaymentService paymentService;
@@ -45,7 +45,8 @@ public class OrderFacade {
 		List<OrderDetailResult> orderDetails = orderService.findHistoryByUserId(userId)
 			.stream().map(oh -> {
 				Long orderId = oh.getOrder().getId();
-				List<Product> products = productService.orderItemToProduct(oh.getOrder().getOrderItems());
+				List<Product> products = productService.orderItemToProduct(
+					oh.getOrder().getOrderItems());
 				List<Coupon> coupons = oh.getOrder().getCouponIds().stream()
 					.map(couponService::findCouponById)
 					.toList();
@@ -56,11 +57,7 @@ public class OrderFacade {
 
 	public CancelOrderResult cancel(CancelOrderCriteria criteria) {
 		logger.info("### cancel parameter : {}", criteria.toString());
-		Order order = orderService.findById(criteria.orderId());
-		// 해당 주문건이 사용자의 주문건인지
-		if (!order.getUserId().equals(criteria.userId())) {
-			throw new CustomException(UNAUTHORIZED_ORDER_ACCESS);
-		}
+		Order order = orderService.findByIdAndUserId(criteria.orderId(), criteria.userId());
 		User user = userService.get(criteria.userId());
 		// 결제 취소
 		Payment payment = paymentService.cancel(order);
@@ -68,8 +65,7 @@ public class OrderFacade {
 		pointService.refund(UpdatePointCommand.Refund.of(user, order.getTotalPrice()));
 		// 쿠폰 상태 복원 (쿠폰 사용했으면)
 		if (!order.getCouponIds().isEmpty()) {
-			List<Coupon> coupons = order.getCouponIds().stream().map(couponService::findCouponById).toList();
-			couponService.restore(UseCouponCommand.of(user, coupons));
+			couponService.restore(UseCouponCommand.of(user.getId(), order.getCouponIds()));
 		}
 		// 재고 복원
 		productService.increaseStock(order.getOrderItems());
@@ -89,16 +85,15 @@ public class OrderFacade {
 		User user = userService.get(criteria.userId());
 		// 상품 조회
 		List<OrderItem> orderItems = createOrderItems(criteria);
+
+		// 쿠폰 사용 - 상태 변환
 		// 쿠폰 유효성 확인
 		// - 만료 되진 않았는지, 쿠폰이 유저 소유가 맞는지
-		List<Coupon> coupons = validateCoupons(user.getId(), criteria.couponIds());
-		// 주문 생성 + price 쿠폰 적용
-		Order order = orderService.create(
-			CreateOrderCommand.of(criteria.userId(), orderItems, coupons));
-		// 쿠폰 사용 - 상태 변환
-		if (!coupons.isEmpty()) {
-			couponService.use(UseCouponCommand.of(user, coupons));
-		}
+		UseCouponInfo couponInfo = couponService.use(UseCouponCommand.of(
+			user.getId(), criteria.couponIds()
+		));
+
+		Order order = orderService.create(CreateOrderCommand.of(orderItems, couponInfo));
 		// 유저 포인트 사용
 		pointService.use(UpdatePointCommand.Use.of(user, order.getTotalPrice()));
 		// 결제 시도
@@ -113,8 +108,7 @@ public class OrderFacade {
 			user.getId(),
 			products,
 			payment,
-			order,
-			coupons
+			order
 		);
 	}
 
@@ -131,14 +125,5 @@ public class OrderFacade {
 			})
 			.toList();
 		return orderItemService.saveAll(orderItems);
-	}
-
-	private List<Coupon> validateCoupons(Long userId, List<String> couponIds) {
-		logger.info("### validateCoupons parameter : userId : {}, couponIds :{}", userId, couponIds);
-		if (couponIds == null || couponIds.isEmpty()) {
-			return List.of();
-		}
-		CouponValidCommand command = CouponValidCommand.of(userId, couponIds);
-		return couponService.validateUserCoupons(command);
 	}
 }

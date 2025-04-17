@@ -9,6 +9,8 @@ public interface UserCouponRepository {
 	List<UserCoupon> findByUserId(Long userId);
 	void validateUserCoupons(CouponValidCommand command);
 	void validateDuplicateIssued(IssueCouponCommand command);
-	UserCoupon save(UserCoupon coupon);
+	UserCoupon save(IssueCouponCommand command);
 	List<UserCoupon> findByUserIdAndCouponIds(Long userId, List<String> couponIds);
+	void updateAll(List<UserCoupon> userCoupons);
+	void saveAll(List<UserCoupon> userCoupons);
 }

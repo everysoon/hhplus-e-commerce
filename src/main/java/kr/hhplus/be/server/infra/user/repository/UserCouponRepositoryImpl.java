@@ -20,7 +20,9 @@ public class UserCouponRepositoryImpl implements UserCouponRepository {
 	private final UserCouponJpaRepository userCouponJpaRepository;
 	@Override
 	public List<UserCoupon> findByUserId(Long userId) {
-		return userCouponJpaRepository.findByUserId(userId).stream().map(UserCouponEntity::toDomain).toList();
+		return userCouponJpaRepository.findByUserId(userId).stream()
+			.map(UserCouponEntity::toDomain)
+			.toList();
 	}
 
 	@Override
@@ -45,12 +47,25 @@ public class UserCouponRepositoryImpl implements UserCouponRepository {
 	}
 
 	@Override
-	public UserCoupon save(UserCoupon coupon) {
-		return userCouponJpaRepository.save(UserCouponEntity.from(coupon)).toDomain();
+	public UserCoupon save(IssueCouponCommand command) {
+		UserCoupon userCoupon = UserCoupon.of(command.userId(), command.couponId());
+		return userCouponJpaRepository.save(UserCouponEntity.from(userCoupon)).toDomain();
 	}
 
 	@Override
 	public List<UserCoupon> findByUserIdAndCouponIds(Long userId, List<String> couponIds) {
 		return userCouponJpaRepository.findByUserIdAndCouponIds(userId,couponIds).stream().map(UserCouponEntity::toDomain).toList();
+	}
+
+	@Override
+	public void updateAll(List<UserCoupon> userCoupons) {
+		List<UserCouponEntity> userCouponEntities = userCoupons.stream().map(UserCouponEntity::update).toList();
+		userCouponJpaRepository.saveAll(userCouponEntities);
+	}
+
+	@Override
+	public void saveAll(List<UserCoupon> userCoupons) {
+		List<UserCouponEntity> userCouponEntities = userCoupons.stream().map(UserCouponEntity::from).toList();
+		userCouponJpaRepository.saveAll(userCouponEntities);
 	}
 }

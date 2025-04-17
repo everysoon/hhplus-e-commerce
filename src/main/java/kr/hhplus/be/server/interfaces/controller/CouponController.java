@@ -8,9 +8,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
-import java.util.UUID;
 import kr.hhplus.be.server.ResponseApi;
-import kr.hhplus.be.server.application.coupon.CouponFacade;
+import kr.hhplus.be.server.application.coupon.CouponService;
 import kr.hhplus.be.server.application.coupon.IssueCouponCommand;
 import kr.hhplus.be.server.application.coupon.UserCouponDetailResult;
 import kr.hhplus.be.server.interfaces.dto.UserCouponDTO;
@@ -30,8 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "쿠폰", description = "쿠폰 발급 및 조회 API")
 @RequiredArgsConstructor
 public class CouponController {
-
-	private final CouponFacade couponFacade;
+	private final CouponService couponService;
 
 	@GetMapping("/{userId}")
 	@Operation(description = "유저 보유 쿠폰 조회")
@@ -42,7 +40,7 @@ public class CouponController {
 		@Parameter(description = "유저 ID", required = true)
 		@PathVariable Long userId
 	) {
-		List<UserCouponDetailResult> result = couponFacade.getUserCoupons(userId);
+		List<UserCouponDetailResult> result = couponService.getUserCoupons(userId);
 		List<UserCouponDTO.CouponDetailResponse> response = result.stream()
 			.map(UserCouponDTO.CouponDetailResponse::from).toList();
 		return ResponseEntity.ok(ResponseApi.of(response));
@@ -62,7 +60,7 @@ public class CouponController {
 		@RequestParam String couponId
 	) {
 		IssueCouponCommand command = IssueCouponCommand.of(userId, couponId);
-		UserCouponDetailResult result = couponFacade.issueCoupon(command);
+		UserCouponDetailResult result = couponService.issueCoupon(command);
 		return ResponseEntity.ok(ResponseApi.of(UserCouponDTO.CouponDetailResponse.from(result)));
 	}
 }

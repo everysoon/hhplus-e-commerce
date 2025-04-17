@@ -1,20 +1,18 @@
 package kr.hhplus.be.server.application.coupon;
 
-import kr.hhplus.be.server.domain.coupon.Coupon;
-import kr.hhplus.be.server.domain.user.User;
-import kr.hhplus.be.server.domain.coupon.UserCoupon;
-
 import java.util.List;
-import java.util.stream.Collectors;
 
 public record UseCouponCommand (
-	User user,
-	List<Coupon> coupons
+	Long userId,
+	List<String> couponIds
 ){
-	public static UseCouponCommand of(User user, List<Coupon> coupons) {
-		return new UseCouponCommand(user, coupons);
+//	public static UseCouponCommand of(User user, List<Coupon> coupons) {
+//		return new UseCouponCommand(user, coupons);
+//	}
+ 	public static UseCouponCommand of(Long userId, List<String> couponIds) {
+		return new UseCouponCommand(userId, couponIds);
 	}
-	public List<UserCoupon> getUserCoupons() {
-		return coupons.stream().map(c->UserCoupon.of(user,c)).collect(Collectors.toList());
-	}
+//	public List<UserCoupon> getUserCoupons() {
+//		return coupons.stream().map(c->UserCoupon.of(user,c)).collect(Collectors.toList());
+//	}
 }

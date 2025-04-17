@@ -1,9 +1,11 @@
 package kr.hhplus.be.server.support.config.swagger;
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
-import static org.springframework.http.HttpStatus.*;
 
 @Getter
 @AllArgsConstructor
@@ -21,12 +23,14 @@ public enum ErrorCode {
     OUT_OF_STOCK(BAD_REQUEST.value(),"상품이 품절 상태 입니다."),
     NOT_EXIST_PRODUCT(BAD_REQUEST.value(),"해당 상품이 존재하지 않습니다."),
 	INVALID_QUANTITY(BAD_REQUEST.value(),"잘못된 수량입니다."),
+
     // coupon
     NOT_EXIST_COUPON(BAD_REQUEST.value(),"해당 쿠폰을 찾을 수 없습니다."),
     USED_COUPON(BAD_REQUEST.value(),"이미 사용된 쿠폰이므로 사용할 수 없습니다."),
     REVOKED_COUPON(BAD_REQUEST.value(),"관리자나 시스템에 의해 취소된 쿠폰 입니다."),
     COUPON_SOLD_OUT(BAD_REQUEST.value(),"선착순 마감으로 쿠폰 재고가 존재하지않습니다."),
 	INVALID_COUPON(BAD_REQUEST.value(),"유효하지 않은 쿠폰입니다."),
+	INVALID_COUPON_ID(BAD_REQUEST.value(),"쿠폰ID가 UUID형식이 아닙니다."),
 	EXPIRED_COUPON(BAD_REQUEST.value(),"사용기간이 지난 쿠폰입니다."),
 	INVALID_EXPIRED_COUPON_DATE(BAD_REQUEST.value(),"쿠폰 만료일이 발행일 이전입니다."),
 	COUPON_ISSUED_FAIL(BAD_REQUEST.value(),"쿠폰 발급에 대한 동시성 에러가 발생했습니다."),

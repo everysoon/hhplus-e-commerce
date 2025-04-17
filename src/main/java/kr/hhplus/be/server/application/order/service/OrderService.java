@@ -1,7 +1,9 @@
 package kr.hhplus.be.server.application.order.service;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 import kr.hhplus.be.server.application.order.CreateOrderCommand;
-import kr.hhplus.be.server.domain.coupon.Coupon;
 import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.order.OrderHistory;
 import kr.hhplus.be.server.domain.order.OrderItem;
@@ -9,10 +11,6 @@ import kr.hhplus.be.server.domain.order.repository.OrderHistoryRepository;
 import kr.hhplus.be.server.domain.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -26,17 +24,13 @@ public class OrderService {
 			OrderItem::getUnitPrice
 		).reduce(BigDecimal.ZERO, BigDecimal::add);
 
-		BigDecimal totalDiscount = command.coupons().stream().map(
-			c -> c.getDiscountAmount(totalPrice)
-		).reduce(BigDecimal.ZERO, BigDecimal::add);
-
 		return new Order(
 			null,
-			command.userId(),
-			command.coupons().stream().map(Coupon::getId).toList(),
+			command.couponInfo().userId(),
+			command.couponIdsToString(),
 			command.orderItems(),
 			totalPrice,
-			totalDiscount,
+			command.getDiscountAmount(totalPrice),
 			LocalDateTime.now()
 		);
 
@@ -48,6 +42,10 @@ public class OrderService {
 
 	public Order findById(Long orderId) {
 		return orderRepository.findById(orderId);
+	}
+
+	public Order findByIdAndUserId(Long orderId, Long userId) {
+		return orderRepository.findByIdAndUserId(orderId, userId);
 	}
 
 	public Order save(Order order) {

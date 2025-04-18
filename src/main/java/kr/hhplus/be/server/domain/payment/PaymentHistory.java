@@ -14,18 +14,18 @@ public class PaymentHistory {
 
 	private final Long id;
 	private final Long orderId;
-	private final Payment payment;
+	private Long paymentId;
 	private final PaymentStatus status;
 	private final BigDecimal price;
 	private String description;
 	private final LocalDateTime createdAt;
 	private final String transactionId;
 
-	public static PaymentHistory of(CreatePaymentHistoryCommand command){
+	public static PaymentHistory of(CreatePaymentHistoryCommand command) {
 		return new PaymentHistory(
 			null,
 			command.orderId(),
-			command.payment(),
+			command.payment().getId(),
 			command.payment().getStatus(),
 			command.price(),
 			null,

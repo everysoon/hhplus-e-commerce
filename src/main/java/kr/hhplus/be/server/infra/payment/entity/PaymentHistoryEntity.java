@@ -2,7 +2,6 @@ package kr.hhplus.be.server.infra.payment.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import kr.hhplus.be.server.domain.payment.Payment;
 import kr.hhplus.be.server.domain.payment.PaymentHistory;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -23,9 +22,7 @@ public class PaymentHistoryEntity {
 	@Column(nullable = false)
 	private Long id;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "payment_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-	private PaymentEntity payment;
+	private Long paymentId;
 
 	private Long orderId;
 
@@ -40,8 +37,8 @@ public class PaymentHistoryEntity {
 	private String description; // 실패,환불 사유 명
 	private String transactionId;
 
-	public PaymentHistoryEntity(Payment payment, Long orderId, PaymentStatus status, String description, String transactionId) {
-		this.payment = PaymentEntity.from(payment);
+	public PaymentHistoryEntity(Long paymentId, Long orderId, PaymentStatus status, String description, String transactionId) {
+		this.paymentId = paymentId;
 		this.orderId = orderId;
 		this.status = status;
 		this.createdAt = LocalDateTime.now();
@@ -51,7 +48,7 @@ public class PaymentHistoryEntity {
 
 	public static PaymentHistoryEntity from(PaymentHistory history) {
 		return new PaymentHistoryEntity(
-			history.getPayment(),
+			history.getPaymentId(),
 			history.getOrderId(),
 			history.getStatus(),
 			history.getDescription(),
@@ -63,12 +60,12 @@ public class PaymentHistoryEntity {
 		return new PaymentHistory(
 			this.id,
 			this.orderId,
-			this.payment.toDomain(),
+			this.paymentId,
 			this.status,
 			this.price,
 			this.description,
 			this.createdAt,
-			this.payment.getTransactionId()
+			this.transactionId
 		);
 	}
 }

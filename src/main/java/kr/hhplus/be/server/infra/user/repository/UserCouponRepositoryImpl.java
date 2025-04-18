@@ -1,10 +1,5 @@
 package kr.hhplus.be.server.infra.user.repository;
 
-import static kr.hhplus.be.server.support.config.swagger.ErrorCode.DUPLICATE_COUPON_CLAIM;
-import static kr.hhplus.be.server.support.config.swagger.ErrorCode.INVALID_USER_COUPON;
-import static kr.hhplus.be.server.support.config.swagger.ErrorCode.USED_COUPON;
-
-import java.util.List;
 import kr.hhplus.be.server.application.coupon.CouponValidCommand;
 import kr.hhplus.be.server.application.coupon.IssueCouponCommand;
 import kr.hhplus.be.server.domain.coupon.UserCoupon;
@@ -14,10 +9,20 @@ import kr.hhplus.be.server.support.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
+import static kr.hhplus.be.server.support.config.swagger.ErrorCode.*;
+
 @Repository
 @RequiredArgsConstructor
 public class UserCouponRepositoryImpl implements UserCouponRepository {
 	private final UserCouponJpaRepository userCouponJpaRepository;
+
+	@Override
+	public List<UserCoupon> findAll() {
+		return userCouponJpaRepository.findAll().stream().map(UserCouponEntity::toDomain).toList();
+	}
+
 	@Override
 	public List<UserCoupon> findByUserId(Long userId) {
 		return userCouponJpaRepository.findByUserId(userId).stream()

@@ -8,6 +8,8 @@ import kr.hhplus.be.server.support.config.swagger.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 @RequiredArgsConstructor
 public class UserRepositoryImpl implements UserRepository {
@@ -24,5 +26,10 @@ public class UserRepositoryImpl implements UserRepository {
 	@Override
 	public User save(User user) {
 		return userJpaRepository.save(UserEntity.from(user)).toDomain();
+	}
+
+	@Override
+	public List<User> findAll() {
+		return userJpaRepository.findAll().stream().map(UserEntity::toDomain).toList();
 	}
 }

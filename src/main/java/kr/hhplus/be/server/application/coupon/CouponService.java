@@ -1,7 +1,6 @@
 package kr.hhplus.be.server.application.coupon;
 
 import jakarta.transaction.Transactional;
-import java.util.List;
 import kr.hhplus.be.server.domain.coupon.Coupon;
 import kr.hhplus.be.server.domain.coupon.CouponRepository;
 import kr.hhplus.be.server.domain.coupon.CouponValidator;
@@ -13,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -80,7 +81,7 @@ public class CouponService {
 	}
 	public UseCouponInfo use(UseCouponCommand command) {
 		if (command.couponIds().isEmpty()) {
-			return null;
+			return new UseCouponInfo(command.userId(),null);
 		}
 		logger.info("### use parameter : {}", command);
 		List<UserCoupon> userCoupons = userCouponRepository.findByUserIdAndCouponIds(

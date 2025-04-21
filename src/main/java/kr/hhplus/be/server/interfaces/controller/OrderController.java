@@ -36,15 +36,15 @@ public class OrderController {
 	public ResponseEntity<ResponseApi<OrderDTO.OrderResponse>> order(
 		@Valid @RequestBody OrderDTO.OrderRequest dto
 	) {
-		RequestOrderCriteria command = RequestOrderCriteria.from(dto);
-		PlaceOrderResult result = orderFacade.placeOrder(command);
+		OrderCriteria.Request command = OrderCriteria.Request.from(dto);
+		OrderResult.Place result = orderFacade.placeOrder(command);
 		return ResponseEntity.ok(ResponseApi.of(OrderDTO.OrderResponse.of(result)));
 	}
 
 	@GetMapping("/{userId}")
 	@Operation(description = "유저 주문 목록 조회")
 	public ResponseEntity<ResponseApi<OrderDTO.UserOrderResponse>> getOrders(@PathVariable Long userId) {
-		OrderInfoResult orders = orderFacade.getOrders(userId);
+		OrderResult.InfoByUser orders = orderFacade.getOrders(userId);
 		return ResponseEntity.ok(ResponseApi.of(OrderDTO.UserOrderResponse.of(orders)));
 	}
 
@@ -54,8 +54,8 @@ public class OrderController {
 		@RequestParam("userId") Long userId,
 		@RequestParam("orderId") Long orderId
 	) {
-		CancelOrderCriteria criteria = CancelOrderCriteria.from(userId, orderId);
-		CancelOrderResult result = orderFacade.cancel(criteria);
+		OrderCriteria.Cancel criteria = OrderCriteria.Cancel.from(userId, orderId);
+		OrderResult.Cancel result = orderFacade.cancel(criteria);
 		return ResponseEntity.ok(ResponseApi.of(OrderDTO.CancelResponse.of(result)));
 	}
 }

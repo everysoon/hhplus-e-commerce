@@ -1,13 +1,6 @@
 package kr.hhplus.be.server.infra.product.repository;
 
-import static kr.hhplus.be.server.infra.product.repository.ProductSpecification.filterCategory;
-import static kr.hhplus.be.server.infra.product.repository.ProductSpecification.filterSoldOut;
-import static kr.hhplus.be.server.infra.product.repository.ProductSpecification.nameContains;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import kr.hhplus.be.server.application.product.ProductSearchCommand;
-import kr.hhplus.be.server.application.product.ProductTopSellingCommand;
+import kr.hhplus.be.server.application.product.ProductCommand;
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.product.repository.ProductRepository;
 import kr.hhplus.be.server.infra.product.entity.ProductEntity;
@@ -17,6 +10,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static kr.hhplus.be.server.infra.product.repository.ProductSpecification.*;
 
 @Repository
 @RequiredArgsConstructor
@@ -31,7 +29,7 @@ public class ProductRepositoryImpl implements ProductRepository {
 	}
 
 	@Override
-	public List<Product> searchFilter(ProductSearchCommand command) {
+	public List<Product> searchFilter(ProductCommand.FilterSearch command) {
 		Specification<ProductEntity> spec = Specification
 			.where(nameContains(command.name()))
 			.and(filterCategory(command.category()))
@@ -41,7 +39,7 @@ public class ProductRepositoryImpl implements ProductRepository {
 	}
 
 	@Override
-	public List<Product> findPopularAll(ProductTopSellingCommand command) {
+	public List<Product> findPopularAll(ProductCommand.TopSelling command) {
 		LocalDateTime endDate = command.getEndDateOrDefault();
 		LocalDateTime startDate = command.getStartDateOrDefault();
 		return productJpaRepository.findPopularAll(startDate, endDate, command.pageable()).stream()

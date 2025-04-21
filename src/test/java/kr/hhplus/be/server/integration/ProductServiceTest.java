@@ -1,15 +1,7 @@
 package kr.hhplus.be.server.integration;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import java.math.BigDecimal;
-import java.util.List;
-import kr.hhplus.be.server.application.product.ProductSearchCommand;
+import kr.hhplus.be.server.application.product.ProductCommand;
 import kr.hhplus.be.server.application.product.ProductService;
-import kr.hhplus.be.server.application.product.ProductTopSellingCommand;
 import kr.hhplus.be.server.domain.order.OrderItem;
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.product.ProductStatus;
@@ -19,11 +11,18 @@ import kr.hhplus.be.server.integration.common.BaseIntegrationTest;
 import kr.hhplus.be.server.integration.common.TestBatchDataFactory;
 import kr.hhplus.be.server.support.common.exception.CustomException;
 import kr.hhplus.be.server.support.config.swagger.ErrorCode;
+import kr.hhplus.be.server.utils.ProductTestFixture;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.jdbc.core.JdbcTemplate;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ProductServiceTest extends BaseIntegrationTest {
 
@@ -85,7 +84,7 @@ public class ProductServiceTest extends BaseIntegrationTest {
 
 	@Test
 	void 필터링_상품_조회시_카테고리_필터시_해당_카테고리만_조회된다() {
-		ProductSearchCommand command = ProductSearchCommand.of(
+		ProductCommand.FilterSearch command = ProductCommand.FilterSearch.of(
 			null,
 			Category.BABY.name(),
 			null,
@@ -100,7 +99,7 @@ public class ProductServiceTest extends BaseIntegrationTest {
 
 	@Test
 	void 필터링_상품_조회시_카테고리_필터시_카테고리가_enum에_존재하지않는다면_Throws_InvalidDataAccessApiUsageException() {
-		ProductSearchCommand command = ProductSearchCommand.of(
+		ProductCommand.FilterSearch command = ProductCommand.FilterSearch.of(
 			null,
 			"minsun",
 			null,
@@ -114,7 +113,7 @@ public class ProductServiceTest extends BaseIntegrationTest {
 
 	@Test
 	void 필터링_상품_조회시_해당_이름으로_검색이_가능하다() {
-		ProductSearchCommand command = ProductSearchCommand.of(
+		ProductCommand.FilterSearch command = ProductCommand.FilterSearch.of(
 			"Small",
 			null,
 			null,
@@ -129,7 +128,7 @@ public class ProductServiceTest extends BaseIntegrationTest {
 
 	@Test
 	void 필터링_상품_조회시_정렬값으로_정렬이_가능하다() {
-		ProductSearchCommand command = ProductSearchCommand.of(
+		ProductCommand.FilterSearch command = ProductCommand.FilterSearch.of(
 			null,
 			null,
 			"CATEGORY",
@@ -141,7 +140,7 @@ public class ProductServiceTest extends BaseIntegrationTest {
 	}
 	@Test
 	void 필터링_상품_조회시_유효하지않은_정렬값이면_Throws_INVALID_SORTED_BY(){
-		ProductSearchCommand command = ProductSearchCommand.of(
+		ProductCommand.FilterSearch command = ProductCommand.FilterSearch.of(
 			null,
 			null,
 			"MINSOON",
@@ -155,7 +154,7 @@ public class ProductServiceTest extends BaseIntegrationTest {
 	}
 	@Test
 	void 필터링_상품_조회시_유효하지않은_정렬순이면_Throws_INVALID_SORTED(){
-		ProductSearchCommand command = ProductSearchCommand.of(
+		ProductCommand.FilterSearch command = ProductCommand.FilterSearch.of(
 			null,
 			null,
 			null,
@@ -169,7 +168,7 @@ public class ProductServiceTest extends BaseIntegrationTest {
 	}
 	@Test
 	void 최근3일간의_인기상품_조회시_판매량_내림차순으로_조회된다(){
-		ProductTopSellingCommand command = new ProductTopSellingCommand(null,null,null);
+		ProductCommand.TopSelling command = new ProductCommand.TopSelling(null,null,null);
 		List<Product> products = productService.findPopularAll(command);
 		assertThat(products.size()).isGreaterThan(0);
 		assertThat(products.get(0).getCategory()).isEqualTo(Category.PET_SUPPLIES);
@@ -181,7 +180,9 @@ public class ProductServiceTest extends BaseIntegrationTest {
 	@Test
 	void 주문시_상품_재고가_주문량만큼_감소된다(){
 		// before - 15개
-		List<OrderItem> orderItems = List.of(new OrderItem(1L,1L,null,10, BigDecimal.valueOf(2185)));
+		Product product = ProductTestFixture.create(1L);
+		List<OrderItem> orderItems = List.of(new OrderItem(1L,product,null,10, BigDecimal.valueOf(2185)));
+
 
 		List<Product> products = productService.decreaseStock(orderItems);
 

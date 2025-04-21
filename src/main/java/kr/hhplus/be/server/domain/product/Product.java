@@ -23,20 +23,23 @@ public class Product {
 	private LocalDateTime createdAt;
 
 	public void decreaseStock(Integer amount) {
-		if(this.stock <= 0){
+		if (this.stock <= 0) {
 			throw new CustomException(ErrorCode.OUT_OF_STOCK);
 		}
 		this.stock -= amount;
-		if(this.stock == 0){
+		if (this.stock == 0) {
 			this.status = ProductStatus.OUT_OF_STOCK;
 		}
 	}
+
 	public void increaseStock(Integer amount) {
 		this.stock += amount;
 	}
-	public void validateOrderable(){
-		if(this.status ==ProductStatus.OUT_OF_STOCK || this.stock <=0){
+
+	public Product validateOrderable() {
+		if (this.status == ProductStatus.OUT_OF_STOCK || this.stock <= 0) {
 			throw new CustomException(ErrorCode.OUT_OF_STOCK);
 		}
+		return this;
 	}
 }

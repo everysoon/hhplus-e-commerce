@@ -1,6 +1,6 @@
 package kr.hhplus.be.server.domain.payment;
 
-import kr.hhplus.be.server.application.payment.CreatePaymentHistoryCommand;
+import kr.hhplus.be.server.application.payment.PaymentCommand;
 import kr.hhplus.be.server.infra.payment.entity.PaymentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,7 +21,7 @@ public class PaymentHistory {
 	private final LocalDateTime createdAt;
 	private final String transactionId;
 
-	public static PaymentHistory of(CreatePaymentHistoryCommand command) {
+	public static PaymentHistory of(PaymentCommand.CreateHistory command) {
 		return new PaymentHistory(
 			null,
 			command.orderId(),

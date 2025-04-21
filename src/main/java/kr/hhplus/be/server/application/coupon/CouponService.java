@@ -1,19 +1,19 @@
 package kr.hhplus.be.server.application.coupon;
 
-import jakarta.transaction.Transactional;
 import kr.hhplus.be.server.domain.coupon.Coupon;
 import kr.hhplus.be.server.domain.coupon.CouponRepository;
 import kr.hhplus.be.server.domain.coupon.CouponValidator;
 import kr.hhplus.be.server.domain.coupon.UserCoupon;
 import kr.hhplus.be.server.domain.user.repository.UserCouponRepository;
-import kr.hhplus.be.server.support.common.exception.CustomException;
-import kr.hhplus.be.server.support.config.swagger.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
+import static org.springframework.transaction.annotation.Propagation.MANDATORY;
 
 @Service
 @RequiredArgsConstructor
@@ -24,90 +24,80 @@ public class CouponService {
 	private final UserCouponRepository userCouponRepository;
 	private final CouponValidator couponValidator;
 
+	@Transactional(readOnly = true)
 	public List<UserCouponDetailResult> getUserCoupons(Long userId) {
-		return findUserCouponByUserId(userId).stream().map(uc -> {
-			Coupon coupon = findCouponById(uc.getCouponId());
-			return UserCouponDetailResult.of(uc, coupon);
-		}).toList();
+		return userCouponRepository.findByUserId(userId).stream().map(UserCouponDetailResult::of).toList();
 	}
 
-	public List<UserCoupon> findUserCouponByUserId(Long userId) {
-		logger.info("### findUserCouponByUserId parameter : {}", userId);
-		return userCouponRepository.findByUserId(userId);
+	@Transactional(readOnly = true)
+	public List<Coupon> findCouponByUserId(Long userId) {
+		logger.info("### findCouponByUserId parameter : {}", userId);
+		List<String> couponIds = userCouponRepository.findByUserId(userId)
+			.stream()
+			.map(UserCoupon::getCoupon)
+			.map(Coupon::getId)
+			.toList();
+		return couponRepository.findAllByIdIn(couponIds);
 	}
-
-	@Transactional
-	public void restore(UseCouponCommand command) {
+	@Transactional(propagation = MANDATORY)
+	public void restore(CouponCommand.Restore command) {
 		logger.info("### restore parameter : {}", command.toString());
-
-		List<Coupon> coupons = command.couponIds().stream()
-			.map(this::findCouponById)
-			.toList();
-
-		List<String> couponIds = coupons.stream()
-			.map(Coupon::getId).toList();
-
+		if(command.coupons() == null || command.coupons().isEmpty()){
+			return;
+		}
 		List<UserCoupon> userCoupons = userCouponRepository.findByUserIdAndCouponIds(
-			command.userId(), couponIds)
-			.stream().map(UserCoupon::isValidRestore)
+				command.userId(), command.couponIds())
+			.stream()
+			.map(UserCoupon::isValidRestore)
 			.toList();
-
+		List<Coupon> coupons = userCoupons.stream().map(UserCoupon::getCoupon).toList();
 		userCoupons.forEach(UserCoupon::restore);
 		coupons.forEach(Coupon::increaseStock);
 		userCouponRepository.updateAll(userCoupons);
 		couponRepository.updateAll(coupons);
 	}
-	public UserCouponDetailResult issueCoupon(IssueCouponCommand command) {
-		// 쿠폰 중복 발급인지 확인
+
+	@Transactional
+	public UserCouponDetailResult issueCoupon(CouponCommand.Issue command) {
 		couponValidator.isCouponIdValidUuid(command.couponId());
-		Coupon coupon = findCouponById(command.couponId());
+		Coupon coupon = couponRepository.findById(command.couponId());
 		coupon.issue();
-
 		UserCoupon userCoupon = issueByUser(command);
-
-		return UserCouponDetailResult.of(userCoupon, coupon);
-	}
-	public List<Coupon> validateUserCoupons(CouponValidCommand command) {
-		logger.info("### validateUserCoupons parameter : {}", command.toString());
-		command.couponIds().forEach(couponValidator::isCouponIdValidUuid);
-		userCouponRepository.validateUserCoupons(command);
-		return couponRepository.validateCoupons(command.couponIds());
+		return UserCouponDetailResult.of(userCoupon);
 	}
 
-	public void validateDuplicateIssued(IssueCouponCommand command) {
-		logger.info("### validateDuplicateIssued parameter : {}", command.toString());
-		couponValidator.isCouponIdValidUuid(command.couponId());
-		userCouponRepository.validateDuplicateIssued(command);
-	}
-	public UseCouponInfo use(UseCouponCommand command) {
+	@Transactional(propagation = MANDATORY)
+	public UseCouponInfo use(CouponCommand.Use command) {
 		if (command.couponIds().isEmpty()) {
-			return new UseCouponInfo(command.userId(),null);
+			return new UseCouponInfo(command.userId(), null);
 		}
 		logger.info("### use parameter : {}", command);
 		List<UserCoupon> userCoupons = userCouponRepository.findByUserIdAndCouponIds(
 				command.userId(), command.couponIds())
-			.stream().map(UserCoupon::use)
+			.stream()
+			.map(UserCoupon::use)
 			.toList();
 		userCouponRepository.saveAll(userCoupons);
-		List<Coupon> coupons = validateUserCoupons(
-			CouponValidCommand.of(command.userId(), command.couponIds()));
-
+		userCoupons.stream()
+			.map(UserCoupon::getCoupon)
+			.forEach(Coupon::validExpired);
 		return new UseCouponInfo(
 			command.userId(),
-			coupons
+			userCoupons.stream().map(UserCoupon::getCoupon).toList()
 		);
 	}
 
-	public UserCoupon issueByUser(IssueCouponCommand command) {
+	public UserCoupon issueByUser(CouponCommand.Issue command) {
 		logger.info("### issueByUser parameter : {}", command.toString());
-		validateDuplicateIssued(command);
-		return userCouponRepository.save(command);
+		couponValidator.duplicateIssued(command.userId(), command.couponId());
+		Coupon coupon = couponRepository.findById(command.couponId());
+		couponValidator.isValidCoupon(coupon);
+		return userCouponRepository.save(command.toUnitCouponValid(coupon));
 	}
 
 	public Coupon findCouponById(String id) {
 		logger.info("### findCouponById parameter : {}", id);
 		couponValidator.isCouponIdValidUuid(id);
-		return couponRepository.findById(id)
-			.orElseThrow(() -> new CustomException(ErrorCode.NOT_EXIST_COUPON));
+		return couponRepository.findById(id);
 	}
 }

@@ -1,6 +1,6 @@
 package kr.hhplus.be.server.domain.payment;
 
-import kr.hhplus.be.server.application.payment.RequestPaymentCommand;
+import kr.hhplus.be.server.application.payment.PaymentCommand;
 import kr.hhplus.be.server.infra.payment.entity.PaymentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,7 +19,7 @@ public class Payment {
 	private BigDecimal price;
 	private PaymentStatus status;
 	private String transactionId;
-	public static Payment of(RequestPaymentCommand command,String transactionId) {
+	public static Payment of(PaymentCommand.Request command, String transactionId) {
 		return new Payment(
 			null,
 			command.paymentMethod(),

@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 public class OrderItem {
 
 	private final Long id;
-	private final Long productId;
+	private final Product product;
 	private Long orderId;
 	private final Integer quantity;
 	private BigDecimal unitPrice;
@@ -23,7 +23,7 @@ public class OrderItem {
 	public static OrderItem create(Product product,Integer quantity){
 		return new OrderItem(
 			null,
-			product.getId(),
+			product,
 			null,
 			quantity,
 			product.getPrice()

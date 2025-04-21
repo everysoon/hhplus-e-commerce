@@ -7,8 +7,11 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
+import static org.springframework.transaction.annotation.Propagation.MANDATORY;
 
 @Service
 @RequiredArgsConstructor
@@ -16,37 +19,36 @@ public class ProductService {
 	private final Logger logger = LoggerFactory.getLogger(ProductService.class);
 	private final ProductRepository productRepository;
 
+	@Transactional(readOnly = true)
 	public Product findById(Long productId) {
 		return productRepository.findById(productId);
 	}
 
-	public List<Product> orderItemToProduct(List<OrderItem> orderItems) {
-		return orderItems.stream().map(OrderItem::getProductId).map(productRepository::findById)
-			.toList();
-	}
-
-	public List<Product> searchFilter(ProductSearchCommand command) {
+	@Transactional(readOnly = true)
+	public List<Product> searchFilter(ProductCommand.FilterSearch command) {
 		return productRepository.searchFilter(command);
 	}
 
-	public List<Product> findPopularAll(ProductTopSellingCommand command) {
+	@Transactional(readOnly = true)
+	public List<Product> findPopularAll(ProductCommand.TopSelling command) {
 		return productRepository.findPopularAll(command);
 	}
 
+	@Transactional(propagation = MANDATORY)
 	public List<Product> increaseStock(List<OrderItem> orderItems) {
-		return orderItems.stream().map(o -> {
-			Product product = findById(o.getProductId());
-			product.increaseStock(o.getQuantity());
-			return productRepository.save(product);
-		}).toList();
+		return orderItems.stream()
+			.map(o -> {
+				o.getProduct().increaseStock(o.getQuantity());
+				return productRepository.save(o.getProduct());
+			}).toList();
 	}
 
+	@Transactional(propagation = MANDATORY)
 	public List<Product> decreaseStock(List<OrderItem> orderItems) {
 		logger.info("### decreaseStock :{}", orderItems);
 		return orderItems.stream().map(o -> {
-			Product product = findById(o.getProductId());
-			product.decreaseStock(o.getQuantity());
-			return productRepository.save(product);
+			o.getProduct().decreaseStock(o.getQuantity());
+			return productRepository.save(o.getProduct());
 		}).toList();
 	}
 }

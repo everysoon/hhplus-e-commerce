@@ -2,19 +2,17 @@ package kr.hhplus.be.server.interfaces.dto;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
-import kr.hhplus.be.server.application.order.CancelOrderResult;
-import kr.hhplus.be.server.application.order.OrderDetailResult;
-import kr.hhplus.be.server.application.order.OrderInfoResult;
-import kr.hhplus.be.server.application.order.PlaceOrderResult;
+import kr.hhplus.be.server.application.order.OrderResult;
 import kr.hhplus.be.server.domain.payment.PaymentMethod;
 import kr.hhplus.be.server.infra.payment.entity.PaymentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 
 public class OrderDTO {
 	@Data
@@ -36,7 +34,7 @@ public class OrderDTO {
 		BigDecimal totalPrice,
 		PaymentMethod method
 	) {
-		public static CancelResponse of(CancelOrderResult result) {
+		public static CancelResponse of(OrderResult.Cancel result) {
 			return new CancelResponse(
 				result.order().getUserId(),
 				result.order().getId(),
@@ -56,7 +54,7 @@ public class OrderDTO {
 		BigDecimal totalDiscount,
 		LocalDateTime orderedAt
 	) {
-		public static OrderResponse of(PlaceOrderResult result) {
+		public static OrderResponse of(OrderResult.Place result) {
 			return new OrderResponse(
 				result.userId(),
 				result.products().stream()
@@ -74,7 +72,7 @@ public class OrderDTO {
 		Long userId,
 		List<OrderDetailResponse> orderInfos
 	) {
-		public static UserOrderResponse of(OrderInfoResult result) {
+		public static UserOrderResponse of(OrderResult.InfoByUser result) {
 			return new UserOrderResponse(
 				result.userId(),
 				result.results().stream().map(OrderDetailResponse::of).toList()
@@ -88,7 +86,7 @@ public class OrderDTO {
 		List<CouponDTO.OrderCouponResponse> coupons
 
 	) {
-		public static OrderDetailResponse of(OrderDetailResult result) {
+		public static OrderDetailResponse of(OrderResult.DetailByOrder result) {
 			return new OrderDetailResponse(
 				result.orderId(),
 				result.productList().stream().map(ProductDTO.OrderItemDetailResponse::of).toList(),

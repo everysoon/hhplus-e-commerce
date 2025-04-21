@@ -1,21 +1,20 @@
 package kr.hhplus.be.server.integration;
 
+import kr.hhplus.be.server.application.order.OrderCriteria;
 import kr.hhplus.be.server.application.order.OrderFacade;
-import kr.hhplus.be.server.application.order.PlaceOrderResult;
-import kr.hhplus.be.server.application.order.RequestOrderCriteria;
-import kr.hhplus.be.server.application.point.UpdatePointCommand;
+import kr.hhplus.be.server.application.order.OrderResult;
+import kr.hhplus.be.server.application.point.PointCommand;
 import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.order.repository.OrderRepository;
 import kr.hhplus.be.server.domain.payment.PaymentMethod;
 import kr.hhplus.be.server.domain.point.Point;
 import kr.hhplus.be.server.domain.point.repository.PointRepository;
 import kr.hhplus.be.server.domain.product.Product;
-import kr.hhplus.be.server.domain.product.ProductStatus;
 import kr.hhplus.be.server.domain.product.repository.ProductRepository;
 import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.domain.user.repository.UserRepository;
-import kr.hhplus.be.server.infra.product.entity.Category;
 import kr.hhplus.be.server.integration.common.BaseIntegrationTest;
+import kr.hhplus.be.server.utils.ProductTestFixture;
 import kr.hhplus.be.server.utils.UserTestFixture;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,7 +22,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -54,20 +52,11 @@ public class OrderConcurrencyTest extends BaseIntegrationTest {
 	@BeforeEach
 	void setUp() {
 		user = UserTestFixture.createUser(1L);
-		product = new Product(
-			1L,
-			"테스트 상품",
-			1,
-			Category.BABY,
-			"유아용 자동차 장난감",
-			BigDecimal.valueOf(5000),
-			ProductStatus.AVAILABLE,
-			LocalDateTime.now()
-		);
+		product = ProductTestFixture.create(1L,1);
 
 		productRepository.save(product);
 		userRepository.save(user);
-		pointRepository.save(Point.from(UpdatePointCommand.Charge.of(user.getId(),BigDecimal.valueOf(50000))));
+		pointRepository.save(Point.from(PointCommand.Charge.of(user.getId(),BigDecimal.valueOf(50000))));
 
 		log.info("### temp product : {}", product.getId());
 		log.info("### temp user : {}", user.getId());
@@ -80,13 +69,13 @@ public class OrderConcurrencyTest extends BaseIntegrationTest {
 		for (int i = 0; i < threadCount; i++) {
 			executor.submit(() -> {
 				try {
-					RequestOrderCriteria request = new RequestOrderCriteria(
+					OrderCriteria.Request request = new OrderCriteria.Request(
 						user.getId(), // userId
-						List.of(new RequestOrderCriteria.Item(product.getId(), 1)), // 상품 1개 주문
+						List.of(new OrderCriteria.Request.Item(product.getId(), 1)), // 상품 1개 주문
 						List.of(), // 쿠폰 없음
 						PaymentMethod.POINTS
 					);
-					PlaceOrderResult placeOrderResult = orderFacade.placeOrder(request);
+					OrderResult.Place placeOrderResult = orderFacade.placeOrder(request);
 					log.info("### placeOrderResult : {}", placeOrderResult);
 				} catch (Exception e) {
 					exceptions.add(e);

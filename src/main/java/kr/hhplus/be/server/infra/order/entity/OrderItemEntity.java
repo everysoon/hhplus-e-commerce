@@ -1,7 +1,6 @@
 package kr.hhplus.be.server.infra.order.entity;
 
 import jakarta.persistence.*;
-import kr.hhplus.be.server.domain.order.OrderItem;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,32 +27,12 @@ public class OrderItemEntity {
 
 	@Column(nullable = false)
 	private Integer quantity;
-	public OrderItemEntity(Long productId, Long orderId,BigDecimal unitPrice, Integer quantity) {
-		this.productId = productId;
+
+	public OrderItemEntity(Long id, Long productId, Long orderId, BigDecimal unitPrice, Integer quantity) {
+		this.id = id;
 		this.orderId = orderId;
-		this.unitPrice = unitPrice;
-		this.quantity = quantity;
-	}
-	public OrderItemEntity(Long productId, BigDecimal unitPrice, Integer quantity) {
 		this.productId = productId;
 		this.unitPrice = unitPrice;
 		this.quantity = quantity;
-	}
-	public static OrderItemEntity from(OrderItem orderItem) {
-		return new OrderItemEntity(
-			orderItem.getOrderId(),
-			orderItem.getProductId(),
-			orderItem.getUnitPrice(),
-			orderItem.getQuantity()
-		);
-	}
-	public OrderItem toDomain() {
-		return new OrderItem(
-			this.id,
-			this.productId,
-			this.orderId,
-			this.quantity,
-			this.unitPrice
-		);
 	}
 }

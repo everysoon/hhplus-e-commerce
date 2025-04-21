@@ -1,13 +1,8 @@
 package kr.hhplus.be.server.integration;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import java.math.BigDecimal;
-import java.util.List;
 import kr.hhplus.be.server.application.coupon.CouponService;
 import kr.hhplus.be.server.application.coupon.UseCouponInfo;
-import kr.hhplus.be.server.application.order.CreateOrderCommand;
+import kr.hhplus.be.server.application.order.OrderCommand;
 import kr.hhplus.be.server.application.order.service.OrderService;
 import kr.hhplus.be.server.application.product.ProductService;
 import kr.hhplus.be.server.domain.coupon.Coupon;
@@ -22,6 +17,12 @@ import kr.hhplus.be.server.support.config.swagger.ErrorCode;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class OrderServiceTest extends BaseIntegrationTest {
 
@@ -45,10 +46,10 @@ public class OrderServiceTest extends BaseIntegrationTest {
 		Product product = productService.findById(1L);
 
 		List<OrderItem> orderItems = List.of(
-			new OrderItem(1L, product.getId(), null, 10, product.getPrice())
+			new OrderItem(1L, product, null, 10, product.getPrice())
 		);
 		UseCouponInfo couponInfo = new UseCouponInfo(1L, null);
-		CreateOrderCommand command = CreateOrderCommand.of(orderItems, couponInfo);
+		OrderCommand.Create command = OrderCommand.Create.of(orderItems, couponInfo);
 
 		Order order = orderService.create(command);
 
@@ -67,9 +68,9 @@ public class OrderServiceTest extends BaseIntegrationTest {
 		UseCouponInfo couponInfo = UseCouponInfo.from(1L, coupons);
 		List<OrderItem> orderItems = List.of(
 			// product unit pridce : 2185.00
-			new OrderItem(1L, product.getId(), null, 10, product.getPrice())
+			new OrderItem(1L, product, null, 10, product.getPrice())
 		);
-		CreateOrderCommand command = CreateOrderCommand.of(orderItems, couponInfo);
+		OrderCommand.Create command = OrderCommand.Create.of(orderItems, couponInfo);
 
 		Order order = orderService.create(command);
 
@@ -88,9 +89,9 @@ public class OrderServiceTest extends BaseIntegrationTest {
 		UseCouponInfo couponInfo = UseCouponInfo.from(1L, coupons);
 		List<OrderItem> orderItems = List.of(
 			// product unit pridce : 2185.00
-			new OrderItem(1L, product.getId(), null, 10, product.getPrice())
+			new OrderItem(1L, product, null, 10, product.getPrice())
 		);
-		CreateOrderCommand command = CreateOrderCommand.of(orderItems, couponInfo);
+		OrderCommand.Create command = OrderCommand.Create.of(orderItems, couponInfo);
 		CustomException customException = assertThrows(CustomException.class, () -> {
 			orderService.create(command);
 		});

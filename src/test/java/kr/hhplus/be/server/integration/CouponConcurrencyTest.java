@@ -1,22 +1,20 @@
 package kr.hhplus.be.server.integration;
 
+import kr.hhplus.be.server.application.coupon.CouponCommand;
 import kr.hhplus.be.server.application.coupon.CouponService;
-import kr.hhplus.be.server.application.coupon.IssueCouponCommand;
 import kr.hhplus.be.server.domain.coupon.Coupon;
 import kr.hhplus.be.server.domain.coupon.CouponRepository;
-import kr.hhplus.be.server.domain.coupon.CouponType;
 import kr.hhplus.be.server.domain.coupon.UserCoupon;
 import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.domain.user.repository.UserCouponRepository;
 import kr.hhplus.be.server.domain.user.repository.UserRepository;
 import kr.hhplus.be.server.integration.common.BaseIntegrationTest;
+import kr.hhplus.be.server.utils.CouponTestFixture;
 import kr.hhplus.be.server.utils.UserTestFixture;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -46,16 +44,7 @@ public class CouponConcurrencyTest extends BaseIntegrationTest {
 
 	@BeforeAll
 	void init() {
-		coupon = new Coupon(
-			UUID.randomUUID().toString(),
-			CouponType.FIXED,
-			"",
-			BigDecimal.valueOf(1000),
-			1,
-			1,
-			LocalDateTime.now().plusDays(7),
-			LocalDateTime.now());
-
+		coupon = CouponTestFixture.create(UUID.randomUUID().toString());
 		IntStream.rangeClosed(1, threadCount).forEach(i -> {
 			userRepository.save(UserTestFixture.createUser((long) i));
 		});
@@ -72,7 +61,7 @@ public class CouponConcurrencyTest extends BaseIntegrationTest {
 		for (User user : users) {
 			executor.submit(() -> {
 				try {
-					IssueCouponCommand command = IssueCouponCommand.of(user.getId(), issue.getId());
+					CouponCommand.Issue command = CouponCommand.Issue.of(user.getId(), issue.getId());
 					couponService.issueCoupon(command);
 				} catch (Exception e) {
 					System.out.println("exception"+e.getMessage());

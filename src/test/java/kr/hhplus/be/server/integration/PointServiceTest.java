@@ -1,15 +1,7 @@
 package kr.hhplus.be.server.integration;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import java.math.BigDecimal;
+import kr.hhplus.be.server.application.point.PointCommand;
 import kr.hhplus.be.server.application.point.PointService;
-import kr.hhplus.be.server.application.point.UpdatePointCommand;
-import kr.hhplus.be.server.application.point.UpdatePointCommand.Charge;
-import kr.hhplus.be.server.application.point.UpdatePointCommand.Refund;
-import kr.hhplus.be.server.application.point.UpdatePointCommand.Use;
 import kr.hhplus.be.server.domain.point.Point;
 import kr.hhplus.be.server.domain.point.PointHistory;
 import kr.hhplus.be.server.domain.point.repository.PointHistoryRepository;
@@ -21,6 +13,12 @@ import kr.hhplus.be.server.support.config.swagger.ErrorCode;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.math.BigDecimal;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class PointServiceTest extends BaseIntegrationTest {
 	@Autowired
@@ -37,7 +35,7 @@ public class PointServiceTest extends BaseIntegrationTest {
 	}
 	@Test
 	void 유저_포인트_충전시_포인트기록을_리턴한다(){
-		Charge command = Charge.of(1L, BigDecimal.valueOf(1000));
+		PointCommand.Charge command = PointCommand.Charge.of(1L, BigDecimal.valueOf(1000));
 
 		PointHistory history = pointService.charge(command);
 		assertAll("포인트 기록 상세 확인",
@@ -48,7 +46,7 @@ public class PointServiceTest extends BaseIntegrationTest {
 	}
 	@Test
 	void 유저_포인트_충전시_충전량이_0보다_작을경우_Throws_INVALID_CHARGE_AMOUNT(){
-		Charge command = Charge.of(1L, BigDecimal.valueOf(0));
+		PointCommand.Charge command = PointCommand.Charge.of(1L, BigDecimal.valueOf(0));
 		CustomException customException = assertThrows(CustomException.class, () -> {
 			pointService.charge(command);
 		});
@@ -57,7 +55,7 @@ public class PointServiceTest extends BaseIntegrationTest {
 
 	@Test
 	void 유저_포인트_사용시_포인트가_충분하다면_정상으로_감소된다(){
-		Use command = Use.of(1L, BigDecimal.valueOf(100));
+		PointCommand.Use command = PointCommand.Use.of(1L, BigDecimal.valueOf(100));
 		PointHistory history = pointService.use(command);
 		assertAll("포인트 기록 상세 확인",
 			()->assertThat(history.getStatus()).isEqualTo(PointStatus.USED),
@@ -67,7 +65,7 @@ public class PointServiceTest extends BaseIntegrationTest {
 	}
 	@Test
 	void 유저_포인트_사용시_포인트_충분하지않다면_Throws_INSUFFICIENT_POINTS(){
-		Use command = Use.of(1L, BigDecimal.valueOf(10000));
+		PointCommand.Use command = PointCommand.Use.of(1L, BigDecimal.valueOf(10000));
 		CustomException customException = assertThrows(CustomException.class, () -> {
 			pointService.use(command);
 		});
@@ -88,7 +86,7 @@ public class PointServiceTest extends BaseIntegrationTest {
 	}
 	@Test
 	void 주문취소시_포인트가_정상_복원된다(){
-		Refund command = UpdatePointCommand.Refund.of(1L, BigDecimal.valueOf(100));
+		PointCommand.Refund command = PointCommand.Refund.of(1L, BigDecimal.valueOf(100));
 		Point point = pointService.refund(command);
 		assertThat(point.getBalance().toString()).isEqualTo("800.00");
 	}

@@ -27,18 +27,18 @@ public class PointService {
 		PointHistory pointHistory = new PointHistory(null, command.userId(), PointStatus.REFUND, command.totalPrice(), LocalDateTime.now());
 		Point point = pointRepository.findByUserId(command.userId()).get();
 		point.charge(command.totalPrice());
-		Point save = pointRepository.update(point);
+		Point save = pointRepository.save(point);
 		pointHistoryRepository.save(pointHistory);
 		return save;
 	}
 
 	@Transactional
 	public PointHistory charge(PointCommand.Charge command) {
-		PointHistory history = PointHistory.from(command);
-		Point point = pointRepository.findByUserId(command.userId())
+		Point point = pointRepository.findByUserIdWithLock(command.userId())
 			.orElseGet(() -> pointRepository.save(Point.create(command.userId())));
 		point.charge(command.amount());
-		pointRepository.update(point);
+		PointHistory history = PointHistory.from(command);
+		pointRepository.save(point);
 		return pointHistoryRepository.save(history);
 	}
 
@@ -47,13 +47,13 @@ public class PointService {
 		return pointRepository.findByUserId(userId).orElseThrow(() -> new CustomException(ErrorCode.NOT_EXIST_POINT_BY_USER_ID));
 	}
 
-	@Transactional(propagation = MANDATORY)
+	@Transactional
 	public PointHistory use(PointCommand.Use command) {
-		PointHistory history = PointHistory.from(command);
-		Point point = pointRepository.findByUserId(command.userId())
+		Point point = pointRepository.findByUserIdWithLock(command.userId())
 			.orElseThrow(() -> new CustomException(ErrorCode.INSUFFICIENT_POINTS));
 		point.use(command.amount());
-		pointRepository.update(point);
+		PointHistory history = PointHistory.from(command);
+		pointRepository.save(point);
 		return pointHistoryRepository.save(history);
 	}
 }

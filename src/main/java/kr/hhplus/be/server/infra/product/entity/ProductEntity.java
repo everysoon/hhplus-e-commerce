@@ -3,9 +3,12 @@ package kr.hhplus.be.server.infra.product.entity;
 import jakarta.persistence.*;
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.product.ProductStatus;
+import kr.hhplus.be.server.support.common.exception.CustomException;
+import kr.hhplus.be.server.support.config.swagger.ErrorCode;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.math.BigDecimal;
@@ -25,6 +28,7 @@ public class ProductEntity {
 	private String productName;
 
 	@Column(nullable = false)
+	@Setter
 	private Integer stock;
 
 	@Column(name = "category", nullable = false)
@@ -43,7 +47,11 @@ public class ProductEntity {
 	@CreatedDate
 	@Column(nullable = false)
 	private LocalDateTime createdAt;
-	public ProductEntity(String productName, Integer stock, Category category, String description, BigDecimal price,ProductStatus status) {
+
+	@Version
+	private Long version;
+
+	public ProductEntity(String productName, Integer stock, Category category, String description, BigDecimal price, ProductStatus status) {
 		this.productName = productName;
 		this.stock = stock;
 		this.category = category;
@@ -52,7 +60,8 @@ public class ProductEntity {
 		this.status = status;
 		this.createdAt = LocalDateTime.now();
 	}
-	public static ProductEntity from (Product product){
+
+	public static ProductEntity from(Product product) {
 		return new ProductEntity(
 			product.getProductName(),
 			product.getStock(),
@@ -62,7 +71,8 @@ public class ProductEntity {
 			product.getStatus()
 		);
 	}
-	public Product toDomain(){
+
+	public Product toDomain() {
 		return new Product(
 			this.id,
 			this.productName,
@@ -73,5 +83,19 @@ public class ProductEntity {
 			this.status,
 			this.createdAt
 		);
+	}
+
+	public void decreaseStock(Integer amount) {
+		this.stock -= amount;
+		if (this.stock < 0) {
+			throw new CustomException(ErrorCode.OUT_OF_STOCK);
+		}
+		if (this.stock == 0) {
+			this.status = ProductStatus.OUT_OF_STOCK;
+		}
+	}
+
+	public void increaseStock(Integer amount) {
+		this.stock += amount;
 	}
 }

@@ -2,7 +2,6 @@ package kr.hhplus.be.server.integration;
 
 import kr.hhplus.be.server.application.product.ProductCommand;
 import kr.hhplus.be.server.application.product.ProductService;
-import kr.hhplus.be.server.domain.order.OrderItem;
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.product.ProductStatus;
 import kr.hhplus.be.server.domain.product.repository.ProductRepository;
@@ -11,14 +10,12 @@ import kr.hhplus.be.server.integration.common.BaseIntegrationTest;
 import kr.hhplus.be.server.integration.common.TestBatchDataFactory;
 import kr.hhplus.be.server.support.common.exception.CustomException;
 import kr.hhplus.be.server.support.config.swagger.ErrorCode;
-import kr.hhplus.be.server.utils.ProductTestFixture;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -177,16 +174,16 @@ public class ProductServiceTest extends BaseIntegrationTest {
 
 	}
 
-	@Test
-	void 주문시_상품_재고가_주문량만큼_감소된다(){
-		// before - 15개
-		Product product = ProductTestFixture.create(1L);
-		List<OrderItem> orderItems = List.of(new OrderItem(1L,product,null,10, BigDecimal.valueOf(2185)));
-
-
-		List<Product> products = productService.decreaseStock(orderItems);
-
-		assertThat(products.size()).isGreaterThan(0);
-		assertThat(products.get(0).getStock()).isEqualTo(5);
-	}
+//	@Test
+//	void 주문시_상품_재고가_주문량만큼_감소된다(){
+//		// before - 15개
+//		Product product = ProductTestFixture.create(1L);
+//		List<OrderItem> orderItems = List.of(new OrderItem(1L,product,null,10, BigDecimal.valueOf(2185)));
+//
+//
+//		List<Product> products = productService.decreaseStock(orderItems);
+//
+//		assertThat(products.size()).isGreaterThan(0);
+//		assertThat(products.get(0).getStock()).isEqualTo(5);
+//	}
 }

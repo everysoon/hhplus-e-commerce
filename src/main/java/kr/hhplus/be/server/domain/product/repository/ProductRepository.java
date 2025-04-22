@@ -9,10 +9,15 @@ public interface ProductRepository {
 
 	Product findById(Long productId);
 
+	Product decreaseStock(Long productId, Integer quantity);
+
+	Product increaseStock(Product product, Integer quantity);
+
 	List<Product> searchFilter(ProductCommand.FilterSearch command);
 
 	List<Product> findPopularAll(ProductCommand.TopSelling command);
 
 	Product save(Product product);
+
 	List<Product> findAll();
 }

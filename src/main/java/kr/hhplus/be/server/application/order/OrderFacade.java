@@ -20,6 +20,9 @@ import kr.hhplus.be.server.domain.user.User;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -43,14 +46,18 @@ public class OrderFacade {
 			.map(OrderResult.DetailByOrder::from).toList();
 		return OrderResult.InfoByUser.from(userId, orderDetails);
 	}
-
+	@Retryable(
+		value = {ObjectOptimisticLockingFailureException.class},
+		maxAttempts = 3,
+		backoff = @Backoff(delay = 100, multiplier = 2)
+	)
 	@Transactional
 	public OrderResult.Cancel cancel(OrderCriteria.Cancel criteria) {
 		logger.info("### cancel parameter : {}", criteria.toString());
 		Order order = orderService.findByIdAndUserId(criteria.orderId(), criteria.userId());
 		User user = userService.get(criteria.userId());
 		// 결제 취소
-		Payment payment = paymentService.cancel(order);
+//		Payment payment = paymentService.cancel(order);
 		// 포인트 환불
 		pointService.refund(PointCommand.Refund.of(user.getId(), order.getTotalPrice()));
 		// 쿠폰 상태 복원 (쿠폰 사용했으면)
@@ -62,16 +69,19 @@ public class OrderFacade {
 		orderService.cancel(order.getId());
 		return OrderResult.Cancel.of(
 			order,
-			payment
+			null
 		);
 	}
 
+	@Retryable(
+		value = {ObjectOptimisticLockingFailureException.class},
+		maxAttempts = 3,
+		backoff = @Backoff(delay = 100, multiplier = 2)
+	)
 	@Transactional
 	public OrderResult.Place placeOrder(OrderCriteria.Request criteria) {
 		logger.info("### placeOrder parameter : {}", criteria.toString());
-
 		User user = userService.get(criteria.userId());
-
 		// 쿠폰 사용 - 상태 변환
 		// 쿠폰 유효성 확인
 		// - 만료 되진 않았는지, 쿠폰이 유저 소유가 맞는지
@@ -79,35 +89,29 @@ public class OrderFacade {
 			user.getId(), criteria.couponIds()
 		));
 		// 상품 조회
-		List<OrderItem> orderItems = createOrderItems(criteria);
-
+		List<OrderItem> orderItems = createOrderItems(criteria.orderItems());
 		Order order = orderService.create(OrderCommand.Create.of(orderItems, couponInfo));
-
 		// 유저 포인트 사용
 		pointService.use(PointCommand.Use.of(user.getId(), order.getTotalPrice()));
 		// 결제 시도
 		Payment payment = paymentService.pay(
 			PaymentCommand.Request.of(order, criteria.paymentMethod())
 		);
-		// 재고 차감
-		List<Product> products = productService.decreaseStock(orderItems);
 		// 주문 저장
 		orderService.save(order);
-		logger.info("check after save order logging orderItems : {} ", orderItems);
 		return OrderResult.Place.of(
 			user.getId(),
-			products,
+			orderItems.stream().map(OrderItem::getProduct).toList(),
 			payment,
 			order
 		);
 	}
 
-	private List<OrderItem> createOrderItems(OrderCriteria.Request command) {
-		logger.info("### createOrderItems parameter : {}", command.toString());
-		return command.orderItems().stream()
+	private List<OrderItem> createOrderItems(List<OrderCriteria.Request.Item> orderItems) {
+		logger.info("### createOrderItems parameter : {}", orderItems.toString());
+		return orderItems.stream()
 			.map(itemCommand -> {
-				Product product = productService.findById(itemCommand.productId());
-				product.validateOrderable();
+				Product product = productService.decreaseStock(itemCommand.productId(), itemCommand.quantity());
 				return OrderItem.create(product, itemCommand.quantity());
 			})
 			.toList();

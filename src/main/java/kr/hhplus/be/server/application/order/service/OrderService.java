@@ -25,14 +25,11 @@ public class OrderService {
 
 	public Order create(OrderCommand.Create command) {
 		logger.info("### create : {}", command);
-		Order order = new Order(
+		return new Order(
 			command.couponInfo().userId(),
 			command.couponInfo().coupons(),
 			command.orderItems()
 		);
-		order.calculateTotalDiscount();
-		order.calculateItemTotalPrice();
-		return order;
 	}
 
 	public List<OrderHistory> findHistoryByUserId(Long userId) {

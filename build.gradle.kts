@@ -63,5 +63,8 @@ dependencies {
     testAnnotationProcessor("org.projectlombok:lombok:1.18.34")
 
     testImplementation("net.datafaker:datafaker:2.0.2")
+
+    implementation ("org.springframework.retry:spring-retry")
+    implementation ("org.springframework.boot:spring-boot-starter-aop")
 }
 

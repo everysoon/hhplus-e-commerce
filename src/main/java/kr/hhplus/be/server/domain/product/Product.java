@@ -1,8 +1,6 @@
 package kr.hhplus.be.server.domain.product;
 
 import kr.hhplus.be.server.infra.product.entity.Category;
-import kr.hhplus.be.server.support.common.exception.CustomException;
-import kr.hhplus.be.server.support.config.swagger.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -21,25 +19,4 @@ public class Product {
 	private BigDecimal price;
 	private ProductStatus status;
 	private LocalDateTime createdAt;
-
-	public void decreaseStock(Integer amount) {
-		if (this.stock <= 0) {
-			throw new CustomException(ErrorCode.OUT_OF_STOCK);
-		}
-		this.stock -= amount;
-		if (this.stock == 0) {
-			this.status = ProductStatus.OUT_OF_STOCK;
-		}
-	}
-
-	public void increaseStock(Integer amount) {
-		this.stock += amount;
-	}
-
-	public Product validateOrderable() {
-		if (this.status == ProductStatus.OUT_OF_STOCK || this.stock <= 0) {
-			throw new CustomException(ErrorCode.OUT_OF_STOCK);
-		}
-		return this;
-	}
 }

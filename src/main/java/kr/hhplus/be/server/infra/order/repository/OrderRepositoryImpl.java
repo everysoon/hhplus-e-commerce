@@ -32,6 +32,12 @@ public class OrderRepositoryImpl implements OrderRepository {
 	}
 
 	@Override
+	public List<Order> saveAll(List<Order> order) {
+		List<OrderEntity> list = order.stream().map(mapper::toEntity).toList();
+		return orderJpaRepository.saveAllAndFlush(list).stream().map(mapper::toDomain).toList();
+	}
+
+	@Override
 	public Order findById(Long orderId) {
 		return orderJpaRepository.findById(orderId)
 			.map(mapper::toDomain)

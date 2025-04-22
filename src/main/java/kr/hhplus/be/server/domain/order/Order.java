@@ -2,6 +2,8 @@ package kr.hhplus.be.server.domain.order;
 
 import kr.hhplus.be.server.domain.coupon.Coupon;
 import kr.hhplus.be.server.domain.product.Product;
+import kr.hhplus.be.server.support.common.exception.CustomException;
+import kr.hhplus.be.server.support.config.swagger.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -22,6 +24,7 @@ public class Order {
 
 	public BigDecimal getTotalPrice() {
 		if (this.totalDiscount == null) {
+			this.totalDiscount = BigDecimal.ZERO;
 			return this.totalPrice;
 		}
 		return this.totalPrice.subtract(this.totalDiscount);
@@ -32,11 +35,13 @@ public class Order {
 		this.coupons = coupons;
 		this.orderItems = orderItems;
 		this.orderedAt = LocalDateTime.now();
+		calculateItemTotalPrice();
+		calculateTotalDiscount();
 	}
 
 	public void calculateItemTotalPrice() {
 		if (orderItems == null || orderItems.isEmpty()) {
-			return;
+			throw new CustomException(ErrorCode.NOT_EXIST_ORDER_ITEM);
 		}
 		this.totalPrice = orderItems.stream()
 			.map(OrderItem::getProduct)
@@ -46,6 +51,7 @@ public class Order {
 
 	public void calculateTotalDiscount() {
 		if (coupons == null || coupons.isEmpty()) {
+			this.totalDiscount = BigDecimal.ZERO;
 			return;
 		}
 		this.totalDiscount = coupons.stream()

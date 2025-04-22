@@ -60,10 +60,19 @@ public class CouponService {
 	@Transactional
 	public UserCouponDetailResult issueCoupon(CouponCommand.Issue command) {
 		couponValidator.isCouponIdValidUuid(command.couponId());
-		Coupon coupon = couponRepository.findById(command.couponId());
+		Coupon coupon = couponRepository.findByIdWithLock(command.couponId());
 		coupon.issue();
+		couponRepository.save(coupon);
 		UserCoupon userCoupon = issueByUser(command);
 		return UserCouponDetailResult.of(userCoupon);
+	}
+
+	public UserCoupon issueByUser(CouponCommand.Issue command) {
+		logger.info("### issueByUser parameter : {}", command.toString());
+		couponValidator.duplicateIssued(command.userId(), command.couponId());
+		Coupon coupon = couponRepository.findById(command.couponId());
+		couponValidator.isValidCoupon(coupon);
+		return userCouponRepository.save(command.toUnitCouponValid(coupon));
 	}
 
 	@Transactional(propagation = MANDATORY)
@@ -87,13 +96,6 @@ public class CouponService {
 		);
 	}
 
-	public UserCoupon issueByUser(CouponCommand.Issue command) {
-		logger.info("### issueByUser parameter : {}", command.toString());
-		couponValidator.duplicateIssued(command.userId(), command.couponId());
-		Coupon coupon = couponRepository.findById(command.couponId());
-		couponValidator.isValidCoupon(coupon);
-		return userCouponRepository.save(command.toUnitCouponValid(coupon));
-	}
 
 	public Coupon findCouponById(String id) {
 		logger.info("### findCouponById parameter : {}", id);

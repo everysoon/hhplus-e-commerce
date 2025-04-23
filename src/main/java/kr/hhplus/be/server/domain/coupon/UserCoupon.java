@@ -20,6 +20,7 @@ public class UserCoupon {
 	public static UserCoupon of(Long userId, Coupon coupon) {
 		return new UserCoupon(null, userId, coupon, CouponStatus.ISSUED, LocalDateTime.now());
 	}
+
 	public UserCoupon isValidRestore(){
 		if(this.status.equals(CouponStatus.REVOKED)){
 			throw new CustomException(ErrorCode.REVOKED_COUPON);
@@ -39,11 +40,12 @@ public class UserCoupon {
 		this.status = CouponStatus.USED;
 		return this;
 	}
-
 	public boolean isValid() {
 		return this.status == CouponStatus.ISSUED;
 	}
-
+	public void expire() {
+		this.status = CouponStatus.EXPIRED;
+	}
 	public void restore() {
 		this.status = CouponStatus.ISSUED;
 	}

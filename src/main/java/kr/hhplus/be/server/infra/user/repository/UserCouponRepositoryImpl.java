@@ -15,6 +15,7 @@ import java.util.List;
 public class UserCouponRepositoryImpl implements UserCouponRepository {
 	private final UserCouponJpaRepository userCouponJpaRepository;
 	private final UserCouponMapper mapper;
+
 	@Override
 	public List<UserCoupon> findAll() {
 		return userCouponJpaRepository.findAll().stream()
@@ -38,7 +39,7 @@ public class UserCouponRepositoryImpl implements UserCouponRepository {
 
 	@Override
 	public List<UserCoupon> findByUserIdAndCouponIds(Long userId, List<String> couponIds) {
-		return userCouponJpaRepository.findByUserIdAndCouponIds(userId,couponIds).stream()
+		return userCouponJpaRepository.findByUserIdAndCouponIds(userId, couponIds).stream()
 			.map(mapper::toDomain).toList();
 	}
 
@@ -52,5 +53,15 @@ public class UserCouponRepositoryImpl implements UserCouponRepository {
 	public List<UserCoupon> saveAll(List<UserCoupon> userCoupons) {
 		List<UserCouponEntity> userCouponEntities = userCoupons.stream().map(mapper::toEntity).toList();
 		return userCouponJpaRepository.saveAll(userCouponEntities).stream().map(mapper::toDomain).toList();
+	}
+
+	@Override
+	public List<UserCoupon> updateExpiredCoupons(List<String> expiredCouponIds) {
+		return userCouponJpaRepository.updateExpiredAll(expiredCouponIds).stream().map(mapper::toDomain).toList();
+	}
+
+	@Override
+	public List<UserCoupon> findByCouponIds(List<String> expiredCouponIds) {
+		return userCouponJpaRepository.findByCouponIds(expiredCouponIds).stream().map(mapper::toDomain).toList();
 	}
 }

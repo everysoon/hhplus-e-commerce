@@ -12,4 +12,6 @@ public interface UserCouponRepository {
 	List<UserCoupon> findByUserIdAndCouponIds(Long userId, List<String> couponIds);
 	void updateAll(List<UserCoupon> userCoupons);
 	List<UserCoupon> saveAll(List<UserCoupon> userCoupons);
+	List<UserCoupon> updateExpiredCoupons(List<String> expiredCouponIds);
+	List<UserCoupon> findByCouponIds(List<String> expiredCouponIds);
 }

@@ -8,7 +8,8 @@ import java.util.Optional;
 public interface PointRepository {
 	Optional<Point> findByUserId(Long userId);
 	Optional<Point> findByUserIdWithLock(Long userId);
-	void use(Long userId, BigDecimal amount);
-	void charge(Long userId, BigDecimal amount);
+	Point use(Long userId, BigDecimal amount);
+
+	Point charge(Long userId, BigDecimal amount);
 	Point save(Point point);
 }

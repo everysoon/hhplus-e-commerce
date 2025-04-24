@@ -23,7 +23,8 @@ public class PointService {
 
 	@Transactional(propagation = MANDATORY)
 	public Point refund(PointCommand.Refund command) {
-		PointHistory pointHistory = new PointHistory(null, command.userId(), PointStatus.REFUND, command.totalPrice(), LocalDateTime.now());
+		PointHistory pointHistory = new PointHistory(null, command.userId(), PointStatus.REFUND,
+			command.totalPrice(), LocalDateTime.now());
 		Point point = pointRepository.findByUserId(command.userId()).get();
 		point.charge(command.totalPrice());
 		Point save = pointRepository.save(point);
@@ -32,21 +33,24 @@ public class PointService {
 	}
 
 	@Transactional
-	public PointHistory charge(PointCommand.Charge command) {
-		pointRepository.charge(command.userId(),command.amount());
+	public PointCommand.Detail charge(PointCommand.Charge command) {
+		Point point = pointRepository.charge(command.userId(), command.amount());
 		PointHistory history = PointHistory.from(command);
-		return pointHistoryRepository.save(history);
+		pointHistoryRepository.save(history);
+		return PointCommand.Detail.of(history, point.getBalance());
 	}
 
 	@Transactional(readOnly = true)
 	public Point getUserPoint(Long userId) {
-		return pointRepository.findByUserId(userId).orElseThrow(() -> new CustomException(ErrorCode.NOT_EXIST_POINT_BY_USER_ID));
+		return pointRepository.findByUserId(userId)
+			.orElseThrow(() -> new CustomException(ErrorCode.NOT_EXIST_POINT_BY_USER_ID));
 	}
 
 	@Transactional
-	public PointHistory use(PointCommand.Use command) {
-		pointRepository.use(command.userId(),command.amount());
+	public PointCommand.Detail use(PointCommand.Use command) {
+		Point point = pointRepository.use(command.userId(), command.amount());
 		PointHistory history = PointHistory.from(command);
-		return pointHistoryRepository.save(history);
+		pointHistoryRepository.save(history);
+		return PointCommand.Detail.of(history, point.getBalance());
 	}
 }

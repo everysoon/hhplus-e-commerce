@@ -28,22 +28,22 @@ public class PointRepositoryImpl implements PointRepository {
 	}
 
 	@Override
-	public void use(Long userId, BigDecimal amount) {
+	public Point use(Long userId, BigDecimal amount) {
 		PointEntity entity = pointJpaRepository.findByUserIdWithLock(userId).orElseThrow(()->new CustomException(
 			ErrorCode.INSUFFICIENT_POINTS));
 		Point domain = entity.toDomain();
 		domain.use(amount);
-		pointJpaRepository.save(PointEntity.from(domain));
+		return pointJpaRepository.save(PointEntity.from(domain)).toDomain();
 	}
 
 	@Override
-	public void charge(Long userId, BigDecimal amount) {
+	public Point charge(Long userId, BigDecimal amount) {
 		PointEntity entity = pointJpaRepository.findByUserIdWithLock(userId).orElseGet(() ->
 			pointJpaRepository.save(PointEntity.create(userId))
 		);
 		Point domain = entity.toDomain();
 		domain.charge(amount);
-		pointJpaRepository.save(PointEntity.from(domain));
+		return pointJpaRepository.save(PointEntity.from(domain)).toDomain();
 	}
 
 	@Override

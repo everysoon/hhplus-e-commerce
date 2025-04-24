@@ -33,7 +33,8 @@ public class ProductRepositoryImpl implements ProductRepository {
 
 	@Override
 	public Product decreaseStock(Long productId, Integer quantity) {
-		ProductEntity productEntity = productJpaRepository.findById(productId).orElseThrow(() -> new CustomException(ErrorCode.NOT_EXIST_PRODUCT));
+		ProductEntity productEntity = productJpaRepository.findById(productId)
+			.orElseThrow(() -> new CustomException(ErrorCode.NOT_EXIST_PRODUCT));
 		productEntity.decreaseStock(quantity);
 		return productJpaRepository.saveAndFlush(productEntity).toDomain();
 	}

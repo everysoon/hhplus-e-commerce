@@ -27,10 +27,14 @@ public class ProductSpecification {
 			if (!isValidString(category)) {
 				return null;
 			}
-			if(Category.valueOf(category.toUpperCase()) == null){
+
+			try {
+				Category.valueOf(category.toUpperCase());
+			} catch (IllegalArgumentException e) {
 				throw new CustomException(INVALID_CATEGORY);
 			}
-			return criteriaBuilder.equal(root.get("category").as(String.class), category);
+
+			return criteriaBuilder.equal(root.get("category"), Category.valueOf(category.toUpperCase()));
 		});
 	}
 

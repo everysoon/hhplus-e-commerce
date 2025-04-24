@@ -1,16 +1,12 @@
 package kr.hhplus.be.server.infra.point.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import java.math.BigDecimal;
+import jakarta.persistence.*;
 import kr.hhplus.be.server.domain.point.Point;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
 
 @Getter
 @Entity
@@ -39,24 +35,23 @@ public class PointEntity {
 
 	public static PointEntity from(Point point) {
 		return new PointEntity(
+			point.getId(),
 			point.getUserId(),
 			point.getBalance()
 		);
 	}
-
+	public static PointEntity create(Long userId) {
+		return new PointEntity(
+			null,
+			userId,
+			BigDecimal.ZERO
+		);
+	}
 	public Point toDomain() {
 		return new Point(
 			this.id,
 			this.userId,
 			this.balance
-		);
-	}
-
-	public static PointEntity update(Point point) {
-		return new PointEntity(
-			point.getId(),
-			point.getUserId(),
-			point.getBalance()
 		);
 	}
 }

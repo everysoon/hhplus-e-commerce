@@ -1,5 +1,8 @@
 package kr.hhplus.be.server.application.point;
 
+import static org.springframework.transaction.annotation.Propagation.MANDATORY;
+
+import java.time.LocalDateTime;
 import kr.hhplus.be.server.domain.point.Point;
 import kr.hhplus.be.server.domain.point.PointHistory;
 import kr.hhplus.be.server.domain.point.repository.PointHistoryRepository;
@@ -10,10 +13,6 @@ import kr.hhplus.be.server.support.config.swagger.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-
-import static org.springframework.transaction.annotation.Propagation.MANDATORY;
 
 @Service
 @RequiredArgsConstructor
@@ -27,18 +26,15 @@ public class PointService {
 		PointHistory pointHistory = new PointHistory(null, command.userId(), PointStatus.REFUND, command.totalPrice(), LocalDateTime.now());
 		Point point = pointRepository.findByUserId(command.userId()).get();
 		point.charge(command.totalPrice());
-		Point save = pointRepository.update(point);
+		Point save = pointRepository.save(point);
 		pointHistoryRepository.save(pointHistory);
 		return save;
 	}
 
 	@Transactional
 	public PointHistory charge(PointCommand.Charge command) {
+		pointRepository.charge(command.userId(),command.amount());
 		PointHistory history = PointHistory.from(command);
-		Point point = pointRepository.findByUserId(command.userId())
-			.orElseGet(() -> pointRepository.save(Point.create(command.userId())));
-		point.charge(command.amount());
-		pointRepository.update(point);
 		return pointHistoryRepository.save(history);
 	}
 
@@ -47,13 +43,10 @@ public class PointService {
 		return pointRepository.findByUserId(userId).orElseThrow(() -> new CustomException(ErrorCode.NOT_EXIST_POINT_BY_USER_ID));
 	}
 
-	@Transactional(propagation = MANDATORY)
+	@Transactional
 	public PointHistory use(PointCommand.Use command) {
+		pointRepository.use(command.userId(),command.amount());
 		PointHistory history = PointHistory.from(command);
-		Point point = pointRepository.findByUserId(command.userId())
-			.orElseThrow(() -> new CustomException(ErrorCode.INSUFFICIENT_POINTS));
-		point.use(command.amount());
-		pointRepository.update(point);
 		return pointHistoryRepository.save(history);
 	}
 }

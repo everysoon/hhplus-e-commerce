@@ -37,18 +37,14 @@ public class ProductService {
 	@Transactional(propagation = MANDATORY)
 	public List<Product> increaseStock(List<OrderItem> orderItems) {
 		return orderItems.stream()
-			.map(o -> {
-				o.getProduct().increaseStock(o.getQuantity());
-				return productRepository.save(o.getProduct());
-			}).toList();
+			.map(o -> productRepository.increaseStock(o.getProduct(), o.getQuantity()))
+			.toList();
 	}
 
 	@Transactional(propagation = MANDATORY)
-	public List<Product> decreaseStock(List<OrderItem> orderItems) {
-		logger.info("### decreaseStock :{}", orderItems);
-		return orderItems.stream().map(o -> {
-			o.getProduct().decreaseStock(o.getQuantity());
-			return productRepository.save(o.getProduct());
-		}).toList();
+	public Product decreaseStock(Long productId, Integer quantity) {
+		logger.info("### decreaseStock : {}, {}", productId, quantity);
+		Product product = productRepository.decreaseStock(productId, quantity);
+		return product;
 	}
 }

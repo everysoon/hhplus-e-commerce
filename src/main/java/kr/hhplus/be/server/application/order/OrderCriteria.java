@@ -1,9 +1,8 @@
 package kr.hhplus.be.server.application.order;
 
+import java.util.List;
 import kr.hhplus.be.server.domain.payment.PaymentMethod;
 import kr.hhplus.be.server.interfaces.dto.OrderDTO;
-
-import java.util.List;
 
 public class OrderCriteria {
 	public record Cancel(
@@ -26,6 +25,9 @@ public class OrderCriteria {
 				.toList();
 
 			return new Request(dto.getUserId(), items, dto.getCouponId(),PaymentMethod.POINTS);
+		}
+		public List<Long> productIds(){
+			return orderItems.stream().map(Item::productId).toList();
 		}
 		public record Item(
 			Long productId,

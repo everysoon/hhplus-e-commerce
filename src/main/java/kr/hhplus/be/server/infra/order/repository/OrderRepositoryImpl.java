@@ -1,5 +1,9 @@
 package kr.hhplus.be.server.infra.order.repository;
 
+import static kr.hhplus.be.server.support.config.swagger.ErrorCode.NOT_EXIST_ORDER;
+import static kr.hhplus.be.server.support.config.swagger.ErrorCode.UNAUTHORIZED_ORDER_ACCESS;
+
+import java.util.List;
 import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.order.OrderMapper;
 import kr.hhplus.be.server.domain.order.repository.OrderRepository;
@@ -8,27 +12,29 @@ import kr.hhplus.be.server.support.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
-import static kr.hhplus.be.server.support.config.swagger.ErrorCode.NOT_EXIST_ORDER;
-import static kr.hhplus.be.server.support.config.swagger.ErrorCode.UNAUTHORIZED_ORDER_ACCESS;
-
 @Repository
 @RequiredArgsConstructor
 public class OrderRepositoryImpl implements OrderRepository {
 
 	private final OrderJpaRepository orderJpaRepository;
 	private final OrderMapper mapper;
+
 	@Override
 	public Order save(Order order) {
-		try{
+		try {
 			OrderEntity entity = mapper.toEntity(order);
 			orderJpaRepository.saveAndFlush(entity);
 			return mapper.toDomain(entity);
-		}catch (Exception e){
+		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
 		return null;
+	}
+
+	@Override
+	public List<Order> saveAll(List<Order> order) {
+		List<OrderEntity> list = order.stream().map(mapper::toEntity).toList();
+		return orderJpaRepository.saveAllAndFlush(list).stream().map(mapper::toDomain).toList();
 	}
 
 	@Override
@@ -55,5 +61,10 @@ public class OrderRepositoryImpl implements OrderRepository {
 	@Override
 	public List<Order> findAll() {
 		return orderJpaRepository.findAll().stream().map(mapper::toDomain).toList();
+	}
+
+	@Override
+	public Order existsOrder(Long userId, List<Long> productIds) {
+		return mapper.toDomain(orderJpaRepository.existsOrder(userId, productIds));
 	}
 }

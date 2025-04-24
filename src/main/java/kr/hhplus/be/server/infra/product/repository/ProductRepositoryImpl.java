@@ -1,5 +1,11 @@
 package kr.hhplus.be.server.infra.product.repository;
 
+import static kr.hhplus.be.server.infra.product.repository.ProductSpecification.filterCategory;
+import static kr.hhplus.be.server.infra.product.repository.ProductSpecification.filterSoldOut;
+import static kr.hhplus.be.server.infra.product.repository.ProductSpecification.nameContains;
+
+import java.time.LocalDateTime;
+import java.util.List;
 import kr.hhplus.be.server.application.product.ProductCommand;
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.product.repository.ProductRepository;
@@ -7,15 +13,12 @@ import kr.hhplus.be.server.infra.product.entity.ProductEntity;
 import kr.hhplus.be.server.support.common.exception.CustomException;
 import kr.hhplus.be.server.support.config.swagger.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
-import static kr.hhplus.be.server.infra.product.repository.ProductSpecification.*;
-
+@Slf4j
 @Repository
 @RequiredArgsConstructor
 public class ProductRepositoryImpl implements ProductRepository {
@@ -26,6 +29,20 @@ public class ProductRepositoryImpl implements ProductRepository {
 		return productJpaRepository.findById(productId)
 			.orElseThrow(() -> new CustomException(ErrorCode.NOT_EXIST_PRODUCT))
 			.toDomain();
+	}
+
+	@Override
+	public Product decreaseStock(Long productId, Integer quantity) {
+		ProductEntity productEntity = productJpaRepository.findById(productId).orElseThrow(() -> new CustomException(ErrorCode.NOT_EXIST_PRODUCT));
+		productEntity.decreaseStock(quantity);
+		return productJpaRepository.saveAndFlush(productEntity).toDomain();
+	}
+
+	@Override
+	public Product increaseStock(Product product, Integer quantity) {
+		ProductEntity productEntity = productJpaRepository.findById(product.getId()).orElseThrow(() -> new CustomException(ErrorCode.NOT_EXIST_PRODUCT));
+		productEntity.increaseStock(quantity);
+		return productJpaRepository.saveAndFlush(productEntity).toDomain();
 	}
 
 	@Override

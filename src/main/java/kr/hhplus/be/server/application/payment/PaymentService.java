@@ -1,5 +1,7 @@
 package kr.hhplus.be.server.application.payment;
 
+import static org.springframework.transaction.annotation.Propagation.MANDATORY;
+
 import kr.hhplus.be.server.application.dataplatform.PaymentClient;
 import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.payment.Payment;
@@ -12,8 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import static org.springframework.transaction.annotation.Propagation.MANDATORY;
 
 @Service
 @RequiredArgsConstructor

@@ -14,8 +14,8 @@ public class OrderMapper {
 	private final CouponRepository couponRepository;
 	private final OrderItemMapper orderItemMapper;
 
-	public Order toDomain(OrderEntity entity){
-		List<Coupon> coupons = entity.getUsedUserCouponIds().stream().map(couponRepository::findById).toList();
+	public Order toDomain(OrderEntity entity) {
+		List<Coupon> coupons = entity.getUsedUserCouponIds() == null ? null : entity.getUsedUserCouponIds().stream().map(couponRepository::findById).toList();
 		List<OrderItem> orderItems = entity.getOrderItems().stream().map(orderItemMapper::toDomain).toList();
 		return new Order(
 			entity.getId(),
@@ -24,18 +24,21 @@ public class OrderMapper {
 			orderItems,
 			entity.getTotalPrice(),
 			entity.getTotalDiscount(),
-			entity.getOrderedAt()
+			entity.getOrderedAt(),
+			entity.getStatus()
 		);
 	}
-	public  OrderEntity toEntity(Order domain){
+
+	public OrderEntity toEntity(Order domain) {
 		return new OrderEntity(
 			domain.getId(),
 			domain.getUserId(),
-			domain.getCoupons().stream().map(Coupon::getId).toList(),
+			domain.getCoupons() == null ? null : domain.getCoupons().stream().map(Coupon::getId).toList(),
 			domain.getOrderItems().stream().map(orderItemMapper::toEntity).toList(),
 			domain.getTotalPrice(),
 			domain.getTotalDiscount(),
-			domain.getOrderedAt()
+			domain.getOrderedAt(),
+			domain.getStatus()
 		);
 	}
 }

@@ -24,15 +24,15 @@ public class OrderEntity {
 	@Column(nullable = false)
 	private Long userId;
 
-	@ElementCollection
+	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
 		name = "order_user_coupon",
 		joinColumns = @JoinColumn(
 			name = "order_id",
-			foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT) // 💥 여기!
+			foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)
 		)
 	)
-	@Column(name = "user_coupon_id")
+	@Column(name = "user_coupon_ids")
 	private List<String> usedUserCouponIds = new ArrayList<>();
 
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
@@ -51,12 +51,18 @@ public class OrderEntity {
 	@Column(nullable = false)
 	private LocalDateTime orderedAt;
 
-	public OrderEntity(Long id,Long userId, List<String> usedUserCouponIds, List<OrderItemEntity> orderItems, BigDecimal totalPrice, BigDecimal totalDiscount, LocalDateTime orderedAt) {
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	private OrderStatus status;
+
+	public OrderEntity(Long id, Long userId, List<String> usedUserCouponIds, List<OrderItemEntity> orderItems, BigDecimal totalPrice, BigDecimal totalDiscount, LocalDateTime orderedAt,OrderStatus status) {
 		this.id = id;
 		this.userId = userId;
 		this.usedUserCouponIds = usedUserCouponIds;
+		this.orderItems = orderItems;
 		this.totalPrice = totalPrice;
-		this.totalDiscount = totalDiscount;
+		this.totalDiscount = totalDiscount == null ? BigDecimal.ZERO : totalDiscount;
 		this.orderedAt = orderedAt;
+		this.status = status;
 	}
 }

@@ -58,6 +58,7 @@ public enum ErrorCode {
 
 	// payment
 	PAYMENT_FAIL(BAD_REQUEST.value(),"결제가 실패했습니다."),
+	NOT_EXIST_PAYMENT_BY_ORDER(BAD_REQUEST.value(),"해당 주문건의 결제내역을 찾을 수 없습니다."),
 	NOT_EXIST_PAYMENT_BY_TX_ID(BAD_REQUEST.value(),"해당 트랜잭션 ID로 결제 내역을 조회할 수 없습니다."),
 	EXTERNAL_PAYMENT_API_ERROR(BAD_REQUEST.value(),"외부 결제 API에서 오류가 발생했습니다.")
 	;

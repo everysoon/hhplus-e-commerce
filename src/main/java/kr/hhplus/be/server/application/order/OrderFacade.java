@@ -41,8 +41,7 @@ public class OrderFacade {
 
 	public OrderResult.InfoByUser getOrders(Long userId) {
 		logger.info("### getOrders parameter : {}", userId);
-		List<OrderResult.DetailByOrder> orderDetails = orderService.findOrderByUserId(userId)
-			.stream()
+		List<OrderResult.DetailByOrder> orderDetails = orderService.findOrderByUserId(userId).stream()
 			.map(OrderResult.DetailByOrder::from).toList();
 		return OrderResult.InfoByUser.from(userId, orderDetails);
 	}
@@ -59,7 +58,7 @@ public class OrderFacade {
 
 		User user = userService.get(criteria.userId());
 		// 결제 취소
-//		Payment payment = paymentService.cancel(order);
+		Payment payment = paymentService.cancel(order);
 		// 포인트 환불
 		pointService.refund(PointCommand.Refund.of(user.getId(), order.getTotalPrice()));
 		// 쿠폰 상태 복원 (쿠폰 사용했으면)
@@ -71,7 +70,7 @@ public class OrderFacade {
 		orderService.cancel(order);
 		return OrderResult.Cancel.of(
 			order,
-			null
+			payment
 		);
 	}
 

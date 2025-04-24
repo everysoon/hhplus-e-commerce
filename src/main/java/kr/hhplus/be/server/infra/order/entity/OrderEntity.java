@@ -51,11 +51,7 @@ public class OrderEntity {
 	@Column(nullable = false)
 	private LocalDateTime orderedAt;
 
-	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
-	private OrderStatus status;
-
-	public OrderEntity(Long id, Long userId, List<String> usedUserCouponIds, List<OrderItemEntity> orderItems, BigDecimal totalPrice, BigDecimal totalDiscount, LocalDateTime orderedAt,OrderStatus status) {
+	public OrderEntity(Long id,Long userId, List<String> usedUserCouponIds, List<OrderItemEntity> orderItems, BigDecimal totalPrice, BigDecimal totalDiscount, LocalDateTime orderedAt) {
 		this.id = id;
 		this.userId = userId;
 		this.usedUserCouponIds = usedUserCouponIds;
@@ -63,6 +59,5 @@ public class OrderEntity {
 		this.totalPrice = totalPrice;
 		this.totalDiscount = totalDiscount == null ? BigDecimal.ZERO : totalDiscount;
 		this.orderedAt = orderedAt;
-		this.status = status;
 	}
 }

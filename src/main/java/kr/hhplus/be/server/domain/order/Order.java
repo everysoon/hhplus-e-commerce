@@ -22,7 +22,6 @@ public class Order {
 	private BigDecimal totalPrice;
 	private BigDecimal totalDiscount;
 	private final LocalDateTime orderedAt;
-	private OrderStatus status;
 
 	public BigDecimal getTotalPrice() {
 		if (this.totalDiscount == null) {

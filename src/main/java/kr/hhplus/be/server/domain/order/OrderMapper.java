@@ -24,8 +24,7 @@ public class OrderMapper {
 			orderItems,
 			entity.getTotalPrice(),
 			entity.getTotalDiscount(),
-			entity.getOrderedAt(),
-			entity.getStatus()
+			entity.getOrderedAt()
 		);
 	}
 
@@ -37,8 +36,7 @@ public class OrderMapper {
 			domain.getOrderItems().stream().map(orderItemMapper::toEntity).toList(),
 			domain.getTotalPrice(),
 			domain.getTotalDiscount(),
-			domain.getOrderedAt(),
-			domain.getStatus()
+			domain.getOrderedAt()
 		);
 	}
 }

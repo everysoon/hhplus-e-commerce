@@ -5,7 +5,6 @@ import java.util.List;
 import kr.hhplus.be.server.application.coupon.CouponCommand;
 import kr.hhplus.be.server.application.coupon.CouponService;
 import kr.hhplus.be.server.application.coupon.UseCouponInfo;
-import kr.hhplus.be.server.application.order.service.OrderItemService;
 import kr.hhplus.be.server.application.order.service.OrderService;
 import kr.hhplus.be.server.application.payment.PaymentCommand;
 import kr.hhplus.be.server.application.payment.PaymentService;
@@ -36,7 +35,6 @@ public class OrderFacade {
 	private final ProductService productService;
 	private final PointService pointService;
 	private final CouponService couponService;
-	private final OrderItemService orderItemService;
 	private final UserService userService;
 
 	public OrderResult.InfoByUser getOrders(Long userId) {
@@ -95,12 +93,14 @@ public class OrderFacade {
 		Order order = orderService.create(OrderCommand.Create.of(orderItems, couponInfo));
 		// 유저 포인트 사용
 		pointService.use(PointCommand.Use.of(user.getId(), order.getTotalPrice()));
+
+		// 주문 저장
+		Order save = orderService.save(order);
+		logger.info("### save order : {}", save.getId());
 		// 결제 시도
 		Payment payment = paymentService.pay(
-			PaymentCommand.Request.of(order, criteria.paymentMethod())
+			PaymentCommand.Request.of(save, criteria.paymentMethod())
 		);
-		// 주문 저장
-		orderService.save(order);
 		return OrderResult.Place.of(
 			user.getId(),
 			orderItems.stream().map(OrderItem::getProduct).toList(),

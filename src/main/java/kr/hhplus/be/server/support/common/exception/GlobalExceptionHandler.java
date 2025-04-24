@@ -51,7 +51,7 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(NoResourceFoundException.class)
 	@ResponseStatus(HttpStatus.NOT_FOUND)
 	public ResponseApi<?> handleNoResourceFoundException(NoResourceFoundException ex) {
-		logger.error("CompAttendService Client Error: {}", ex.getMessage(), ex);
+		logger.error("hhplus Service Client Error: {}", ex.getMessage(), ex);
 
 		return new ResponseApi<>(false, ex.getMessage(), null);
 	}
@@ -60,14 +60,14 @@ public class GlobalExceptionHandler {
 	@ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
 	public ResponseApi<?> handleHttpRequestMethodNotSupportedException(
 		HttpRequestMethodNotSupportedException ex) {
-		logger.error("CompAttendService Client Error: {}", ex.getMessage(), ex);
+		logger.error("hhplus Service  Client Error: {}", ex.getMessage(), ex);
 		return new ResponseApi<>(false, ex.getMessage(), null);
 	}
 
 	@ExceptionHandler(Exception.class)
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	public ResponseApi<?> handleGlobalException(Exception ex) {
-		logger.error("CompAttendService Server Error: {}", ex.getMessage(), ex);
+		logger.error("hhplus Service  Server Error: {}", ex.getMessage(), ex);
 		return new ResponseApi<>(false, ex.getMessage(), null);
 	}
 }

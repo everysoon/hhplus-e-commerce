@@ -14,8 +14,7 @@ public interface ProductJpaRepository extends JpaRepository<ProductEntity, Long>
 	@Query("""
 		SELECT p FROM ProductEntity p
 		JOIN OrderItemEntity oi ON p.id = oi.productId
-		JOIN OrderEntity o ON oi.orderId = o.id
-		WHERE o.orderedAt BETWEEN :startDate AND :endDate
+		WHERE oi.order.orderedAt BETWEEN :startDate AND :endDate
 		GROUP BY p
 		ORDER BY SUM(oi.quantity) DESC
 		"""

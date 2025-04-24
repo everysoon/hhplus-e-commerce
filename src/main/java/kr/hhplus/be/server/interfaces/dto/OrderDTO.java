@@ -2,6 +2,8 @@ package kr.hhplus.be.server.interfaces.dto;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalDateTime;
+import java.util.List;
 import kr.hhplus.be.server.application.order.OrderResult;
 import kr.hhplus.be.server.domain.payment.PaymentMethod;
 import kr.hhplus.be.server.infra.payment.entity.PaymentStatus;
@@ -10,16 +12,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
-
 public class OrderDTO {
+
 	@Data
 	@NoArgsConstructor
 	@AllArgsConstructor
 	@Builder
 	public static class OrderRequest {
+
 		@NotNull
 		Long userId;
 		@NotNull
@@ -31,15 +31,16 @@ public class OrderDTO {
 		Long userId,
 		Long orderId,
 		Long paymentId,
-		BigDecimal totalPrice,
+		Integer totalPrice,
 		PaymentMethod method
 	) {
+
 		public static CancelResponse of(OrderResult.Cancel result) {
 			return new CancelResponse(
 				result.order().getUserId(),
 				result.order().getId(),
 				result.payment().getId(),
-				result.order().getTotalPrice(),
+				result.order().getTotalPrice().intValue(),
 				result.payment().getPaymentMethod()
 			);
 		}
@@ -50,10 +51,11 @@ public class OrderDTO {
 		List<ProductDTO.ProductResponse> orderItems,
 		PaymentMethod paymentMethod,
 		PaymentStatus paymentStatus,
-		BigDecimal totalPrice,
-		BigDecimal totalDiscount,
+		Integer totalPrice,
+		Integer totalDiscount,
 		LocalDateTime orderedAt
 	) {
+
 		public static OrderResponse of(OrderResult.Place result) {
 			return new OrderResponse(
 				result.userId(),
@@ -61,8 +63,8 @@ public class OrderDTO {
 					.map(ProductDTO.ProductResponse::from).toList(),
 				result.payment().getPaymentMethod(),
 				result.payment().getStatus(),
-				result.order().getTotalPrice(),
-				result.order().getTotalDiscount(),
+				result.order().getTotalPrice().intValue(),
+				result.order().getTotalDiscount().intValue(),
 				result.order().getOrderedAt()
 			);
 		}
@@ -72,6 +74,7 @@ public class OrderDTO {
 		Long userId,
 		List<OrderDetailResponse> orderInfos
 	) {
+
 		public static UserOrderResponse of(OrderResult.InfoByUser result) {
 			return new UserOrderResponse(
 				result.userId(),
@@ -86,6 +89,7 @@ public class OrderDTO {
 		List<CouponDTO.OrderCouponResponse> coupons
 
 	) {
+
 		public static OrderDetailResponse of(OrderResult.DetailByOrder result) {
 			return new OrderDetailResponse(
 				result.orderId(),
@@ -98,7 +102,8 @@ public class OrderDTO {
 	@Data
 	@NoArgsConstructor
 	@AllArgsConstructor
-	public class OrderItemRequest {
+	public static class OrderItemRequest {
+
 		@NotNull
 		Long productId;
 		@NotNull
@@ -113,21 +118,4 @@ public class OrderDTO {
 	) {
 
 	}
-
-//	public record OrderItemResponse(
-//		@NotNull List<Item> orderItems,
-//		List<UUID> couponIds
-//	) {
-//		public static OrderItemResponse from(OrderRequest dto) {
-//			List<Item> items = dto.getProducts().stream()
-//				.map(p -> new Item(p.productId, p.quantity))
-//				.toList();
-//
-//			return new OrderItemResponse(items, dto.couponId);
-//		}
-//		public record Item(
-//			Long productId,
-//			int quantity
-//		) {}
-//	}
 }

@@ -10,8 +10,10 @@ import kr.hhplus.be.server.domain.order.repository.OrderRepository;
 import kr.hhplus.be.server.infra.order.entity.OrderEntity;
 import kr.hhplus.be.server.support.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
+@Slf4j
 @Repository
 @RequiredArgsConstructor
 public class OrderRepositoryImpl implements OrderRepository {
@@ -21,14 +23,9 @@ public class OrderRepositoryImpl implements OrderRepository {
 
 	@Override
 	public Order save(Order order) {
-		try {
-			OrderEntity entity = mapper.toEntity(order);
-			orderJpaRepository.saveAndFlush(entity);
-			return mapper.toDomain(entity);
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-		}
-		return null;
+		OrderEntity entity1 = mapper.toEntity(order);
+		OrderEntity entity = orderJpaRepository.saveAndFlush(entity1);
+		return mapper.toDomain(entity);
 	}
 
 	@Override

@@ -1,12 +1,11 @@
 package kr.hhplus.be.server.domain.order;
 
+import java.util.List;
 import kr.hhplus.be.server.domain.coupon.Coupon;
 import kr.hhplus.be.server.domain.coupon.CouponRepository;
 import kr.hhplus.be.server.infra.order.entity.OrderEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -29,14 +28,17 @@ public class OrderMapper {
 	}
 
 	public OrderEntity toEntity(Order domain) {
-		return new OrderEntity(
+		OrderEntity orderEntity = new OrderEntity(
 			domain.getId(),
 			domain.getUserId(),
-			domain.getCoupons() == null ? null : domain.getCoupons().stream().map(Coupon::getId).toList(),
-			domain.getOrderItems().stream().map(orderItemMapper::toEntity).toList(),
+			domain.getCoupons() == null ? null
+				: domain.getCoupons().stream().map(Coupon::getId).toList(),
+			null,
 			domain.getTotalPrice(),
 			domain.getTotalDiscount(),
 			domain.getOrderedAt()
 		);
+		orderEntity.setOrderItems(domain.getOrderItems().stream().map(oi->orderItemMapper.toEntity(orderEntity,oi)).toList());
+		return orderEntity;
 	}
 }

@@ -1,5 +1,11 @@
 package kr.hhplus.be.server.infra.product.repository;
 
+import static kr.hhplus.be.server.infra.product.repository.ProductSpecification.filterCategory;
+import static kr.hhplus.be.server.infra.product.repository.ProductSpecification.filterSoldOut;
+import static kr.hhplus.be.server.infra.product.repository.ProductSpecification.nameContains;
+
+import java.time.LocalDateTime;
+import java.util.List;
 import kr.hhplus.be.server.application.product.ProductCommand;
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.product.repository.ProductRepository;
@@ -11,11 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
-
-import java.time.LocalDateTime;
-import java.util.List;
-
-import static kr.hhplus.be.server.infra.product.repository.ProductSpecification.*;
 
 @Slf4j
 @Repository

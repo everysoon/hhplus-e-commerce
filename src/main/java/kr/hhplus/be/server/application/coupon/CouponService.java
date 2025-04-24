@@ -1,5 +1,8 @@
 package kr.hhplus.be.server.application.coupon;
 
+import static org.springframework.transaction.annotation.Propagation.MANDATORY;
+
+import java.util.List;
 import kr.hhplus.be.server.domain.coupon.Coupon;
 import kr.hhplus.be.server.domain.coupon.CouponRepository;
 import kr.hhplus.be.server.domain.coupon.CouponValidator;
@@ -63,20 +66,13 @@ public class CouponService {
 
 	@Transactional
 	public UserCouponDetailResult issueCoupon(CouponCommand.Issue command) {
+		logger.info("### issueCoupon parameter : {}", command.toString());
 		couponValidator.isCouponIdValidUuid(command.couponId());
-		Coupon coupon = couponRepository.findByIdWithLock(command.couponId());
-		coupon.issue();
-		couponRepository.save(coupon);
-		UserCoupon userCoupon = issueByUser(command);
-		return UserCouponDetailResult.of(userCoupon);
-	}
-
-	public UserCoupon issueByUser(CouponCommand.Issue command) {
-		logger.info("### issueByUser parameter : {}", command.toString());
 		couponValidator.duplicateIssued(command.userId(), command.couponId());
-		Coupon coupon = couponRepository.findById(command.couponId());
+		Coupon coupon = couponRepository.issue(command.couponId());
 		couponValidator.isValidCoupon(coupon);
-		return userCouponRepository.save(command.toUnitCouponValid(coupon));
+		UserCoupon userCoupon = userCouponRepository.save(command.toUnitCouponValid(coupon));
+		return UserCouponDetailResult.of(userCoupon);
 	}
 
 	@Transactional(propagation = MANDATORY)

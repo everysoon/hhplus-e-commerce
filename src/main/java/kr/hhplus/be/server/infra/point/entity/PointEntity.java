@@ -40,7 +40,13 @@ public class PointEntity {
 			point.getBalance()
 		);
 	}
-
+	public static PointEntity create(Long userId) {
+		return new PointEntity(
+			null,
+			userId,
+			BigDecimal.ZERO
+		);
+	}
 	public Point toDomain() {
 		return new Point(
 			this.id,

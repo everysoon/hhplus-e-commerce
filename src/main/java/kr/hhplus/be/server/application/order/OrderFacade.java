@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.application.order;
 
 import jakarta.transaction.Transactional;
+import java.util.List;
 import kr.hhplus.be.server.application.coupon.CouponCommand;
 import kr.hhplus.be.server.application.coupon.CouponService;
 import kr.hhplus.be.server.application.coupon.UseCouponInfo;
@@ -25,8 +26,6 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 @Component
 @RequiredArgsConstructor
 public class OrderFacade {
@@ -46,18 +45,20 @@ public class OrderFacade {
 			.map(OrderResult.DetailByOrder::from).toList();
 		return OrderResult.InfoByUser.from(userId, orderDetails);
 	}
+
 	@Retryable(
 		value = {ObjectOptimisticLockingFailureException.class},
 		maxAttempts = 3,
-		backoff = @Backoff(delay = 100, multiplier = 2)
+		backoff = @Backoff(delay = 100)
 	)
 	@Transactional
 	public OrderResult.Cancel cancel(OrderCriteria.Cancel criteria) {
 		logger.info("### cancel parameter : {}", criteria.toString());
 		Order order = orderService.findByIdAndUserId(criteria.orderId(), criteria.userId());
+
 		User user = userService.get(criteria.userId());
 		// 결제 취소
-//		Payment payment = paymentService.cancel(order);
+		Payment payment = paymentService.cancel(order);
 		// 포인트 환불
 		pointService.refund(PointCommand.Refund.of(user.getId(), order.getTotalPrice()));
 		// 쿠폰 상태 복원 (쿠폰 사용했으면)
@@ -66,17 +67,17 @@ public class OrderFacade {
 		productService.increaseStock(order.getOrderItems());
 
 		// 주문상태 변경 및 저장 - 취소
-		orderService.cancel(order.getId());
+		orderService.cancel(order);
 		return OrderResult.Cancel.of(
 			order,
-			null
+			payment
 		);
 	}
 
 	@Retryable(
 		value = {ObjectOptimisticLockingFailureException.class},
 		maxAttempts = 3,
-		backoff = @Backoff(delay = 100, multiplier = 2)
+		backoff = @Backoff(delay = 100)
 	)
 	@Transactional
 	public OrderResult.Place placeOrder(OrderCriteria.Request criteria) {
@@ -90,6 +91,7 @@ public class OrderFacade {
 		));
 		// 상품 조회
 		List<OrderItem> orderItems = createOrderItems(criteria.orderItems());
+
 		Order order = orderService.create(OrderCommand.Create.of(orderItems, couponInfo));
 		// 유저 포인트 사용
 		pointService.use(PointCommand.Use.of(user.getId(), order.getTotalPrice()));
@@ -111,7 +113,8 @@ public class OrderFacade {
 		logger.info("### createOrderItems parameter : {}", orderItems.toString());
 		return orderItems.stream()
 			.map(itemCommand -> {
-				Product product = productService.decreaseStock(itemCommand.productId(), itemCommand.quantity());
+				Product product = productService.decreaseStock(itemCommand.productId(),
+					itemCommand.quantity());
 				return OrderItem.create(product, itemCommand.quantity());
 			})
 			.toList();

@@ -1,5 +1,7 @@
 package kr.hhplus.be.server.application.payment;
 
+import static org.springframework.transaction.annotation.Propagation.MANDATORY;
+
 import kr.hhplus.be.server.application.dataplatform.PaymentClient;
 import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.payment.Payment;
@@ -13,8 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.springframework.transaction.annotation.Propagation.MANDATORY;
-
 @Service
 @RequiredArgsConstructor
 public class PaymentService {
@@ -25,6 +25,7 @@ public class PaymentService {
 
 	@Transactional(propagation = MANDATORY)
 	public Payment pay(PaymentCommand.Request command) {
+		logger.info("### pay command : {}", command);
 		// client 통신
 		String token = paymentClient.getToken(PaymentDTO.TokenRequest.from(command));
 		String transactionId = paymentClient.send(PaymentDTO.PaymentRequest.from(command, token));
@@ -39,6 +40,7 @@ public class PaymentService {
 	@Transactional(propagation = MANDATORY)
 	public Payment cancel(Order order) {
 		// client 통신
+		logger.info("### cancel command : {}", order);
 		Payment payment = paymentRepository.findByOrderId(order.getId());
 		PaymentCommand.Request command = PaymentCommand.Request.of(order, payment.getPaymentMethod());
 		String token = paymentClient.getToken(PaymentDTO.TokenRequest.from(command));

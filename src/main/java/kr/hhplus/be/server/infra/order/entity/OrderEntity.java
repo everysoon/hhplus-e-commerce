@@ -51,7 +51,7 @@ public class OrderEntity {
 	@Column(nullable = false)
 	private LocalDateTime orderedAt;
 
-	public OrderEntity(Long id, Long userId, List<String> usedUserCouponIds, List<OrderItemEntity> orderItems, BigDecimal totalPrice, BigDecimal totalDiscount, LocalDateTime orderedAt) {
+	public OrderEntity(Long id,Long userId, List<String> usedUserCouponIds, List<OrderItemEntity> orderItems, BigDecimal totalPrice, BigDecimal totalDiscount, LocalDateTime orderedAt) {
 		this.id = id;
 		this.userId = userId;
 		this.usedUserCouponIds = usedUserCouponIds;

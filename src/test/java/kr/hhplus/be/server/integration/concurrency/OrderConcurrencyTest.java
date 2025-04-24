@@ -1,5 +1,9 @@
 package kr.hhplus.be.server.integration.concurrency;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+
+import java.math.BigDecimal;
+import java.util.List;
 import kr.hhplus.be.server.application.order.OrderCriteria;
 import kr.hhplus.be.server.application.order.OrderFacade;
 import kr.hhplus.be.server.application.order.OrderResult;
@@ -7,6 +11,7 @@ import kr.hhplus.be.server.application.point.PointCommand;
 import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.order.OrderItem;
 import kr.hhplus.be.server.domain.order.repository.OrderRepository;
+import kr.hhplus.be.server.domain.payment.Payment;
 import kr.hhplus.be.server.domain.payment.PaymentMethod;
 import kr.hhplus.be.server.domain.payment.repository.PaymentRepository;
 import kr.hhplus.be.server.domain.point.Point;
@@ -23,11 +28,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.math.BigDecimal;
-import java.util.List;
-
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 @Slf4j
 public class OrderConcurrencyTest extends BaseIntegrationTest {
@@ -46,26 +46,23 @@ public class OrderConcurrencyTest extends BaseIntegrationTest {
 	@Autowired
 	private ConcurrencyTestHelper concurrencyTestHelper;
 
-	Product product;
 	int threadCount = 5;
-	User user;
 
 	@BeforeEach
 	void setUp() {
-		user = UserTestFixture.createUser(1L);
-		product = ProductTestFixture.create(1L, 1);
 
-		productRepository.save(product);
-		userRepository.save(user);
-		pointRepository.save(Point.from(PointCommand.Charge.of(user.getId(), BigDecimal.valueOf(50000))));
-
-		log.info("### temp product : {}", product.getId());
-		log.info("### temp user : {}", user.getId());
 	}
 
 	@Test
 	@DisplayName("재고 차감 동시성 이슈")
 	void 상품_주문시_상품_재고가_1개일_경우_여러주문이_들어오면_한개만_성공한다() throws InterruptedException {
+		User user = UserTestFixture.createUser(1L);
+		Product product = ProductTestFixture.create(1L, 1);
+
+		productRepository.save(product);
+		userRepository.save(user);
+		pointRepository.save(Point.from(PointCommand.Charge.of(user.getId(), BigDecimal.valueOf(50000))));
+
 		concurrencyTestHelper.run(threadCount, index -> {
 			OrderCriteria.Request request = new OrderCriteria.Request(
 				user.getId(), // userId
@@ -87,11 +84,18 @@ public class OrderConcurrencyTest extends BaseIntegrationTest {
 	@DisplayName("재고 복원 동시성 이슈")
 	void 상품_주문취소시_재고와_포인트가_정상적으로_복원된다() throws InterruptedException {
 		// given 초기 stock : 10 / user point : 50000
+		User user = UserTestFixture.createUser(2L);
 		Product product = ProductTestFixture.create(2L, 10);
+
 		productRepository.save(product);
+		userRepository.save(user);
+		pointRepository.save(Point.from(PointCommand.Charge.of(user.getId(), BigDecimal.valueOf(50000))));
+
 		Order order1 = new Order(user.getId(), null, List.of(new OrderItem(null, product, null, 1, product.getPrice())));
 		Order order2 = new Order(user.getId(), null, List.of(new OrderItem(null, product, null, 1, product.getPrice())));
 		List<Order> orders = orderRepository.saveAll(List.of(order1, order2));
+		List<Payment> payments = orders.stream().map(Payment::create).toList();
+		paymentRepository.saveAll(payments);
 		// when
 		concurrencyTestHelper.run(2, index -> {
 			OrderCriteria.Cancel request = new OrderCriteria.Cancel(

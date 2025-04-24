@@ -24,15 +24,12 @@ public class CouponRepositoryImpl implements CouponRepository {
 	}
 
 	@Override
-	public Coupon issue(Coupon coupon) {
-		return couponJpaRepository.save(CouponEntity.create(coupon)).toDomain();
-	}
-
-	@Override
-	public Coupon findByIdWithLock(String id) {
-		return couponJpaRepository.findByIdWithLock(id)
-			.orElseThrow(()->new CustomException(ErrorCode.NOT_EXIST_COUPON))
-			.toDomain();
+	public Coupon issue(String id) {
+		CouponEntity couponEntity = couponJpaRepository.findByIdWithLock(id)
+			.orElseThrow(() -> new CustomException(ErrorCode.NOT_EXIST_COUPON));
+		Coupon coupon = couponEntity.toDomain();
+		coupon.issue();
+		return couponJpaRepository.save(CouponEntity.from(coupon)).toDomain();
 	}
 
 	@Override

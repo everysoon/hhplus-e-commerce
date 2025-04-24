@@ -1,19 +1,19 @@
 package kr.hhplus.be.server.application.order.service;
 
+import static org.springframework.transaction.annotation.Propagation.MANDATORY;
+
+import java.util.List;
 import kr.hhplus.be.server.application.order.OrderCommand;
 import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.order.OrderHistory;
 import kr.hhplus.be.server.domain.order.repository.OrderHistoryRepository;
 import kr.hhplus.be.server.domain.order.repository.OrderRepository;
+import kr.hhplus.be.server.infra.order.entity.OrderStatus;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-
-import static org.springframework.transaction.annotation.Propagation.MANDATORY;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +23,14 @@ public class OrderService {
 	private final OrderHistoryRepository orderHistoryRepository;
 	private final Logger logger = LoggerFactory.getLogger(OrderService.class);
 
+	public boolean isExistingOrder(OrderCommand.Exist command) {
+		Order order = orderRepository.existsOrder(command.userId(),
+			command.productIds());
+		return order != null;
+	}
+
 	public Order create(OrderCommand.Create command) {
+
 		logger.info("### create : {}", command);
 		return new Order(
 			command.couponInfo().userId(),
@@ -55,9 +62,10 @@ public class OrderService {
 		orderHistoryRepository.save(history);
 		return save;
 	}
+
 	@Transactional(propagation = MANDATORY)
-	public void cancel(Long orderId) {
-		OrderHistory history = OrderHistory.of(orderId, "CANCEL");
+	public void cancel(Order order) {
+		OrderHistory history = OrderHistory.of(order.getId(), OrderStatus.CANCELED.toString());
 		orderHistoryRepository.save(history);
 	}
 }

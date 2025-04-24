@@ -1,19 +1,20 @@
 package kr.hhplus.be.server.domain.order;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 import kr.hhplus.be.server.domain.coupon.Coupon;
 import kr.hhplus.be.server.domain.product.Product;
+import kr.hhplus.be.server.infra.order.entity.OrderStatus;
 import kr.hhplus.be.server.support.common.exception.CustomException;
 import kr.hhplus.be.server.support.config.swagger.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
-
 @Getter
 @AllArgsConstructor
 public class Order {
+
 	private Long id;
 	private final Long userId;
 	private List<Coupon> coupons;
@@ -29,7 +30,6 @@ public class Order {
 		}
 		return this.totalPrice.subtract(this.totalDiscount);
 	}
-
 	public Order(Long userId, List<Coupon> coupons, List<OrderItem> orderItems) {
 		this.userId = userId;
 		this.coupons = coupons;

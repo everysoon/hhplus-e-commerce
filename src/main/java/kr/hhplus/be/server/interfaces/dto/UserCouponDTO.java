@@ -1,6 +1,5 @@
 package kr.hhplus.be.server.interfaces.dto;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import kr.hhplus.be.server.application.coupon.UserCouponDetailResult;
@@ -29,7 +28,7 @@ public class UserCouponDTO {
 								 LocalDateTime issuedAt,
 								 CouponType type,
 								 String description,
-								 BigDecimal discount,
+								 Integer discount,
 								 LocalDateTime expired) {
 
 		public static CouponDetailResponse from(UserCouponDetailResult result) {
@@ -40,7 +39,7 @@ public class UserCouponDTO {
 				result.issuedAt(),
 				result.type(),
 				result.description(),
-				result.discount(),
+				result.discount().intValue(),
 				result.expired()
 			);
 		}

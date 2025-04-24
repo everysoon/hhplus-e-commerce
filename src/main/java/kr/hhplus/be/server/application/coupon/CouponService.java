@@ -2,6 +2,7 @@ package kr.hhplus.be.server.application.coupon;
 
 import static org.springframework.transaction.annotation.Propagation.MANDATORY;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import kr.hhplus.be.server.domain.coupon.Coupon;
 import kr.hhplus.be.server.domain.coupon.CouponRepository;
@@ -15,11 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
-import static org.springframework.transaction.annotation.Propagation.MANDATORY;
-
 @Service
 @RequiredArgsConstructor
 public class CouponService {
@@ -32,7 +28,8 @@ public class CouponService {
 
 	@Transactional(readOnly = true)
 	public List<UserCouponDetailResult> getUserCoupons(Long userId) {
-		return userCouponRepository.findByUserId(userId).stream().map(UserCouponDetailResult::of).toList();
+		return userCouponRepository.findByUserId(userId).stream().map(UserCouponDetailResult::of)
+			.toList();
 	}
 
 	@Transactional(readOnly = true)
@@ -77,7 +74,7 @@ public class CouponService {
 
 	@Transactional(propagation = MANDATORY)
 	public UseCouponInfo use(CouponCommand.Use command) {
-		if (command.couponIds().isEmpty()) {
+		if (command.couponIds() == null || command.couponIds().isEmpty()) {
 			return new UseCouponInfo(command.userId(), null);
 		}
 		logger.info("### use parameter : {}", command);
@@ -105,20 +102,25 @@ public class CouponService {
 	@Transactional
 	public void scheduleExpireCoupons() {
 		LocalDateTime now = LocalDateTime.now();
-		List<String> expiredCouponIds = couponRepository.findExpiredAll(now).stream().map(Coupon::getId).toList();
+		List<String> expiredCouponIds = couponRepository.findExpiredAll(now).stream()
+			.map(Coupon::getId).toList();
 		logger.info("### scheduleExpireCoupons {}", expiredCouponIds);
-		if (!expiredCouponIds.isEmpty()) userCouponRepository.updateExpiredCoupons(expiredCouponIds);
+		if (!expiredCouponIds.isEmpty()) {
+			userCouponRepository.updateExpiredCoupons(expiredCouponIds);
+		}
 	}
 
 	@Transactional
 	public void scheduleNotifyUserBeforeExpireDay() {
 		LocalDateTime expiredAt = LocalDateTime.now().minusDays(1);
-		List<String> expiredCouponIds = couponRepository.findExpiredAll(expiredAt).stream().map(Coupon::getId).toList();
+		List<String> expiredCouponIds = couponRepository.findExpiredAll(expiredAt).stream()
+			.map(Coupon::getId).toList();
 		List<UserCoupon> userCoupons = userCouponRepository.findByCouponIds(expiredCouponIds);
 		logger.info("### scheduleNotifyUserBeforeExpireDay {}", userCoupons.size());
 		userCoupons.forEach(uc -> {
 			logger.info("### TEMP SEND Notification");
-			String message = uc.getUserId() + "님, " + uc.getCoupon().getDescription() + " 쿠폰이 만료 하루 전입니다.";
+			String message =
+				uc.getUserId() + "님, " + uc.getCoupon().getDescription() + " 쿠폰이 만료 하루 전입니다.";
 			notificationSender.sendNotification(message);
 		});
 	}

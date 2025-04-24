@@ -25,6 +25,7 @@ public class PaymentService {
 
 	@Transactional(propagation = MANDATORY)
 	public Payment pay(PaymentCommand.Request command) {
+		logger.info("### pay command : {}", command);
 		// client 통신
 		String token = paymentClient.getToken(PaymentDTO.TokenRequest.from(command));
 		String transactionId = paymentClient.send(PaymentDTO.PaymentRequest.from(command, token));
@@ -39,6 +40,7 @@ public class PaymentService {
 	@Transactional(propagation = MANDATORY)
 	public Payment cancel(Order order) {
 		// client 통신
+		logger.info("### cancel command : {}", order);
 		Payment payment = paymentRepository.findByOrderId(order.getId());
 		PaymentCommand.Request command = PaymentCommand.Request.of(order, payment.getPaymentMethod());
 		String token = paymentClient.getToken(PaymentDTO.TokenRequest.from(command));

@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.infra.payment.repository;
 
+import java.util.List;
 import kr.hhplus.be.server.domain.payment.Payment;
 import kr.hhplus.be.server.domain.payment.repository.PaymentRepository;
 import kr.hhplus.be.server.infra.payment.entity.PaymentEntity;
@@ -15,6 +16,12 @@ public class PaymentRepositoryImpl implements PaymentRepository {
 	@Override
 	public Payment save(Payment payment) {
 		return paymentJpaRepository.saveAndFlush(PaymentEntity.from(payment)).toDomain();
+	}
+
+	@Override
+	public List<Payment> saveAll(List<Payment> payments) {
+		List<PaymentEntity> paymentEntities = payments.stream().map(PaymentEntity::from).toList();
+		return paymentJpaRepository.saveAll(paymentEntities).stream().map(PaymentEntity::toDomain).toList();
 	}
 
 	@Override

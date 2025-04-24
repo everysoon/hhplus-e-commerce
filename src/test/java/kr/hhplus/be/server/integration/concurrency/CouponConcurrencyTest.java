@@ -1,5 +1,9 @@
-package kr.hhplus.be.server.integration;
+package kr.hhplus.be.server.integration.concurrency;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
+import java.util.List;
+import java.util.stream.IntStream;
 import kr.hhplus.be.server.application.coupon.CouponCommand;
 import kr.hhplus.be.server.application.coupon.CouponService;
 import kr.hhplus.be.server.domain.coupon.Coupon;
@@ -11,25 +15,16 @@ import kr.hhplus.be.server.domain.user.repository.UserRepository;
 import kr.hhplus.be.server.integration.common.BaseIntegrationTest;
 import kr.hhplus.be.server.utils.CouponTestFixture;
 import kr.hhplus.be.server.utils.UserTestFixture;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.stream.IntStream;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-
+@Slf4j
 public class CouponConcurrencyTest extends BaseIntegrationTest {
+
 	@Autowired
 	private CouponService couponService;
-
 	@Autowired
 	private CouponRepository couponRepository;
 	@Autowired
@@ -37,46 +32,37 @@ public class CouponConcurrencyTest extends BaseIntegrationTest {
 	@Autowired
 	private UserCouponRepository userCouponRepository;
 
+	@Autowired
+	private ConcurrencyTestHelper concurrencyTestHelper;
+
 	private Coupon coupon;
 	private final int threadCount = 10;
-	private ExecutorService executor;
-	private CountDownLatch latch;
 
 	@BeforeAll
 	void init() {
-		coupon = CouponTestFixture.create(UUID.randomUUID().toString());
+		coupon = CouponTestFixture.create(1);
 		IntStream.rangeClosed(1, threadCount).forEach(i -> {
 			userRepository.save(UserTestFixture.createUser((long) i));
 		});
-		executor = Executors.newFixedThreadPool(threadCount);
-		latch = new CountDownLatch(threadCount);
 	}
 
+
 	@Test
-	void 선착순쿠폰_발급시_재고가1개_남았음에도_10명의_유저가_발급요청을_한다면_동시성제어가_되지않아_모두_발급된다() throws InterruptedException {
-		Coupon issue = couponRepository.issue(coupon);
-		List<Exception> exceptions = Collections.synchronizedList(new ArrayList<>());
+	void 선착순쿠폰_발급시_쿠폰_재고가_1개_남았으면_10명중_1명만_발급에_성공한다() throws InterruptedException {
+		Coupon issue = couponRepository.save(coupon);
 
 		List<User> users = userRepository.findAll();
-		for (User user : users) {
-			executor.submit(() -> {
-				try {
-					CouponCommand.Issue command = CouponCommand.Issue.of(user.getId(), issue.getId());
-					couponService.issueCoupon(command);
-				} catch (Exception e) {
-					System.out.println("exception"+e.getMessage());
-					exceptions.add(e);
-				} finally {
-					latch.countDown();
-				}
-			});
-		}
-
-		latch.await();
+		concurrencyTestHelper.run(threadCount, index -> {
+			User user = users.get(index);
+			CouponCommand.Issue command = CouponCommand.Issue.of(user.getId(), issue.getId());
+			couponService.issueCoupon(command);
+		});
 
 		List<UserCoupon> issuedCoupons = userCouponRepository.findAll();
 		int issuedCount = issuedCoupons.size();
-		// 실패해야 하는 조건: 1장 이상 발급되면 동시성 문제가 발생한 것
-		assertThat(issuedCount).isGreaterThan(1);
+
+		assertThat(issuedCount).isEqualTo(1);
+		assertThat(issuedCoupons.get(0).getCoupon().getRemainingQuantity()).isEqualTo(0);
+		assertThat(concurrencyTestHelper.getExceptions().size()).isEqualTo(9);
 	}
 }

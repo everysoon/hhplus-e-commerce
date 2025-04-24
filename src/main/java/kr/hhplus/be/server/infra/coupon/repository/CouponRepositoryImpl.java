@@ -23,19 +23,35 @@ public class CouponRepositoryImpl implements CouponRepository {
 	}
 
 	@Override
-	public Coupon issue(Coupon coupon) {
+	public Coupon issue(String id) {
+		CouponEntity couponEntity = couponJpaRepository.findByIdWithLock(id)
+			.orElseThrow(() -> new CustomException(ErrorCode.NOT_EXIST_COUPON));
+		Coupon coupon = couponEntity.toDomain();
+		coupon.issue();
 		return couponJpaRepository.save(CouponEntity.from(coupon)).toDomain();
 	}
 
 	@Override
+	public Coupon findByIdWithLock(String id) {
+		return couponJpaRepository.findByIdWithLock(id)
+			.orElseThrow(()->new CustomException(ErrorCode.NOT_EXIST_COUPON))
+			.toDomain();
+	}
+
+	@Override
 	public void updateAll(List<Coupon> coupons) {
-		List<CouponEntity> couponEntities = coupons.stream().map(CouponEntity::update).toList();
+		List<CouponEntity> couponEntities = coupons.stream().map(CouponEntity::from).toList();
 		couponJpaRepository.saveAll(couponEntities);
 	}
 
 	@Override
 	public List<Coupon> findAll() {
 		return couponJpaRepository.findAll().stream().map(CouponEntity::toDomain).toList();
+	}
+
+	@Override
+	public Coupon save(Coupon coupon) {
+		return couponJpaRepository.save(CouponEntity.from(coupon)).toDomain();
 	}
 
 	@Override

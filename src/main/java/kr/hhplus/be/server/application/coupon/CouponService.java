@@ -1,5 +1,8 @@
 package kr.hhplus.be.server.application.coupon;
 
+import static org.springframework.transaction.annotation.Propagation.MANDATORY;
+
+import java.util.List;
 import kr.hhplus.be.server.domain.coupon.Coupon;
 import kr.hhplus.be.server.domain.coupon.CouponRepository;
 import kr.hhplus.be.server.domain.coupon.CouponValidator;
@@ -10,10 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-
-import static org.springframework.transaction.annotation.Propagation.MANDATORY;
 
 @Service
 @RequiredArgsConstructor
@@ -59,10 +58,12 @@ public class CouponService {
 
 	@Transactional
 	public UserCouponDetailResult issueCoupon(CouponCommand.Issue command) {
+		logger.info("### issueCoupon parameter : {}", command.toString());
 		couponValidator.isCouponIdValidUuid(command.couponId());
-		Coupon coupon = couponRepository.findById(command.couponId());
-		coupon.issue();
-		UserCoupon userCoupon = issueByUser(command);
+		couponValidator.duplicateIssued(command.userId(), command.couponId());
+		Coupon coupon = couponRepository.issue(command.couponId());
+		couponValidator.isValidCoupon(coupon);
+		UserCoupon userCoupon = userCouponRepository.save(command.toUnitCouponValid(coupon));
 		return UserCouponDetailResult.of(userCoupon);
 	}
 
@@ -87,13 +88,6 @@ public class CouponService {
 		);
 	}
 
-	public UserCoupon issueByUser(CouponCommand.Issue command) {
-		logger.info("### issueByUser parameter : {}", command.toString());
-		couponValidator.duplicateIssued(command.userId(), command.couponId());
-		Coupon coupon = couponRepository.findById(command.couponId());
-		couponValidator.isValidCoupon(coupon);
-		return userCouponRepository.save(command.toUnitCouponValid(coupon));
-	}
 
 	public Coupon findCouponById(String id) {
 		logger.info("### findCouponById parameter : {}", id);

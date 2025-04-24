@@ -23,6 +23,7 @@ public class CouponValidator {
 	public void isValidCoupon(Coupon coupon) {
 		isCouponIdValidUuid(coupon.getId());
 		coupon.validExpired();
+		coupon.validateStock();
 	}
 	public void duplicateIssued(Long userId, String couponId) {
 		List<UserCoupon> userCoupons = userCouponRepository.findByUserIdAndCouponIds(userId, List.of(couponId));

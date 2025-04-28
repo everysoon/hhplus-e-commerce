@@ -10,6 +10,7 @@ import kr.hhplus.be.server.domain.coupon.CouponValidator;
 import kr.hhplus.be.server.domain.coupon.UserCoupon;
 import kr.hhplus.be.server.domain.user.repository.UserCouponRepository;
 import kr.hhplus.be.server.infra.NotificationSender;
+import kr.hhplus.be.server.infra.lock.RedisLock;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,6 +63,7 @@ public class CouponService {
 	}
 
 	@Transactional
+	@RedisLock(lockKey = "user:{#command.userId()}:coupon:{#command.couponId()}", params = "#command.userId(), #command.couponId()")
 	public UserCouponDetailResult issueCoupon(CouponCommand.Issue command) {
 		logger.info("### issueCoupon parameter : {}", command.toString());
 		couponValidator.isCouponIdValidUuid(command.couponId());

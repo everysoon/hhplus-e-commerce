@@ -7,6 +7,7 @@ import kr.hhplus.be.server.domain.point.Point;
 import kr.hhplus.be.server.domain.point.PointHistory;
 import kr.hhplus.be.server.domain.point.repository.PointHistoryRepository;
 import kr.hhplus.be.server.domain.point.repository.PointRepository;
+import kr.hhplus.be.server.infra.lock.RedisLock;
 import kr.hhplus.be.server.infra.point.entity.PointStatus;
 import kr.hhplus.be.server.support.common.exception.CustomException;
 import kr.hhplus.be.server.support.config.swagger.ErrorCode;
@@ -33,6 +34,7 @@ public class PointService {
 	}
 
 	@Transactional
+	@RedisLock(lockKey = "user:point{#command.userId()}", params = "#command.userId()")
 	public PointCommand.Detail charge(PointCommand.Charge command) {
 		Point point = pointRepository.charge(command.userId(), command.amount());
 		PointHistory history = PointHistory.from(command);
@@ -47,6 +49,7 @@ public class PointService {
 	}
 
 	@Transactional
+	@RedisLock(lockKey = "user:point{#command.userId()}", params = "#command.userId()")
 	public PointCommand.Detail use(PointCommand.Use command) {
 		Point point = pointRepository.use(command.userId(), command.amount());
 		PointHistory history = PointHistory.from(command);

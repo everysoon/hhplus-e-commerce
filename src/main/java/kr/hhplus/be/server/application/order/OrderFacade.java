@@ -17,6 +17,7 @@ import kr.hhplus.be.server.domain.order.OrderItem;
 import kr.hhplus.be.server.domain.payment.Payment;
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.user.User;
+import kr.hhplus.be.server.infra.lock.RedisLock;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +51,7 @@ public class OrderFacade {
 		backoff = @Backoff(delay = 100)
 	)
 	@Transactional
+	@RedisLock(lockKey = "order:{#criteria.orderId()}", params = "#criteria.orderId()")
 	public OrderResult.Cancel cancel(OrderCriteria.Cancel criteria) {
 		logger.info("### cancel parameter : {}", criteria.toString());
 		Order order = orderService.findByIdAndUserId(criteria.orderId(), criteria.userId());
@@ -80,6 +82,7 @@ public class OrderFacade {
 	@Transactional
 	public OrderResult.Place placeOrder(OrderCriteria.Request criteria) {
 		logger.info("### placeOrder parameter : {}", criteria.toString());
+
 		User user = userService.get(criteria.userId());
 		// 쿠폰 사용 - 상태 변환
 		// 쿠폰 유효성 확인

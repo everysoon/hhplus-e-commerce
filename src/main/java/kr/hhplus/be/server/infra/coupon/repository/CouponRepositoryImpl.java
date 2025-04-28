@@ -25,7 +25,7 @@ public class CouponRepositoryImpl implements CouponRepository {
 
 	@Override
 	public Coupon issue(String id) {
-		CouponEntity couponEntity = couponJpaRepository.findByIdWithLock(id)
+		CouponEntity couponEntity = couponJpaRepository.findById(id)
 			.orElseThrow(() -> new CustomException(ErrorCode.NOT_EXIST_COUPON));
 		Coupon coupon = couponEntity.toDomain();
 		coupon.issue();

@@ -26,6 +26,12 @@ public class OrderCriteria {
 
 			return new Request(dto.getUserId(), items, dto.getCouponId(),PaymentMethod.POINTS);
 		}
+		public int couponsKey(){
+			if(couponIds == null || couponIds.isEmpty()){
+				return 0;
+			}
+			return couponIds.hashCode();
+		}
 		public List<Long> productIds(){
 			return orderItems.stream().map(Item::productId).toList();
 		}

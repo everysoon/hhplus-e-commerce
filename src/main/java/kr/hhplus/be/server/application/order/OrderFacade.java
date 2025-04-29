@@ -1,7 +1,6 @@
 package kr.hhplus.be.server.application.order;
 
 import jakarta.transaction.Transactional;
-import java.util.List;
 import kr.hhplus.be.server.application.coupon.CouponCommand;
 import kr.hhplus.be.server.application.coupon.CouponService;
 import kr.hhplus.be.server.application.coupon.UseCouponInfo;
@@ -17,7 +16,6 @@ import kr.hhplus.be.server.domain.order.OrderItem;
 import kr.hhplus.be.server.domain.payment.Payment;
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.user.User;
-import kr.hhplus.be.server.infra.lock.RedisLock;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +23,8 @@ import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -51,7 +51,6 @@ public class OrderFacade {
 		backoff = @Backoff(delay = 100)
 	)
 	@Transactional
-	@RedisLock(lockKey = "order:{#criteria.orderId()}", params = "#criteria.orderId()")
 	public OrderResult.Cancel cancel(OrderCriteria.Cancel criteria) {
 		logger.info("### cancel parameter : {}", criteria.toString());
 		Order order = orderService.findByIdAndUserId(criteria.orderId(), criteria.userId());

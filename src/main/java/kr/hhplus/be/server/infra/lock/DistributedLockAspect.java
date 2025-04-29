@@ -1,18 +1,22 @@
 package kr.hhplus.be.server.infra.lock;
 
-import java.sql.SQLException;
-import java.util.concurrent.TimeUnit;
+import kr.hhplus.be.server.support.common.exception.CustomException;
+import kr.hhplus.be.server.support.config.swagger.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.hibernate.exception.LockAcquisitionException;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
+import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.stereotype.Component;
+
+import java.util.concurrent.TimeUnit;
 
 @Aspect
 @Component
@@ -24,47 +28,43 @@ public class DistributedLockAspect {
 
 	@Around("@annotation(redisLock)")
 	public Object lock(ProceedingJoinPoint joinPoint, RedisLock redisLock) throws Throwable {
-		log.info("### DistributedLockAspect lockKey : {} ",redisLock.lockKey());
-		log.info("### DistributedLockAspect params : {} ",redisLock.params());
-		log.info("### DistributedLockAspect waitTime : {} ",redisLock.waitTime());
-		log.info("### DistributedLockAspect lockTimeout : {} ",redisLock.lockTimeout());
-		String lockKey = redisLock.lockKey();
+		MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+		String lockKey = getDynamicValue(signature.getParameterNames(), joinPoint.getArgs(), redisLock.lockKey());
 		long waitTime = redisLock.waitTime();
 		long lockTimeout = redisLock.lockTimeout();
-
+		log.info("### DistributedLockAspect lockKey : {} ", lockKey);
+		log.info("### DistributedLockAspect waitTime : {} ", redisLock.waitTime());
+		log.info("### DistributedLockAspect lockTimeout : {} ", redisLock.lockTimeout());
 		RLock lock = redissonClient.getLock(lockKey);
 		boolean lockAcquired = lock.tryLock(waitTime, lockTimeout, TimeUnit.MILLISECONDS);
 
 		if (!lockAcquired) {
-			throw new LockAcquisitionException("Unable to acquire lock within the wait time",
-				new SQLException());
+			throw new CustomException(ErrorCode.LOCK_ACQUISITION_FAIL);
 		}
-
 		try {
 			return joinPoint.proceed();  // 락을 획득한 후 실제 메서드 실행
 		} finally {
-			lock.unlock();  // 메서드 실행 후 락 해제
-		}
-	}
-	@AfterThrowing(value = "@annotation(redisLock)", throwing = "ex")
-	public void handleLockOnException(RedisLock redisLock, Throwable ex) {
-		// 예외가 발생하면 락 해제
-		log.info("### DistributedLockAspect handleLockOnException : {} ",ex.getMessage());
-		String lockKey = redisLock.lockKey();
-		RLock lock = redissonClient.getLock(lockKey);
-		if (lock.isHeldByCurrentThread()) {
-			lock.unlock();
+			// release lock
+			if (lock.isHeldByCurrentThread()) {
+				log.info("### [{}] releaseLock : {} ", Thread.currentThread().getName(), lock.getName());
+				lock.unlock();
+			}
 		}
 	}
 
-	@After(value = "@annotation(redisLock)")
-	public void releaseLock(RedisLock redisLock) {
-		// 트랜잭션 성공/롤백 여부와 관계없이 락 해제
-		log.info("### DistributedLockAspect releaseLock : {} ",redisLock.lockKey());
-		String lockKey = redisLock.lockKey();
-		RLock lock = redissonClient.getLock(lockKey);
-		if (lock.isHeldByCurrentThread()) {
-			lock.unlock();
+	@AfterThrowing(value = "@annotation(redisLock)", throwing = "ex")
+	public void handleLockOnException(RedisLock redisLock, Throwable ex) {
+		log.info("### [{}] handleLockOnException ", Thread.currentThread().getName(), ex.getMessage());
+	}
+
+	public static String getDynamicValue(String[] parameterNames, Object[] args, String key) {
+		ExpressionParser parser = new SpelExpressionParser();
+		StandardEvaluationContext context = new StandardEvaluationContext();
+
+		for (int i = 0; i < parameterNames.length; i++) {
+			context.setVariable(parameterNames[i], args[i]);
 		}
+
+		return parser.parseExpression(key).getValue(context, String.class);
 	}
 }

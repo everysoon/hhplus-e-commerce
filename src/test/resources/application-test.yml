@@ -1,5 +1,17 @@
 
+
 spring:
+  # Redis 설정은 테스트 컨테이너에서 자동으로 설정됨
+  redis:
+    enabled: true
+
+  # Redis 관련 로그 확인
+  logging:
+    level:
+      org.springframework.data.redis: DEBUG
+      io.lettuce: DEBUG
+      org.redisson: DEBUG
+      kr.hhplus.be.server.test: DEBUG
   datasource:
 #    url: jdbc:tc:mysql:8.0.36:///hhplus  # ✅ 테스트컨테이너용 특수 JDBC URL
 #    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver

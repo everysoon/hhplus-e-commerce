@@ -1,9 +1,5 @@
 package kr.hhplus.be.server.integration.concurrency;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-
-import java.util.List;
-import java.util.stream.IntStream;
 import kr.hhplus.be.server.application.coupon.CouponCommand;
 import kr.hhplus.be.server.application.coupon.CouponService;
 import kr.hhplus.be.server.domain.coupon.Coupon;
@@ -19,6 +15,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
+import java.util.stream.IntStream;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @Slf4j
 public class CouponConcurrencyTest extends BaseIntegrationTest {
@@ -45,8 +46,6 @@ public class CouponConcurrencyTest extends BaseIntegrationTest {
 			userRepository.save(UserTestFixture.createUser((long) i));
 		});
 	}
-
-
 	@Test
 	void 선착순쿠폰_발급시_쿠폰_재고가_1개_남았으면_10명중_1명만_발급에_성공한다() throws InterruptedException {
 		Coupon issue = couponRepository.save(coupon);

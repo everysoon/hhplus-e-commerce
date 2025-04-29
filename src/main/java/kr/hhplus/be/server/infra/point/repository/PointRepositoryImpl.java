@@ -1,6 +1,5 @@
 package kr.hhplus.be.server.infra.point.repository;
 
-import java.math.BigDecimal;
 import kr.hhplus.be.server.domain.point.Point;
 import kr.hhplus.be.server.domain.point.repository.PointRepository;
 import kr.hhplus.be.server.infra.point.entity.PointEntity;
@@ -9,6 +8,7 @@ import kr.hhplus.be.server.support.config.swagger.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 @Repository
@@ -29,7 +29,7 @@ public class PointRepositoryImpl implements PointRepository {
 
 	@Override
 	public Point use(Long userId, BigDecimal amount) {
-		PointEntity entity = pointJpaRepository.findByUserId(userId).orElseThrow(()->new CustomException(
+		PointEntity entity = pointJpaRepository.findByUserIdWithLock(userId).orElseThrow(()->new CustomException(
 			ErrorCode.INSUFFICIENT_POINTS));
 		Point domain = entity.toDomain();
 		domain.use(amount);
@@ -38,7 +38,7 @@ public class PointRepositoryImpl implements PointRepository {
 
 	@Override
 	public Point charge(Long userId, BigDecimal amount) {
-		PointEntity entity = pointJpaRepository.findByUserId(userId).orElseGet(() ->
+		PointEntity entity = pointJpaRepository.findByUserIdWithLock(userId).orElseGet(() ->
 			pointJpaRepository.save(PointEntity.create(userId))
 		);
 		Point domain = entity.toDomain();

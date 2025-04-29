@@ -42,6 +42,9 @@ public class CouponEntity {
 	@Column(nullable = false)
 	private LocalDateTime issuedAt;
 
+	@Version
+	private long version;
+
 	public CouponEntity(CouponType type, String description, BigDecimal discountAmount,
 		int initialQuantity, int remainingQuantity) {
 		this.id = UUID.randomUUID().toString();

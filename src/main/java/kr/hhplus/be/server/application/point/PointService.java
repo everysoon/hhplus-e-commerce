@@ -28,11 +28,9 @@ public class PointService {
 	public Point refund(PointCommand.Refund command) {
 		PointHistory pointHistory = new PointHistory(null, command.userId(), PointStatus.REFUND,
 			command.totalPrice(), LocalDateTime.now());
-		Point point = pointRepository.findByUserId(command.userId()).get();
-		point.charge(command.totalPrice());
-		Point save = pointRepository.save(point);
+		Point point = pointRepository.charge(command.userId(), command.totalPrice());
 		pointHistoryRepository.save(pointHistory);
-		return save;
+		return point;
 	}
 
 	@Transactional

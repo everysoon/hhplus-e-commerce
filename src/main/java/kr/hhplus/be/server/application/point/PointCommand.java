@@ -26,6 +26,9 @@ public class PointCommand {
 		Long userId,
 		BigDecimal totalPrice
 	){
+		public String getLockKey(){
+			return LockKeyPrefix.USER_POINT.createKey(userId);
+		}
 		public static Refund of(Long userId, BigDecimal totalPrice){
 			return new Refund(userId, totalPrice);
 		}

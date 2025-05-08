@@ -16,6 +16,7 @@ import kr.hhplus.be.server.integration.common.BaseIntegrationTest;
 import kr.hhplus.be.server.utils.CouponTestFixture;
 import kr.hhplus.be.server.utils.UserTestFixture;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,12 +38,16 @@ public class CouponConcurrencyTest extends BaseIntegrationTest {
 
 	private final int threadCount = 10;
 
-	@Test
-	@DisplayName("단일 쿠폰의 재고가 부족할때 해당 쿠폰 재고만큼의 유저에게만 발급이 성공한다.")
-	void 선착순쿠폰_발급시_쿠폰_재고가_1개_남았으면_10명중_1명만_발급에_성공한다() throws InterruptedException {
+	@BeforeAll
+	void setUp() throws Exception {
 		IntStream.rangeClosed(1, threadCount).forEach(i -> {
 			userRepository.save(UserTestFixture.createUser((long) i));
 		});
+	}
+
+	@Test
+	@DisplayName("단일 쿠폰의 재고가 부족할때 해당 쿠폰 재고만큼의 유저에게만 발급이 성공한다.")
+	void 선착순쿠폰_발급시_쿠폰_재고가_1개_남았으면_10명중_1명만_발급에_성공한다() throws InterruptedException {
 		Coupon issue = couponRepository.save(CouponTestFixture.create(1));
 		List<User> users = userRepository.findAll();
 		concurrencyTestHelper.run(threadCount, index -> {
@@ -63,9 +68,6 @@ public class CouponConcurrencyTest extends BaseIntegrationTest {
 	@Test
 	void 여러유저가_여러_선착순쿠폰에_동시에_접근하면_각_쿠폰마다_최대1명만_발급된다() throws InterruptedException {
 		// given: 3개의 재고 1인 쿠폰 저장 , 10명의 유저
-		IntStream.rangeClosed(1, threadCount).forEach(i -> {
-			userRepository.save(UserTestFixture.createUser((long) i));
-		});
 		List<Coupon> coupons = IntStream.range(0, 3)
 			.mapToObj(i -> CouponTestFixture.create(1))
 			.map(couponRepository::save)
@@ -78,7 +80,8 @@ public class CouponConcurrencyTest extends BaseIntegrationTest {
 		concurrencyTestHelper.run(threadCount, index -> {
 			User user = users.get(index);
 			Coupon randomCoupon = coupons.get(index % 3); // 0,1,2 반복
-			CouponCommand.Issue command = CouponCommand.Issue.of(user.getId(), randomCoupon.getId());
+			CouponCommand.Issue command = CouponCommand.Issue.of(user.getId(),
+				randomCoupon.getId());
 			couponService.issueCoupon(command);
 		});
 

@@ -1,10 +1,24 @@
 package kr.hhplus.be.server.application.product;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import kr.hhplus.be.server.domain.order.Order;
+import kr.hhplus.be.server.domain.order.OrderItem;
+import kr.hhplus.be.server.support.utils.LockKeyPrefix;
 import org.springframework.data.domain.Pageable;
 
-import java.time.LocalDateTime;
-
 public class ProductCommand {
+	public record Refund (
+		List<OrderItem> orderItems,
+		Long orderId
+	){
+		public static Refund of(Order order){
+			return new Refund(order.getOrderItems(),order.getId());
+		}
+		public String getLockKey(){
+			return LockKeyPrefix.ORDER_CANCEL.createKey(orderId);
+		}
+	}
 	public record FilterSearch (
 		String name,
 		String category,

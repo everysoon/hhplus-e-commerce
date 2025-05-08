@@ -1,17 +1,16 @@
 package kr.hhplus.be.server.application.product;
 
-import kr.hhplus.be.server.domain.order.OrderItem;
+import static org.springframework.transaction.annotation.Propagation.MANDATORY;
+
+import java.util.List;
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.product.repository.ProductRepository;
+import kr.hhplus.be.server.infra.lock.RedisLock;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-
-import static org.springframework.transaction.annotation.Propagation.MANDATORY;
 
 @Service
 @RequiredArgsConstructor
@@ -35,13 +34,15 @@ public class ProductService {
 	}
 
 	@Transactional(propagation = MANDATORY)
-	public List<Product> increaseStock(List<OrderItem> orderItems) {
-		return orderItems.stream()
+	@RedisLock(lockKey = "#command.getLockKey()")
+	public List<Product> increaseStock(ProductCommand.Refund command) {
+		return command.orderItems().stream()
 			.map(o -> productRepository.increaseStock(o.getProduct(), o.getQuantity()))
 			.toList();
 	}
 
 	@Transactional(propagation = MANDATORY)
+	@RedisLock(lockKey = "'lock:product:' + #productId")
 	public Product decreaseStock(Long productId, Integer quantity) {
 		logger.info("### decreaseStock : {}, {}", productId, quantity);
 		Product product = productRepository.decreaseStock(productId, quantity);

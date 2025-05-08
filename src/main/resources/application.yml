@@ -1,0 +1,47 @@
+
+spring:
+  config:
+    activate:
+      on-profile: local
+  application:
+    name: hhplus
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/hhplus?characterEncoding=UTF-8&serverTimezone=UTC
+    username: root
+    password: alstjsl1!
+  sql:
+    init:
+      mode: always
+#      data-locations: classpath:data.sql
+
+  jpa:
+    defer-datasource-initialization: true
+    open-in-view: false
+    generate-ddl: false
+    show-sql: false
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+      hibernate.timezone.default_storage: NORMALIZE_UTC
+      hibernate.jdbc.time_zone: UTC
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+server:
+  port: 8224
+
+springdoc:
+  override-with-generic-response: false
+  swagger-ui:
+    path: /api-docs
+  api-docs:
+    path: /v3/api-docs
+logging:
+  level:
+    org.springframework.data.jpa.repository.query: DEBUG
+    org.hibernate.SQL: DEBUG

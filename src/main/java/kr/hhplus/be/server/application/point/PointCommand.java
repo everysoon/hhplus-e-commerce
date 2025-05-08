@@ -2,6 +2,7 @@ package kr.hhplus.be.server.application.point;
 
 import kr.hhplus.be.server.domain.point.PointHistory;
 import kr.hhplus.be.server.infra.point.entity.PointStatus;
+import kr.hhplus.be.server.support.utils.LockKeyPrefix;
 
 import java.math.BigDecimal;
 
@@ -25,6 +26,9 @@ public class PointCommand {
 		Long userId,
 		BigDecimal totalPrice
 	){
+		public String getLockKey(){
+			return LockKeyPrefix.USER_POINT.createKey(userId);
+		}
 		public static Refund of(Long userId, BigDecimal totalPrice){
 			return new Refund(userId, totalPrice);
 		}
@@ -34,6 +38,9 @@ public class PointCommand {
 		BigDecimal amount,
 		PointStatus status
 	){
+		public String getLockKey(){
+			return LockKeyPrefix.USER_POINT.createKey(userId);
+		}
 		public static Charge of(Long userId, BigDecimal amount){
 			return new Charge(userId, amount,PointStatus.CHARGED);
 		}
@@ -43,6 +50,9 @@ public class PointCommand {
 		BigDecimal amount,
 		PointStatus status
 	){
+		public String getLockKey(){
+			return LockKeyPrefix.USER_POINT.createKey(userId);
+		}
 		public static Use of(Long userId, BigDecimal amount){
 			return new Use(userId, amount,PointStatus.USED);
 		}

@@ -8,7 +8,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.persistence.Version;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import kr.hhplus.be.server.domain.product.Product;
@@ -55,10 +54,6 @@ public class ProductEntity {
 	@Column(nullable = false)
 	private LocalDateTime createdAt;
 
-	@Version
-	@Column(nullable = false)
-	private Long version = 0L;
-
 	public ProductEntity(String productName, Integer stock, Category category, String description, BigDecimal price, ProductStatus status) {
 		this.productName = productName;
 		this.stock = stock;
@@ -67,9 +62,6 @@ public class ProductEntity {
 		this.price = price;
 		this.status = status;
 		this.createdAt = LocalDateTime.now();
-		if(this.version == null){
-			this.version = 0L;
-		}
 	}
 
 	public static ProductEntity from(Product product) {

@@ -1,9 +1,5 @@
 package kr.hhplus.be.server.application.coupon;
 
-import static org.springframework.transaction.annotation.Propagation.MANDATORY;
-
-import java.time.LocalDateTime;
-import java.util.List;
 import kr.hhplus.be.server.domain.coupon.Coupon;
 import kr.hhplus.be.server.domain.coupon.CouponRepository;
 import kr.hhplus.be.server.domain.coupon.CouponValidator;
@@ -16,6 +12,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.springframework.transaction.annotation.Propagation.MANDATORY;
 
 @Service
 @RequiredArgsConstructor
@@ -63,7 +64,7 @@ public class CouponService {
 	}
 
 	@Transactional
-	@RedisLock(lockKey = "user:{#command.userId()}:coupon:{#command.couponId()}", params = "#command.userId(), #command.couponId()")
+	@RedisLock(lockKey = "#command.getLockKey()")
 	public UserCouponDetailResult issueCoupon(CouponCommand.Issue command) {
 		logger.info("### issueCoupon parameter : {}", command.toString());
 		couponValidator.isCouponIdValidUuid(command.couponId());

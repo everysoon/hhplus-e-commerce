@@ -17,7 +17,6 @@ import kr.hhplus.be.server.domain.order.OrderItem;
 import kr.hhplus.be.server.domain.payment.Payment;
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.user.User;
-import kr.hhplus.be.server.infra.lock.RedisLock;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +39,8 @@ public class OrderFacade {
 
 	public OrderResult.InfoByUser getOrders(Long userId) {
 		logger.info("### getOrders parameter : {}", userId);
-		List<OrderResult.DetailByOrder> orderDetails = orderService.findOrderByUserId(userId).stream()
+		List<OrderResult.DetailByOrder> orderDetails = orderService.findOrderByUserId(userId)
+			.stream()
 			.map(OrderResult.DetailByOrder::from).toList();
 		return OrderResult.InfoByUser.from(userId, orderDetails);
 	}
@@ -50,8 +50,8 @@ public class OrderFacade {
 		maxAttempts = 3,
 		backoff = @Backoff(delay = 100)
 	)
+
 	@Transactional
-	@RedisLock(lockKey = "order:{#criteria.orderId()}", params = "#criteria.orderId()")
 	public OrderResult.Cancel cancel(OrderCriteria.Cancel criteria) {
 		logger.info("### cancel parameter : {}", criteria.toString());
 		Order order = orderService.findByIdAndUserId(criteria.orderId(), criteria.userId());

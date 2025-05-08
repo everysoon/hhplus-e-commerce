@@ -1,8 +1,10 @@
 package kr.hhplus.be.server.application.order;
 
-import java.util.List;
 import kr.hhplus.be.server.domain.payment.PaymentMethod;
 import kr.hhplus.be.server.interfaces.dto.OrderDTO;
+import kr.hhplus.be.server.support.utils.LockKeyPrefix;
+
+import java.util.List;
 
 public class OrderCriteria {
 	public record Cancel(
@@ -11,6 +13,9 @@ public class OrderCriteria {
 	) {
 		public static Cancel from(Long userId, Long orderId) {
 			return new Cancel(userId,orderId);
+		}
+		public String getLockKey(){
+			return LockKeyPrefix.ORDER_CANCEL.createKey(orderId);
 		}
 	}
 	public record Request(
@@ -26,11 +31,8 @@ public class OrderCriteria {
 
 			return new Request(dto.getUserId(), items, dto.getCouponId(),PaymentMethod.POINTS);
 		}
-		public int couponsKey(){
-			if(couponIds == null || couponIds.isEmpty()){
-				return 0;
-			}
-			return couponIds.hashCode();
+		public String getLockKey(){
+			return LockKeyPrefix.ORDER.createKey(userId);
 		}
 		public List<Long> productIds(){
 			return orderItems.stream().map(Item::productId).toList();

@@ -10,6 +10,7 @@ import kr.hhplus.be.server.application.payment.PaymentCommand;
 import kr.hhplus.be.server.application.payment.PaymentService;
 import kr.hhplus.be.server.application.point.PointCommand;
 import kr.hhplus.be.server.application.point.PointService;
+import kr.hhplus.be.server.application.product.ProductCommand;
 import kr.hhplus.be.server.application.product.ProductService;
 import kr.hhplus.be.server.application.user.UserService;
 import kr.hhplus.be.server.domain.order.Order;
@@ -64,8 +65,7 @@ public class OrderFacade {
 		// 쿠폰 상태 복원 (쿠폰 사용했으면)
 		couponService.restore(CouponCommand.Restore.of(user.getId(), order.getCoupons()));
 		// 재고 복원
-		productService.increaseStock(order.getOrderItems());
-
+		productService.increaseStock(ProductCommand.Refund.of(order));
 		// 주문상태 변경 및 저장 - 취소
 		orderService.cancel(order);
 		return OrderResult.Cancel.of(

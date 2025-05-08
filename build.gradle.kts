@@ -63,11 +63,15 @@ dependencies {
     testAnnotationProcessor("org.projectlombok:lombok:1.18.34")
     // faker
     testImplementation("net.datafaker:datafaker:2.0.2")
+    // build.gradle
     implementation ("org.springframework.retry:spring-retry:1.3.1") // 최신 버전 확인 후 사용
     implementation ("org.springframework.boot:spring-boot-starter-aop:2.5.4") // Spring Boot 버전에 맞는 버전
     // redisson
     implementation ("org.redisson:redisson-spring-boot-starter:3.23.5")
     // redis
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    testImplementation ("com.github.codemonstur:embedded-redis:1.4.3")
+
+    implementation("org.apache.commons:commons-pool2")
 }
 

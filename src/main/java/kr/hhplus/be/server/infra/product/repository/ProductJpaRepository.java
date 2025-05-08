@@ -20,4 +20,6 @@ public interface ProductJpaRepository extends JpaRepository<ProductEntity, Long>
 		"""
 	)
 	List<ProductEntity> findPopularAll(@Param("startDate")LocalDateTime startDate, @Param("endDate")LocalDateTime endDate, Pageable pageable);
+
+	List<ProductEntity> findByIdIn(List<Long> productIds);
 }

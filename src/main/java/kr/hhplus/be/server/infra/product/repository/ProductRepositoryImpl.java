@@ -32,6 +32,11 @@ public class ProductRepositoryImpl implements ProductRepository {
 	}
 
 	@Override
+	public List<Product> findByIdIn(List<Long> productIds) {
+		return productJpaRepository.findByIdIn(productIds).stream().map(ProductEntity::toDomain).toList();
+	}
+
+	@Override
 	public Product decreaseStock(Long productId, Integer quantity) {
 		ProductEntity productEntity = productJpaRepository.findById(productId)
 			.orElseThrow(() -> new CustomException(ErrorCode.NOT_EXIST_PRODUCT));

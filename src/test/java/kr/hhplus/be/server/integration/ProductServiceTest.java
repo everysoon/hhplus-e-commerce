@@ -6,6 +6,7 @@ import java.util.List;
 import kr.hhplus.be.server.application.product.ProductService;
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.product.repository.ProductRepository;
+import kr.hhplus.be.server.infra.cache.PopularProductRedisService;
 import kr.hhplus.be.server.integration.common.BaseIntegrationTest;
 import kr.hhplus.be.server.integration.common.TestBatchDataFactory;
 import org.junit.jupiter.api.BeforeAll;
@@ -21,11 +22,12 @@ public class ProductServiceTest extends BaseIntegrationTest {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 	private TestBatchDataFactory dataFactory;
-
+	@Autowired
+	private PopularProductRedisService popularProductRedisService;
 	@BeforeAll
 	public void init() {
 		dataFactory = new TestBatchDataFactory(jdbcTemplate);
-		productService = new ProductService(productRepository);
+		productService = new ProductService(productRepository, popularProductRedisService);
 
 		dataFactory.insertBulkProducts(1000);
 	}

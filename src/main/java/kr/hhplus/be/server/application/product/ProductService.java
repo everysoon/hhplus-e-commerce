@@ -5,6 +5,7 @@ import static org.springframework.transaction.annotation.Propagation.MANDATORY;
 import java.util.List;
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.product.repository.ProductRepository;
+import kr.hhplus.be.server.infra.cache.PopularProductRedisService;
 import kr.hhplus.be.server.infra.lock.RedisLock;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -15,8 +16,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class ProductService {
+
 	private final Logger logger = LoggerFactory.getLogger(ProductService.class);
 	private final ProductRepository productRepository;
+
+	private final PopularProductRedisService popularProductRedisService;
 
 	@Transactional(readOnly = true)
 	public Product findById(Long productId) {
@@ -30,14 +34,22 @@ public class ProductService {
 
 	@Transactional(readOnly = true)
 	public List<Product> findPopularAll(ProductCommand.TopSelling command) {
-		return productRepository.findPopularAll(command);
+		List<Long> topPopularProductIds = popularProductRedisService.getTopPopularProductIds(
+			command.getStartDateOrDefault()
+				.toLocalDate(), command.getEndDateOrDefault().toLocalDate(), 5);
+		return productRepository.findByIdIn(topPopularProductIds);
 	}
 
 	@Transactional(propagation = MANDATORY)
 	@RedisLock(lockKey = "#command.getLockKey()")
 	public List<Product> increaseStock(ProductCommand.Refund command) {
+
 		return command.orderItems().stream()
-			.map(o -> productRepository.increaseStock(o.getProduct(), o.getQuantity()))
+			.map(o -> {
+				popularProductRedisService.decreaseScore(o.getProduct().getId(),
+					-o.getQuantity());
+				return productRepository.increaseStock(o.getProduct(), o.getQuantity());
+			})
 			.toList();
 	}
 
@@ -46,6 +58,7 @@ public class ProductService {
 	public Product decreaseStock(Long productId, Integer quantity) {
 		logger.info("### decreaseStock : {}, {}", productId, quantity);
 		Product product = productRepository.decreaseStock(productId, quantity);
+		popularProductRedisService.increaseScore(productId, quantity);
 		return product;
 	}
 }

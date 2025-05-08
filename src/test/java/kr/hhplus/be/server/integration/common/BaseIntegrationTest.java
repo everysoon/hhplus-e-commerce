@@ -10,7 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @ActiveProfiles("test")
-@Import(RedisTestContainer.class)
+@Import(EmbeddedRedisConfig.class)
 public class BaseIntegrationTest {
 
 }

@@ -9,6 +9,8 @@ public interface ProductRepository {
 
 	Product findById(Long productId);
 
+	List<Product> findByIdIn(List<Long> productIds);
+
 	Product decreaseStock(Long productId, Integer quantity);
 
 	Product increaseStock(Product product, Integer quantity);

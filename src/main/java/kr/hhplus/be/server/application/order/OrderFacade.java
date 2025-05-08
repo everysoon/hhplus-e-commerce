@@ -38,6 +38,7 @@ public class OrderFacade {
 	private final CouponService couponService;
 	private final UserService userService;
 
+
 	public OrderResult.InfoByUser getOrders(Long userId) {
 		logger.info("### getOrders parameter : {}", userId);
 		List<OrderResult.DetailByOrder> orderDetails = orderService.findOrderByUserId(userId)
@@ -66,6 +67,7 @@ public class OrderFacade {
 		couponService.restore(CouponCommand.Restore.of(user.getId(), order.getCoupons()));
 		// 재고 복원
 		productService.increaseStock(ProductCommand.Refund.of(order));
+
 		// 주문상태 변경 및 저장 - 취소
 		orderService.cancel(order);
 		return OrderResult.Cancel.of(

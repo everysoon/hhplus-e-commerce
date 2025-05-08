@@ -19,8 +19,6 @@ public class CouponCommand {
 		}
 		public String getLockKey(){
 			return LockKeyPrefix.COUPON.createKey(couponId);
-//			Object[] params = new Object[] { this.userId, this.couponId };
-//			return LockKeyPrefix.USER_COUPON.createKey(params);
 		}
 	}
 

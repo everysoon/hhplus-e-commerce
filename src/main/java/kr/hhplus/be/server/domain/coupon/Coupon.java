@@ -1,12 +1,11 @@
 package kr.hhplus.be.server.domain.coupon;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import kr.hhplus.be.server.support.common.exception.CustomException;
 import kr.hhplus.be.server.support.config.swagger.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor

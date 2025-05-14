@@ -34,6 +34,17 @@ public class CouponCommand {
 			return coupons.stream().map(Coupon::getId).collect(Collectors.toList());
 		}
 	}
+	public record MultiCouponValid(
+		List<Long> userIds,
+		Coupon coupon
+	) {
+		public static UnitCouponValid of(Long userId, Coupon coupon) {
+			return new UnitCouponValid(
+				userId,
+				coupon
+			);
+		}
+	}
 
 	public record UnitCouponValid(
 		Long userId,

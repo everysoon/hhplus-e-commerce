@@ -1,21 +1,24 @@
 package kr.hhplus.be.server.application.coupon;
 
-import static org.springframework.transaction.annotation.Propagation.MANDATORY;
-
-import java.time.LocalDateTime;
-import java.util.List;
 import kr.hhplus.be.server.domain.coupon.Coupon;
 import kr.hhplus.be.server.domain.coupon.CouponRepository;
 import kr.hhplus.be.server.domain.coupon.CouponValidator;
 import kr.hhplus.be.server.domain.coupon.UserCoupon;
 import kr.hhplus.be.server.domain.user.repository.UserCouponRepository;
 import kr.hhplus.be.server.infra.NotificationSender;
-import kr.hhplus.be.server.infra.lock.RedisLock;
+import kr.hhplus.be.server.infra.cache.CouponIssueService;
 import lombok.RequiredArgsConstructor;
+import org.redisson.api.RSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.springframework.transaction.annotation.Propagation.MANDATORY;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +29,9 @@ public class CouponService {
 	private final UserCouponRepository userCouponRepository;
 	private final CouponValidator couponValidator;
 	private final NotificationSender notificationSender;
+	private final CouponIssueService couponIssueService;
 
+	private final ApplicationEventPublisher eventPublisher;
 	@Transactional(readOnly = true)
 	public List<UserCouponDetailResult> getUserCoupons(Long userId) {
 		return userCouponRepository.findByUserId(userId).stream().map(UserCouponDetailResult::of)
@@ -61,19 +66,22 @@ public class CouponService {
 		userCouponRepository.updateAll(userCoupons);
 		couponRepository.updateAll(coupons);
 	}
-
 	@Transactional
-	@RedisLock(lockKey = "#command.getLockKey()")
-	public UserCouponDetailResult issueCoupon(CouponCommand.Issue command) {
+	public String issueCoupon(CouponCommand.Issue command) {
 		logger.info("### issueCoupon parameter : {}", command.toString());
-		couponValidator.isCouponIdValidUuid(command.couponId());
-		couponValidator.duplicateIssued(command.userId(), command.couponId());
-		Coupon coupon = couponRepository.issue(command.couponId());
-		couponValidator.isValidCoupon(coupon);
-		UserCoupon userCoupon = userCouponRepository.save(command.toUnitCouponValid(coupon));
-		return UserCouponDetailResult.of(userCoupon);
+		RSet<Long> userIds = couponIssueService.issueCoupon(command.userId(), command.couponId());
+		Coupon coupon = couponRepository.issue(command.couponId(),userIds.size());
+		//  userCoupon save 이벤트 처리로 변환 -> response ?!
+		eventPublisher.publishEvent(new CouponIssueEvent(this,command.userId(),command.couponId()));
+//		UserCoupon userCoupon = userCouponRepository.save(command.toUnitCouponValid(coupon));
+//		return UserCouponDetailResult.of(userCoupon);
+		return coupon.getId();
 	}
 
+	public Coupon save(Coupon coupon) {
+		couponIssueService.initCouponStock(coupon.getId(),coupon.getInitialQuantity());
+		return couponRepository.save(coupon);
+	}
 	@Transactional(propagation = MANDATORY)
 	public UseCouponInfo use(CouponCommand.Use command) {
 		if (command.couponIds() == null || command.couponIds().isEmpty()) {

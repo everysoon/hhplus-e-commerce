@@ -1,8 +1,5 @@
 package kr.hhplus.be.server.infra.cache;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 import kr.hhplus.be.server.support.utils.CacheKeys;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RScoredSortedSet;
@@ -13,6 +10,10 @@ import org.redisson.client.protocol.ScoredEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Repository
 @RequiredArgsConstructor
@@ -37,8 +38,8 @@ public class PopularProductRepository {
 
 	// 인기 상품 목록 조회
 	public List<Long> getTopPopularProductIds(LocalDate startDate, LocalDate endDate, int topN) {
-		Object[] args = new Object[]{startDate, endDate, topN};
-		String unionKey = CacheKeys.PRODUCT_UNION_KEY.getKey(args);
+		Object[] args = new Object[]{startDate, endDate};
+		String unionKey = CacheKeys.PRODUCT_UNION.getKey(args);
 		RScoredSortedSet<Long> unionZSet = redissonClient.getScoredSortedSet(unionKey, LongCodec.INSTANCE);
 
 		try {
@@ -68,6 +69,7 @@ public class PopularProductRepository {
 			return unionZSet.entryRangeReversed(0, topN - 1)
 				.stream()
 				.map(ScoredEntry::getValue)
+				.limit(topN)
 				.toList();
 
 		} catch (RedisException e) {

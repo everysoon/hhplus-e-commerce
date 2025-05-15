@@ -12,10 +12,14 @@ public class OrderItem {
 
 	private final Long id;
 	private final Long productId;
-	private final Order order;
+	private Long orderId;
 	private final Integer quantity;
 	private BigDecimal unitPrice;
 
+	public OrderItem setOrderId(Long orderId) {
+		this.orderId = orderId;
+		return this;
+	}
 	public static OrderItem create(Product product,Integer quantity){
 		return new OrderItem(
 			null,

@@ -1,8 +1,6 @@
 package kr.hhplus.be.server.application.order;
 
-import static kr.hhplus.be.server.support.config.swagger.ErrorCode.INVALID_QUANTITY;
-
-import java.util.List;
+import jakarta.transaction.Transactional;
 import kr.hhplus.be.server.application.coupon.CouponService;
 import kr.hhplus.be.server.application.coupon.UseCouponCommand;
 import kr.hhplus.be.server.application.coupon.UseCouponInfo;
@@ -25,7 +23,10 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+import static kr.hhplus.be.server.support.config.swagger.ErrorCode.INVALID_QUANTITY;
 
 @Component
 @RequiredArgsConstructor
@@ -42,16 +43,15 @@ public class OrderFacade {
 
 	public OrderInfoResult getOrders(Long userId) {
 		logger.info("### getOrders parameter : {}", userId);
-		List<OrderDetailResult> orderDetails = orderService.findHistoryByUserId(userId)
-			.stream().map(oh -> {
-				Long orderId = oh.getOrder().getId();
-				List<Product> products = productService.orderItemToProduct(
-					oh.getOrder().getOrderItems());
-				List<Coupon> coupons = oh.getOrder().getCouponIds().stream()
-					.map(couponService::findCouponById)
-					.toList();
-				return new OrderDetailResult(orderId, products, coupons);
-			}).toList();
+		List<OrderDetailResult> orderDetails = orderService.findOrderByUserId(userId).stream().map(o -> {
+			Long orderId = o.getId();
+			List<Product> products = orderItemService.findByOrderId(orderId)
+				.stream().map(OrderItem::getProductId).map(productService::findById).toList();
+			List<Coupon> coupons = o.getCouponIds().stream()
+				.map(couponService::findCouponById)
+				.toList();
+			return new OrderDetailResult(orderId, products, coupons);
+		}).toList();
 		return OrderInfoResult.from(userId, orderDetails);
 	}
 
@@ -71,7 +71,7 @@ public class OrderFacade {
 		productService.increaseStock(order.getOrderItems());
 
 		// 주문상태 변경 및 저장 - 취소
-		orderService.cancel(order);
+		orderService.cancel(order.getId());
 		return CancelOrderResult.from(
 			order,
 			payment
@@ -83,8 +83,6 @@ public class OrderFacade {
 		logger.info("### placeOrder parameter : {}", criteria.toString());
 
 		User user = userService.get(criteria.userId());
-		// 상품 조회
-		List<OrderItem> orderItems = createOrderItems(criteria);
 
 		// 쿠폰 사용 - 상태 변환
 		// 쿠폰 유효성 확인
@@ -92,18 +90,26 @@ public class OrderFacade {
 		UseCouponInfo couponInfo = couponService.use(UseCouponCommand.of(
 			user.getId(), criteria.couponIds()
 		));
+		// 상품 조회
+		List<OrderItem> orderItems = createOrderItems(criteria);
 
 		Order order = orderService.create(CreateOrderCommand.of(orderItems, couponInfo));
+
 		// 유저 포인트 사용
 		pointService.use(UpdatePointCommand.Use.of(user.getId(), order.getTotalPrice()));
 		// 결제 시도
 		Payment payment = paymentService.pay(
 			RequestPaymentCommand.of(order, criteria.paymentMethod())
 		);
+		logger.info("### payment : {}", payment);
 		// 재고 차감
 		List<Product> products = productService.decreaseStock(orderItems);
+		logger.info("### products : {}", products.size());
 		// 주문 저장
-		orderService.save(order);
+		Order save = orderService.save(order);
+
+		logger.info("### save : {}", save);
+		orderItemService.saveAll(orderItems.stream().map(oi -> oi.setOrderId(save.getId())).toList());
 		return PlaceOrderResult.of(
 			user.getId(),
 			products,
@@ -124,6 +130,6 @@ public class OrderFacade {
 				return OrderItem.create(product, itemCommand.quantity());
 			})
 			.toList();
-		return orderItemService.saveAll(orderItems);
+		return orderItems;
 	}
 }

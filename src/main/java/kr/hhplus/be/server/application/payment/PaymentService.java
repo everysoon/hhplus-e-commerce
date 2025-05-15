@@ -54,6 +54,7 @@ public class PaymentService {
 	}
 	public void saveWithHistory(Payment payment,PaymentHistory paymentHistory) {
 		paymentRepository.save(payment);
+//		System.out.println("saveWithHistory payment : "+ save.getId());
 		paymentHistoryRepository.save(paymentHistory);
 	}
 }

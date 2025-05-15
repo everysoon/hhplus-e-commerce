@@ -15,7 +15,7 @@ public class OrderHistoryRepositoryImpl implements OrderHistoryRepository {
 
 	@Override
 	public List<OrderHistory> findByUserId(Long userId) {
-		return orderHistoryJpaRepository.findByOrderUserId(userId)
+		return orderHistoryJpaRepository.findByUserId(userId)
 			.stream()
 			.map(OrderHistoryEntity::toDomain).toList();
 	}

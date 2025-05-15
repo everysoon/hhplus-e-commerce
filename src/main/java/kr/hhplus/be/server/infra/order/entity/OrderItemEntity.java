@@ -1,7 +1,6 @@
 package kr.hhplus.be.server.infra.order.entity;
 
 import jakarta.persistence.*;
-import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.order.OrderItem;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -22,24 +21,28 @@ public class OrderItemEntity {
 	private Long id;
 	@Column(nullable = false)
 	private Long productId;
-	@ManyToOne
-	@JoinColumn(name = "order_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-	private OrderEntity order;
+
+	private Long orderId;
 
 	private BigDecimal unitPrice; // 주문 당시 개당 가격
 
 	@Column(nullable = false)
 	private Integer quantity;
-	public OrderItemEntity(Long productId, Order order,BigDecimal unitPrice, Integer quantity) {
+	public OrderItemEntity(Long productId, Long orderId,BigDecimal unitPrice, Integer quantity) {
 		this.productId = productId;
-		this.order = OrderEntity.from(order);
+		this.orderId = orderId;
+		this.unitPrice = unitPrice;
+		this.quantity = quantity;
+	}
+	public OrderItemEntity(Long productId, BigDecimal unitPrice, Integer quantity) {
+		this.productId = productId;
 		this.unitPrice = unitPrice;
 		this.quantity = quantity;
 	}
 	public static OrderItemEntity from(OrderItem orderItem) {
 		return new OrderItemEntity(
+			orderItem.getOrderId(),
 			orderItem.getProductId(),
-			orderItem.getOrder(),
 			orderItem.getUnitPrice(),
 			orderItem.getQuantity()
 		);
@@ -48,7 +51,7 @@ public class OrderItemEntity {
 		return new OrderItem(
 			this.id,
 			this.productId,
-			this.order.toDomain(),
+			this.orderId,
 			this.quantity,
 			this.unitPrice
 		);

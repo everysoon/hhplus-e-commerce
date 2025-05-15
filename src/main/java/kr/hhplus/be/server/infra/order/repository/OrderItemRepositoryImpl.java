@@ -18,4 +18,9 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
 		List<OrderItemEntity> orderItemEntities = orderItems.stream().map(OrderItemEntity::from).toList();
 		return orderItemJpaRepository.saveAll(orderItemEntities).stream().map(OrderItemEntity::toDomain).toList();
 	}
+
+	@Override
+	public List<OrderItem> findByOrderId(Long orderId) {
+		return orderItemJpaRepository.findByOrderId(orderId).stream().map(OrderItemEntity::toDomain).toList();
+	}
 }

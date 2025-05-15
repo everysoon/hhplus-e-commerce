@@ -1,16 +1,16 @@
 package kr.hhplus.be.server.domain.order;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Getter
 @AllArgsConstructor
 public class Order {
-
 	private final Long id;
 	private final Long userId;
 	private List<String> couponIds;
@@ -21,7 +21,9 @@ public class Order {
 	private final LocalDateTime orderedAt;
 
 	public BigDecimal getTotalPrice() {
-		if(this.totalDiscount == null) {return this.totalPrice;}
+		if (this.totalDiscount == null) {
+			return this.totalPrice;
+		}
 		return this.totalPrice.subtract(this.totalDiscount);
 	}
 //	public void applyCoupon(List<Coupon> coupons) {

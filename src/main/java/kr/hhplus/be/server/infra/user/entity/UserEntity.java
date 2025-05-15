@@ -1,0 +1,57 @@
+package kr.hhplus.be.server.infra.user.entity;
+
+import jakarta.persistence.*;
+import kr.hhplus.be.server.domain.user.User;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+
+import java.time.LocalDateTime;
+
+@Getter
+@Entity
+@Table(name = "users")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class UserEntity {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(nullable = false)
+	private Long id;
+
+	private String name;
+	@Column(nullable = false, unique = true)
+	private String email;
+	/**
+	 * address, city, zipcode, detailedAddress의 Address 객체로 보완해도 좋음
+	 */
+	private String address;
+	@CreatedDate
+	@Column(nullable = false)
+	private LocalDateTime createdAt;
+
+	public UserEntity(String name, String email, String address) {
+		this.name = name;
+		this.email = email;
+		this.address = address;
+		this.createdAt = LocalDateTime.now();
+	}
+
+	public static UserEntity from(User user) {
+		return new UserEntity(
+			user.getName(),
+			user.getEmail(),
+			user.getAddress()
+		);
+	}
+
+	public User toDomain() {
+		return new User(
+			this.id,
+			this.email,
+			this.address,
+			this.name,
+			this.createdAt
+		);
+	}
+}

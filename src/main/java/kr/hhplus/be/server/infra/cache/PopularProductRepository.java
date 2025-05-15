@@ -2,6 +2,7 @@ package kr.hhplus.be.server.infra.cache;
 
 import kr.hhplus.be.server.support.utils.CacheKeys;
 import lombok.RequiredArgsConstructor;
+import org.redisson.api.RMap;
 import org.redisson.api.RScoredSortedSet;
 import org.redisson.api.RedissonClient;
 import org.redisson.client.RedisException;
@@ -11,9 +12,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
+import java.time.Duration;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.Map;
 
 @Repository
 @RequiredArgsConstructor
@@ -27,6 +30,10 @@ public class PopularProductRepository {
 		String todayKey = String.format(CacheKeys.POPULAR_PRODUCT.getKey(), LocalDate.now());
 		RScoredSortedSet<Long> zset = redissonClient.getScoredSortedSet(todayKey, LongCodec.INSTANCE);
 		zset.addScore(productId, score);
+
+		// Zset없이 구현할 때의 판매 score 기록
+		RMap<Long, Integer> map = redissonClient.getMap(todayKey, LongCodec.INSTANCE);
+		map.addAndGet(productId, 1); // 없는 경우 0부터 시작
 	}
 
 	// 인기 상품 점수 감소
@@ -63,7 +70,7 @@ public class PopularProductRepository {
 			// union 연산 수행 및 TTL 설정
 			redissonClient.getKeys().delete(unionKey); // 기존 키 삭제 (보호적)
 			unionZSet.union(dateKeys.toArray(new String[0]));
-			unionZSet.expire(TTL_DAY, TimeUnit.DAYS); // 캐시 TTL 설정
+			unionZSet.expire(Duration.ofDays(TTL_DAY)); // 캐시 TTL 설정
 
 			// Top N 반환
 			return unionZSet.entryRangeReversed(0, topN - 1)
@@ -71,7 +78,6 @@ public class PopularProductRepository {
 				.map(ScoredEntry::getValue)
 				.limit(topN)
 				.toList();
-
 		} catch (RedisException e) {
 			// 예외 발생 시 fallback 처리
 			logger.error("Redis 연산 중 오류 발생: {}", e.getMessage(), e);
@@ -83,10 +89,49 @@ public class PopularProductRepository {
 		}
 	}
 
+	public List<Long> getTopNPopularProductIdsWithoutZSet(LocalDate startDate, LocalDate endDate, int topN) {
+		Object[] args = new Object[]{startDate, endDate};
+		String unionKey = CacheKeys.PRODUCT_UNION.getKey(args);
+		RMap<Long, Integer> unionMap = redissonClient.getMap(unionKey, LongCodec.INSTANCE);
+		if (!unionMap.isEmpty()) {
+			return getTopNFromMap(unionMap, topN);
+		}
+		Map<Long, Integer> aggregateMap = new HashMap<>();
+
+		// 날짜별 key
+		List<String> keys = startDate.datesUntil(endDate.plusDays(1))
+			.map(date -> String.format("cache:popular:products:hash:%s", date))
+			.toList();
+
+		for (String key : keys) {
+			RMap<Long, Integer> dailyMap = redissonClient.getMap(key, LongCodec.INSTANCE);
+
+			dailyMap.readAllMap().forEach((productId, count) ->
+				aggregateMap.merge(productId, count, Integer::sum)
+			);
+		}
+		if (aggregateMap.isEmpty()) {
+			return List.of();
+		}
+		unionMap.expire(Duration.ofDays(TTL_DAY));
+		// Top-N 추출
+		return getTopNFromMap(unionMap, topN);
+	}
+
+	private List<Long> getTopNFromMap(RMap<Long, Integer> map, int topN) {
+		return map.entrySet().stream()
+			.sorted(Map.Entry.<Long, Integer>comparingByValue().reversed())
+			.limit(topN)
+			.map(Map.Entry::getKey)
+			.toList();
+	}
+
 	// 특정 날짜의 인기 상품 캐시 삭제
 	public void evictProductCache(LocalDate searchDate) {
 		String todayKey = String.format(CacheKeys.POPULAR_PRODUCT.getKey(), searchDate);
 		RScoredSortedSet<Long> zset = redissonClient.getScoredSortedSet(todayKey, LongCodec.INSTANCE);
 		zset.delete();
 	}
+
+
 }

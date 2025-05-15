@@ -1,8 +1,5 @@
 package kr.hhplus.be.server.application.product;
 
-import static org.springframework.transaction.annotation.Propagation.MANDATORY;
-
-import java.util.List;
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.product.repository.ProductRepository;
 import kr.hhplus.be.server.infra.cache.PopularProductRedisService;
@@ -12,6 +9,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+import static org.springframework.transaction.annotation.Propagation.MANDATORY;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +36,14 @@ public class ProductService {
 	@Transactional(readOnly = true)
 	public List<Product> findPopularAll(ProductCommand.TopSelling command) {
 		List<Long> topPopularProductIds = popularProductRedisService.getTopPopularProductIds(
+			command.getStartDateOrDefault()
+				.toLocalDate(), command.getEndDateOrDefault().toLocalDate(), 5);
+		return productRepository.findByIdIn(topPopularProductIds);
+	}
+
+	@Transactional(readOnly = true)
+	public List<Product> findPopularAllWithOutZSet(ProductCommand.TopSelling command) {
+		List<Long> topPopularProductIds = popularProductRedisService.getTopNPopularProductIdsWithoutZSet(
 			command.getStartDateOrDefault()
 				.toLocalDate(), command.getEndDateOrDefault().toLocalDate(), 5);
 		return productRepository.findByIdIn(topPopularProductIds);

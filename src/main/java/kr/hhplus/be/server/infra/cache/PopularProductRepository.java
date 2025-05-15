@@ -2,6 +2,7 @@ package kr.hhplus.be.server.infra.cache;
 
 import kr.hhplus.be.server.support.utils.CacheKeys;
 import lombok.RequiredArgsConstructor;
+import org.redisson.api.RBloomFilter;
 import org.redisson.api.RMap;
 import org.redisson.api.RScoredSortedSet;
 import org.redisson.api.RedissonClient;
@@ -24,7 +25,12 @@ public class PopularProductRepository {
 	private final RedissonClient redissonClient;
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
+	private static final String BLOCK_FILTER_KEY = "popular:product:block:filter";
+	private static final long EXPECTED_INSERTIONS = 10_000L; // 예상 삽입 수
+	private static final double FALSE_POSITIVE_PROBABILITY = 0.01; // 허용 오차율 (예시는 0.01 - 1%)
+
 	private static final long TTL_DAY = 1;
+
 	// 인기 상품 점수 증가
 	public void increaseScore(Long productId, double score) {
 		String todayKey = String.format(CacheKeys.POPULAR_PRODUCT.getKey(), LocalDate.now());
@@ -76,6 +82,7 @@ public class PopularProductRepository {
 			return unionZSet.entryRangeReversed(0, topN - 1)
 				.stream()
 				.map(ScoredEntry::getValue)
+				.filter(id -> !getBlockFilter().contains(id)) // 블룸필터 추가
 				.limit(topN)
 				.toList();
 		} catch (RedisException e) {
@@ -122,6 +129,7 @@ public class PopularProductRepository {
 		return map.entrySet().stream()
 			.sorted(Map.Entry.<Long, Integer>comparingByValue().reversed())
 			.limit(topN)
+			.filter(entry -> !getBlockFilter().contains(entry.getKey())) // 블룸필터 추가
 			.map(Map.Entry::getKey)
 			.toList();
 	}
@@ -133,5 +141,15 @@ public class PopularProductRepository {
 		zset.delete();
 	}
 
-
+	private RBloomFilter<Long> getBlockFilter() {
+		RBloomFilter<Long> filter = redissonClient.getBloomFilter(BLOCK_FILTER_KEY, LongCodec.INSTANCE);
+		if (!filter.isExists()) {
+			filter.tryInit(EXPECTED_INSERTIONS, FALSE_POSITIVE_PROBABILITY);
+		}
+		return filter;
+	}
+ 	// 따로 블룸필터를 적용해서 product를 제외할때
+	public void blockProductFromRanking(Long productId) {
+		getBlockFilter().add(productId);
+	}
 }

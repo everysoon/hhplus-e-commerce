@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.application.coupon;
 
 import kr.hhplus.be.server.domain.coupon.Coupon;
+import kr.hhplus.be.server.support.utils.LockKeyPrefix;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,6 +16,9 @@ public class CouponCommand {
 		}
 		public UnitCouponValid toUnitCouponValid(Coupon coupon) {
 			return new CouponCommand.UnitCouponValid(userId, coupon);
+		}
+		public String getLockKey(){
+			return LockKeyPrefix.COUPON.createKey(couponId);
 		}
 	}
 

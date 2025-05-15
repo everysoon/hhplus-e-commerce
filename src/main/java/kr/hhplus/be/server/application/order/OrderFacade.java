@@ -10,6 +10,7 @@ import kr.hhplus.be.server.application.payment.PaymentCommand;
 import kr.hhplus.be.server.application.payment.PaymentService;
 import kr.hhplus.be.server.application.point.PointCommand;
 import kr.hhplus.be.server.application.point.PointService;
+import kr.hhplus.be.server.application.product.ProductCommand;
 import kr.hhplus.be.server.application.product.ProductService;
 import kr.hhplus.be.server.application.user.UserService;
 import kr.hhplus.be.server.domain.order.Order;
@@ -39,7 +40,8 @@ public class OrderFacade {
 
 	public OrderResult.InfoByUser getOrders(Long userId) {
 		logger.info("### getOrders parameter : {}", userId);
-		List<OrderResult.DetailByOrder> orderDetails = orderService.findOrderByUserId(userId).stream()
+		List<OrderResult.DetailByOrder> orderDetails = orderService.findOrderByUserId(userId)
+			.stream()
 			.map(OrderResult.DetailByOrder::from).toList();
 		return OrderResult.InfoByUser.from(userId, orderDetails);
 	}
@@ -49,6 +51,7 @@ public class OrderFacade {
 		maxAttempts = 3,
 		backoff = @Backoff(delay = 100)
 	)
+
 	@Transactional
 	public OrderResult.Cancel cancel(OrderCriteria.Cancel criteria) {
 		logger.info("### cancel parameter : {}", criteria.toString());
@@ -62,8 +65,7 @@ public class OrderFacade {
 		// 쿠폰 상태 복원 (쿠폰 사용했으면)
 		couponService.restore(CouponCommand.Restore.of(user.getId(), order.getCoupons()));
 		// 재고 복원
-		productService.increaseStock(order.getOrderItems());
-
+		productService.increaseStock(ProductCommand.Refund.of(order));
 		// 주문상태 변경 및 저장 - 취소
 		orderService.cancel(order);
 		return OrderResult.Cancel.of(
@@ -80,6 +82,7 @@ public class OrderFacade {
 	@Transactional
 	public OrderResult.Place placeOrder(OrderCriteria.Request criteria) {
 		logger.info("### placeOrder parameter : {}", criteria.toString());
+
 		User user = userService.get(criteria.userId());
 		// 쿠폰 사용 - 상태 변환
 		// 쿠폰 유효성 확인

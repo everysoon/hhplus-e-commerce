@@ -1,3 +1,4 @@
+
 spring:
   config:
     activate:
@@ -26,6 +27,11 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
       hibernate.timezone.default_storage: NORMALIZE_UTC
       hibernate.jdbc.time_zone: UTC
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
 server:
   port: 8224
 

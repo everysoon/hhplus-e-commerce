@@ -1,6 +1,5 @@
 package kr.hhplus.be.server.interfaces.dto;
 
-import kr.hhplus.be.server.application.point.UserPointResult;
 import kr.hhplus.be.server.domain.point.PointHistory;
 import kr.hhplus.be.server.infra.point.entity.PointStatus;
 

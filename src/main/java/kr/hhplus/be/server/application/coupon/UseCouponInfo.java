@@ -1,7 +1,8 @@
 package kr.hhplus.be.server.application.coupon;
 
-import java.util.List;
 import kr.hhplus.be.server.domain.coupon.Coupon;
+
+import java.util.List;
 
 public record UseCouponInfo (
 	Long userId,

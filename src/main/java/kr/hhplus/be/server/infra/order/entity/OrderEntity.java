@@ -2,7 +2,6 @@ package kr.hhplus.be.server.infra.order.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import kr.hhplus.be.server.domain.order.Order;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 
@@ -25,15 +24,15 @@ public class OrderEntity {
 	@Column(nullable = false)
 	private Long userId;
 
-	@ElementCollection
+	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
 		name = "order_user_coupon",
 		joinColumns = @JoinColumn(
 			name = "order_id",
-			foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT) // 💥 여기!
+			foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)
 		)
 	)
-	@Column(name = "user_coupon_id")
+	@Column(name = "user_coupon_ids")
 	private List<String> usedUserCouponIds = new ArrayList<>();
 
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
@@ -52,33 +51,13 @@ public class OrderEntity {
 	@Column(nullable = false)
 	private LocalDateTime orderedAt;
 
-	public OrderEntity(Long userId, List<String> usedUserCouponIds, BigDecimal totalPrice, BigDecimal totalDiscount, LocalDateTime orderedAt) {
+	public OrderEntity(Long id,Long userId, List<String> usedUserCouponIds, List<OrderItemEntity> orderItems, BigDecimal totalPrice, BigDecimal totalDiscount, LocalDateTime orderedAt) {
+		this.id = id;
 		this.userId = userId;
 		this.usedUserCouponIds = usedUserCouponIds;
+		this.orderItems = orderItems;
 		this.totalPrice = totalPrice;
-		this.totalDiscount = totalDiscount;
+		this.totalDiscount = totalDiscount == null ? BigDecimal.ZERO : totalDiscount;
 		this.orderedAt = orderedAt;
-	}
-
-	public Order toDomain() {
-		return new Order(
-			this.id,
-			this.userId,
-			this.usedUserCouponIds,
-			this.orderItems.stream().map(OrderItemEntity::toDomain).toList(),
-			this.totalPrice,
-			this.totalDiscount,
-			this.orderedAt
-		);
-	}
-
-	public static OrderEntity from(Order order) {
-		return new OrderEntity(
-			order.getUserId(),
-			order.getCouponIds(),
-			order.getTotalPrice(),
-			order.getTotalDiscount(),
-			order.getOrderedAt()
-		);
 	}
 }

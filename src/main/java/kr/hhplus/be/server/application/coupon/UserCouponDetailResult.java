@@ -1,11 +1,11 @@
 package kr.hhplus.be.server.application.coupon;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import kr.hhplus.be.server.domain.coupon.Coupon;
 import kr.hhplus.be.server.domain.coupon.CouponStatus;
 import kr.hhplus.be.server.domain.coupon.CouponType;
 import kr.hhplus.be.server.domain.coupon.UserCoupon;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 public record UserCouponDetailResult(
 	Long userId,
@@ -17,16 +17,16 @@ public record UserCouponDetailResult(
 	BigDecimal discount,
 	LocalDateTime expired
 ) {
-	public static UserCouponDetailResult of(UserCoupon uc, Coupon coupon) {
+	public static UserCouponDetailResult of(UserCoupon uc) {
 		return new UserCouponDetailResult(
 			uc.getUserId(),
-			coupon.getId(),
+			uc.getCoupon().getId(),
 			uc.getStatus(),
 			uc.getIssuedAt(),
-			coupon.getType(),
-			coupon.getDescription(),
-			coupon.getDiscountAmount(),
-			coupon.getExpiredAt()
+			uc.getCoupon().getType(),
+			uc.getCoupon().getDescription(),
+			uc.getCoupon().getDiscountAmount(),
+			uc.getCoupon().getExpiredAt()
 		);
 	}
 

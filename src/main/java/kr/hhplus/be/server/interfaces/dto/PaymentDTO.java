@@ -1,6 +1,6 @@
 package kr.hhplus.be.server.interfaces.dto;
 
-import kr.hhplus.be.server.application.payment.RequestPaymentCommand;
+import kr.hhplus.be.server.application.payment.PaymentCommand;
 import kr.hhplus.be.server.support.utils.CryptoUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +17,7 @@ public class PaymentDTO {
 		// 결제 정보 암호화
 		private String encryptData;
 
-		public static TokenRequest from(RequestPaymentCommand command) {
+		public static TokenRequest from(PaymentCommand.Request command) {
 			return new TokenRequest(CryptoUtil.sha256Hex(command.combineInfo()));
 		}
 	}
@@ -31,7 +31,7 @@ public class PaymentDTO {
 		// 결제 정보 암호화
 		private String encryptData;
 
-		public static PaymentRequest from(RequestPaymentCommand command, String token) {
+		public static PaymentRequest from(PaymentCommand.Request command, String token) {
 			return new PaymentRequest(CryptoUtil.sha256Hex(command.combineAll(token)));
 		}
 	}

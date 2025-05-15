@@ -1,19 +1,13 @@
 package kr.hhplus.be.server.infra.coupon.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import java.time.LocalDateTime;
+import jakarta.persistence.*;
 import kr.hhplus.be.server.domain.coupon.CouponStatus;
 import kr.hhplus.be.server.domain.coupon.UserCoupon;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Entity
@@ -54,7 +48,7 @@ public class UserCouponEntity {
 		return new UserCouponEntity(
 			uc.getId(),
 			uc.getUserId(),
-			uc.getCouponId(),
+			uc.getCoupon().getId(),
 			uc.getStatus(),
 			uc.getIssuedAt()
 		);
@@ -63,18 +57,8 @@ public class UserCouponEntity {
 	public static UserCouponEntity from(UserCoupon uc) {
 		return new UserCouponEntity(
 			uc.getUserId(),
-			uc.getCouponId(),
+			uc.getCoupon().getId(),
 			uc.getStatus()
-		);
-	}
-
-	public UserCoupon toDomain() {
-		return new UserCoupon(
-			this.id,
-			this.userId,
-			this.couponId,
-			this.status,
-			this.issuedAt
 		);
 	}
 }

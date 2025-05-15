@@ -1,11 +1,12 @@
 package kr.hhplus.be.server.domain.point;
 
-import java.math.BigDecimal;
-import kr.hhplus.be.server.application.point.UpdatePointCommand;
+import kr.hhplus.be.server.application.point.PointCommand;
 import kr.hhplus.be.server.support.common.exception.CustomException;
 import kr.hhplus.be.server.support.config.swagger.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
+import java.math.BigDecimal;
 
 @Getter
 @AllArgsConstructor
@@ -17,7 +18,7 @@ public class Point {
 
 	private BigDecimal balance;
 
-	public static Point from(Long userId) {
+	public static Point create(Long userId) {
 		return new Point(
 			null,
 			userId,
@@ -25,11 +26,11 @@ public class Point {
 		);
 	}
 
-	public static Point from(UpdatePointCommand.Charge command) {
+	public static Point from(PointCommand.Charge command) {
 		return new Point(
 			null,
-			command.getUserId(),
-			command.getAmount()
+			command.userId(),
+			command.amount()
 		);
 	}
 

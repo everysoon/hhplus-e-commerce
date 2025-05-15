@@ -1,13 +1,14 @@
 package kr.hhplus.be.server.interfaces.dto;
 
-import java.math.BigDecimal;
-import kr.hhplus.be.server.application.product.ProductSearchCommand;
+import kr.hhplus.be.server.application.product.ProductCommand;
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.product.ProductStatus;
 import kr.hhplus.be.server.infra.product.entity.Category;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
 
 public class ProductDTO {
 	@Data
@@ -19,8 +20,8 @@ public class ProductDTO {
 		private String sortBy;
 		private String sorted;
 		private boolean soldOut;
-		public ProductSearchCommand toCommand(){
-			return ProductSearchCommand.of(name, category, sortBy, sorted, soldOut);
+		public ProductCommand.FilterSearch toCommand(){
+			return ProductCommand.FilterSearch.of(name, category, sortBy, sorted, soldOut);
 		}
 	}
 	public record OrderItemDetailResponse(

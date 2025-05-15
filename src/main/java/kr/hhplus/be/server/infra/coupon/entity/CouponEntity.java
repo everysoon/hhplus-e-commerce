@@ -62,7 +62,7 @@ public class CouponEntity {
 		this.issuedAt = issuedAt;
 	}
 
-	public static CouponEntity update(Coupon coupon) {
+	public static CouponEntity from(Coupon coupon) {
 		return new CouponEntity(
 			coupon.getId(),
 			coupon.getType(),
@@ -75,7 +75,7 @@ public class CouponEntity {
 		);
 	}
 
-	public static CouponEntity from(Coupon coupon) {
+	public static CouponEntity create(Coupon coupon) {
 		return new CouponEntity(
 			coupon.getType(),
 			coupon.getDescription(),

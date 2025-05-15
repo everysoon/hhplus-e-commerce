@@ -1,12 +1,12 @@
 package kr.hhplus.be.server.domain.coupon;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface CouponRepository {
-	Optional<Coupon> findById(String id);
-	Coupon issue(Coupon coupon);
+	Coupon findById(String id);
+	Coupon issue(String id);
 	void updateAll(List<Coupon> coupons);
-	List<Coupon> validateCoupons(List<String> couponIds);
 	List<Coupon> findAll();
+	Coupon save(Coupon coupon);
+	List<Coupon> findAllByIdIn(List<String> couponIds);
 }

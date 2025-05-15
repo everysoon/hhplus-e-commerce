@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.application.payment;
 
-import jakarta.transaction.Transactional;
+import static org.springframework.transaction.annotation.Propagation.MANDATORY;
+
 import kr.hhplus.be.server.application.dataplatform.PaymentClient;
 import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.payment.Payment;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,40 +23,37 @@ public class PaymentService {
 	private final PaymentRepository paymentRepository;
 	private final PaymentHistoryRepository paymentHistoryRepository;
 
-	@Transactional
-	public Payment pay(RequestPaymentCommand command) {
-//		try {
-			// client 통신
-			String token = paymentClient.getToken(PaymentDTO.TokenRequest.from(command));
-			String transactionId = paymentClient.send(PaymentDTO.PaymentRequest.from(command, token));
-			// create payment + payment history
-			Payment payment = Payment.of(command,transactionId);
-			CreatePaymentHistoryCommand payloadCommand = command.toCreatePaymentCommand(payment);
-			// save
-			saveWithHistory(payment,PaymentHistory.of(payloadCommand));
-			return payment;
-//		} catch (Exception e) {
-//			logger.error("결제 처리 중 예상치 못한 오류", e);
-//			throw new CustomException(ErrorCode.PAYMENT_FAIL);
-//		}
-	}
-
-	@Transactional
-	public Payment cancel(Order order) {
+	@Transactional(propagation = MANDATORY)
+	public Payment pay(PaymentCommand.Request command) {
+		logger.info("### pay command : {}", command);
 		// client 통신
-		Payment payment = paymentRepository.findByOrderId(order.getId());
-		RequestPaymentCommand command = RequestPaymentCommand.of(order,payment.getPaymentMethod());
 		String token = paymentClient.getToken(PaymentDTO.TokenRequest.from(command));
-		String transactionId = paymentClient.cancel(PaymentDTO.PaymentRequest.from(command, token));
-		payment.cancel(order.getTotalPrice(),transactionId);
-		CreatePaymentHistoryCommand payloadCommand = command.toCreatePaymentCommand(payment);
-
-		saveWithHistory(payment,PaymentHistory.of(payloadCommand));
+		String transactionId = paymentClient.send(PaymentDTO.PaymentRequest.from(command, token));
+		// create payment + payment history
+		Payment payment = Payment.of(command, transactionId);
+		PaymentCommand.CreateHistory payloadCommand = command.toCreatePaymentCommand(payment);
+		// save
+		saveWithHistory(payment, PaymentHistory.of(payloadCommand));
 		return payment;
 	}
-	public void saveWithHistory(Payment payment,PaymentHistory paymentHistory) {
+
+	@Transactional(propagation = MANDATORY)
+	public Payment cancel(Order order) {
+		// client 통신
+		logger.info("### cancel command : {}", order);
+		Payment payment = paymentRepository.findByOrderId(order.getId());
+		PaymentCommand.Request command = PaymentCommand.Request.of(order, payment.getPaymentMethod());
+		String token = paymentClient.getToken(PaymentDTO.TokenRequest.from(command));
+		String transactionId = paymentClient.cancel(PaymentDTO.PaymentRequest.from(command, token));
+		payment.cancel(order.getTotalPrice(), transactionId);
+		PaymentCommand.CreateHistory payloadCommand = command.toCreatePaymentCommand(payment);
+
+		saveWithHistory(payment, PaymentHistory.of(payloadCommand));
+		return payment;
+	}
+
+	public void saveWithHistory(Payment payment, PaymentHistory paymentHistory) {
 		paymentRepository.save(payment);
-//		System.out.println("saveWithHistory payment : "+ save.getId());
 		paymentHistoryRepository.save(paymentHistory);
 	}
 }

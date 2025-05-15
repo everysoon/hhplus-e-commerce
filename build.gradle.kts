@@ -63,5 +63,8 @@ dependencies {
     testAnnotationProcessor("org.projectlombok:lombok:1.18.34")
 
     testImplementation("net.datafaker:datafaker:2.0.2")
+    implementation ("org.springframework.retry:spring-retry:1.3.1") // 최신 버전 확인 후 사용
+    implementation ("org.springframework.boot:spring-boot-starter-aop:2.5.4") // Spring Boot 버전에 맞는 버전
+
 }
 

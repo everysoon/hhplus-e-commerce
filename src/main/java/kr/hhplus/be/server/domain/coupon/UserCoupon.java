@@ -1,11 +1,11 @@
 package kr.hhplus.be.server.domain.coupon;
 
-import java.time.LocalDateTime;
-import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.support.common.exception.CustomException;
 import kr.hhplus.be.server.support.config.swagger.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
+import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
@@ -13,17 +13,12 @@ public class UserCoupon {
 
 	private final Long id;
 	private final Long userId;
-	private final String couponId;
+	private final Coupon coupon;
 	private CouponStatus status;
 	private LocalDateTime issuedAt;
 
-	public static UserCoupon of(Long userId, String couponId) {
-		return new UserCoupon(null, userId, couponId, CouponStatus.ISSUED, LocalDateTime.now());
-	}
-
-	public static UserCoupon of(User user, Coupon coupon) {
-		return new UserCoupon(null, user.getId(), coupon.getId(), CouponStatus.ISSUED,
-			LocalDateTime.now());
+	public static UserCoupon of(Long userId, Coupon coupon) {
+		return new UserCoupon(null, userId, coupon, CouponStatus.ISSUED, LocalDateTime.now());
 	}
 	public UserCoupon isValidRestore(){
 		if(this.status.equals(CouponStatus.REVOKED)){

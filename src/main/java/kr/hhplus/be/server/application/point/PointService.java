@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.application.point;
 
-import jakarta.transaction.Transactional;
+import static org.springframework.transaction.annotation.Propagation.MANDATORY;
+
 import java.time.LocalDateTime;
 import kr.hhplus.be.server.domain.point.Point;
 import kr.hhplus.be.server.domain.point.PointHistory;
@@ -11,6 +12,7 @@ import kr.hhplus.be.server.support.common.exception.CustomException;
 import kr.hhplus.be.server.support.config.swagger.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -19,36 +21,32 @@ public class PointService {
 	private final PointRepository pointRepository;
 	private final PointHistoryRepository pointHistoryRepository;
 
-	@Transactional
-	public Point refund(UpdatePointCommand.Refund command) {
-		PointHistory pointHistory = new PointHistory(null, command.getUserId(), PointStatus.REFUND, command.getTotalPrice(), LocalDateTime.now());
-		Point point = pointRepository.findByUserId(command.getUserId()).get();
-		point.charge(command.getTotalPrice());
-		Point save = pointRepository.update(point);
+	@Transactional(propagation = MANDATORY)
+	public Point refund(PointCommand.Refund command) {
+		PointHistory pointHistory = new PointHistory(null, command.userId(), PointStatus.REFUND, command.totalPrice(), LocalDateTime.now());
+		Point point = pointRepository.findByUserId(command.userId()).get();
+		point.charge(command.totalPrice());
+		Point save = pointRepository.save(point);
 		pointHistoryRepository.save(pointHistory);
 		return save;
 	}
 
 	@Transactional
-	public PointHistory charge(UpdatePointCommand.Charge command) {
+	public PointHistory charge(PointCommand.Charge command) {
+		pointRepository.charge(command.userId(),command.amount());
 		PointHistory history = PointHistory.from(command);
-		Point point = pointRepository.findByUserId(command.getUserId())
-			.orElseGet(() -> pointRepository.save(Point.from(command.getUserId())));
-		point.charge(command.getAmount());
-		pointRepository.update(point);
 		return pointHistoryRepository.save(history);
 	}
 
+	@Transactional(readOnly = true)
 	public Point getUserPoint(Long userId) {
 		return pointRepository.findByUserId(userId).orElseThrow(() -> new CustomException(ErrorCode.NOT_EXIST_POINT_BY_USER_ID));
 	}
+
 	@Transactional
-	public PointHistory use(UpdatePointCommand.Use command) {
+	public PointHistory use(PointCommand.Use command) {
+		pointRepository.use(command.userId(),command.amount());
 		PointHistory history = PointHistory.from(command);
-		Point point = pointRepository.findByUserId(command.getUserId())
-			.orElseThrow(() -> new CustomException(ErrorCode.INSUFFICIENT_POINTS));
-		point.use(command.getAmount());
-		pointRepository.update(point);
 		return pointHistoryRepository.save(history);
 	}
 }

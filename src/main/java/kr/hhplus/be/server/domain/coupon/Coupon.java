@@ -1,11 +1,12 @@
 package kr.hhplus.be.server.domain.coupon;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import kr.hhplus.be.server.support.common.exception.CustomException;
 import kr.hhplus.be.server.support.config.swagger.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
@@ -53,9 +54,5 @@ public class Coupon {
 		if(expiredAt.isBefore(LocalDateTime.now())){
 			throw new CustomException(ErrorCode.EXPIRED_COUPON);
 		}
-	}
-	public void isValid(){
-		this.validateStock();
-		this.validExpired();
 	}
 }

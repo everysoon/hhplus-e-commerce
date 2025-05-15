@@ -8,6 +8,7 @@ import kr.hhplus.be.server.support.config.swagger.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -40,6 +41,18 @@ public class CouponRepositoryImpl implements CouponRepository {
 	@Override
 	public List<Coupon> findAll() {
 		return couponJpaRepository.findAll().stream().map(CouponEntity::toDomain).toList();
+	}
+
+	@Override
+	public List<Coupon> findExpiredAll(LocalDateTime expiredAt) {
+		return couponJpaRepository.findExpiredAll(expiredAt)
+			.stream().map(CouponEntity::toDomain).toList();
+	}
+
+	@Override
+	public List<Coupon> findNotExpiredAll(LocalDateTime expiredAt) {
+		return couponJpaRepository.findNotExpiredAll(expiredAt)
+			.stream().map(CouponEntity::toDomain).toList();
 	}
 
 	@Override

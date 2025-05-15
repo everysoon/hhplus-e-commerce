@@ -10,6 +10,6 @@ import org.springframework.data.repository.query.Param;
 public interface OrderJpaRepository extends JpaRepository<OrderEntity, Long> {
 	OrderEntity findByIdAndUserId(Long orderId, Long userId);
 	List<OrderEntity> findByUserId(Long userId);
-	@Query("SELECT o FROM OrderEntity o LEFT JOIN OrderItemEntity  oi ON o.id = oi.orderId WHERE o.userId =:userId AND oi.productId IN :productIds")
+	@Query("SELECT o FROM OrderEntity o LEFT JOIN OrderItemEntity  oi ON o.id = oi.order.id WHERE o.userId =:userId AND oi.productId IN :productIds")
 	OrderEntity existsOrder(@Param("userId") Long userId,@Param("productIds") List<Long> productIds);
 }

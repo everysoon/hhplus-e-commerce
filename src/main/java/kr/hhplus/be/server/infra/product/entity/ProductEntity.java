@@ -1,6 +1,16 @@
 package kr.hhplus.be.server.infra.product.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Version;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.product.ProductStatus;
 import kr.hhplus.be.server.support.common.exception.CustomException;
@@ -8,14 +18,12 @@ import kr.hhplus.be.server.support.config.swagger.ErrorCode;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.ToString;
 import org.springframework.data.annotation.CreatedDate;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Getter
 @Entity
+@ToString
 @Table(name = "products")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProductEntity {
@@ -28,7 +36,6 @@ public class ProductEntity {
 	private String productName;
 
 	@Column(nullable = false)
-	@Setter
 	private Integer stock;
 
 	@Column(name = "category", nullable = false)
@@ -49,7 +56,8 @@ public class ProductEntity {
 	private LocalDateTime createdAt;
 
 	@Version
-	private Long version;
+	@Column(nullable = false)
+	private Long version = 0L;
 
 	public ProductEntity(String productName, Integer stock, Category category, String description, BigDecimal price, ProductStatus status) {
 		this.productName = productName;
@@ -59,6 +67,9 @@ public class ProductEntity {
 		this.price = price;
 		this.status = status;
 		this.createdAt = LocalDateTime.now();
+		if(this.version == null){
+			this.version = 0L;
+		}
 	}
 
 	public static ProductEntity from(Product product) {
@@ -86,10 +97,10 @@ public class ProductEntity {
 	}
 
 	public void decreaseStock(Integer amount) {
-		this.stock -= amount;
-		if (this.stock < 0) {
+		if (this.stock < amount) {
 			throw new CustomException(ErrorCode.OUT_OF_STOCK);
 		}
+		this.stock -= amount;
 		if (this.stock == 0) {
 			this.status = ProductStatus.OUT_OF_STOCK;
 		}

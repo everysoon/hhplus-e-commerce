@@ -14,7 +14,7 @@ public class ProductDTO {
 	@Data
 	@NoArgsConstructor
 	@AllArgsConstructor
-	public class SearchRequest{
+	public static class SearchRequest{
 		private String name;
 		private String category;
 		private String sortBy;
@@ -47,7 +47,7 @@ public class ProductDTO {
 		Category category,
 		Integer stock,
 		String description,
-		BigDecimal price,
+		Integer price,
 		ProductStatus status
 	) {
 		public static ProductResponse from(Product product){
@@ -57,7 +57,7 @@ public class ProductDTO {
 				product.getCategory(),
 				product.getStock(),
 				product.getDescription(),
-				product.getPrice(),
+				product.getPrice().intValue(),
 				product.getStatus()
 			);
 		}

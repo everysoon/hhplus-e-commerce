@@ -13,7 +13,6 @@ import java.util.List;
 @Getter
 @Entity
 @Table(name = "orders")
-@ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OrderEntity {
 	@Id
@@ -26,7 +25,7 @@ public class OrderEntity {
 
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
-		name = "order_user_coupon",
+		name = "user_coupon_ids",
 		joinColumns = @JoinColumn(
 			name = "order_id",
 			foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)
@@ -36,10 +35,10 @@ public class OrderEntity {
 	private List<String> usedUserCouponIds = new ArrayList<>();
 
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-	@JoinColumn(name = "orderId")
+	@JoinColumn(name = "order_item_id")
+	@Setter
 	private List<OrderItemEntity> orderItems = new ArrayList<>();
 
-	@Setter
 	@Column(nullable = false)
 	private BigDecimal totalPrice = BigDecimal.ZERO;
 

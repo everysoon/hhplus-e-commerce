@@ -25,7 +25,8 @@ public class CouponValidator {
 		coupon.validExpired();
 		coupon.validateStock();
 	}
-	public void duplicateIssued(Long userId, String couponId) {
+	public void duplicateIssuedByRDB(Long userId, String couponId) {
+		isCouponIdValidUuid(couponId);
 		List<UserCoupon> userCoupons = userCouponRepository.findByUserIdAndCouponIds(userId, List.of(couponId));
 		if(!userCoupons.isEmpty()){
 			throw new CustomException(ErrorCode.DUPLICATE_COUPON_CLAIM);

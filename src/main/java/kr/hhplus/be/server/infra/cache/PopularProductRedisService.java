@@ -32,4 +32,7 @@ public class PopularProductRedisService {
 	public void evictProductCache(LocalDate searchDate) {
 		popularProductRepository.evictProductCache(searchDate);
 	}
+	public void blockProductFromRanking(Long productId){
+		popularProductRepository.blockProductFromRanking(productId);
+	}
 }

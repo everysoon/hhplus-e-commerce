@@ -4,13 +4,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import kr.hhplus.be.server.infra.cache.PopularProductRedisService;
 import kr.hhplus.be.server.integration.common.EmbeddedRedisConfig;
 import kr.hhplus.be.server.support.utils.CacheKeys;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.redisson.api.RMap;
 import org.redisson.api.RScoredSortedSet;
+import org.redisson.api.RType;
 import org.redisson.api.RedissonClient;
 import org.redisson.client.codec.LongCodec;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,11 +30,11 @@ public class PopularProductRedisServiceTest {
 	@Autowired
 	private RedissonClient redissonClient;
 
-	@BeforeEach
-	void setUp() {
-		// Redis 초기화
-		redissonClient.getKeys().flushall();
-	}
+//	@BeforeEach
+//	void setUp() {
+//		// Redis 초기화
+//		redissonClient.getKeys().flushall();
+//	}
 
 	@Test
 	void 인기상품_점수를_증가하고_기간별로_조회할_수_있다() {
@@ -50,6 +53,12 @@ public class PopularProductRedisServiceTest {
 			LongCodec.INSTANCE);
 		day2ZSet.addScore(101L, 2);  // 101의 총합 = 7
 		day2ZSet.addScore(103L, 10); // 103의 총합 = 10
+
+		String unionKey = CacheKeys.PRODUCT_UNION.getKey(new Object[]{day1,day2});
+		RScoredSortedSet<Long> unionZSet = redissonClient.getScoredSortedSet(unionKey,
+			LongCodec.INSTANCE);
+
+		unionZSet.union(startDate,endDate);
 
 		// when
 		List<Long> result = popularProductRedisService.getTopPopularProductIds(day1, day2, 2);
@@ -127,5 +136,69 @@ public class PopularProductRedisServiceTest {
 		assertThrows(Exception.class, () -> {
 			redissonClient.getScoredSortedSet(key, LongCodec.INSTANCE).entryRangeReversed(0, 1);
 		});
+	}
+	@Test
+	void Redis_Hash로_인기상품_조회(){
+		// given
+		LocalDate day1 = LocalDate.of(2025, 5, 7);
+		LocalDate day2 = LocalDate.of(2025, 5, 8);
+		String startDateKey = String.format("cache:popular:products:hash:%s", day1);
+		String endDateKey = String.format("cache:popular:products:hash:%s", day2);
+		List<String> keys = day1.datesUntil(day2.plusDays(1))
+			.map(date -> String.format("cache:popular:products:hash:%s", date))
+			.toList();
+		Map<Long, Long> aggregateMap = new HashMap<>();
+		for (String key : keys) {
+			RMap<Long, Long> dailyMap = redissonClient.getMap(key, LongCodec.INSTANCE);
+
+			dailyMap.readAllMap().forEach((productId, count) ->
+				aggregateMap.merge(productId, count, Long::sum)
+			);
+		}
+
+		RMap<Long, Long> unionMap = redissonClient.getMap(startDateKey, LongCodec.INSTANCE);
+		unionMap.addAndGet(101L, 5);
+		unionMap.addAndGet(102L, 3);
+
+		RMap<Long, Long> unionMap2 = redissonClient.getMap(endDateKey,
+			LongCodec.INSTANCE);
+		unionMap2.addAndGet(101L, 2);  // 101의 총합 = 7
+		unionMap2.addAndGet(103L, 10); // 103의 총합 = 10
+
+		// when
+		List<Long> result = popularProductRedisService.getTopNPopularProductIdsWithoutZSet(day1, day2, 2);
+
+		// then
+		assertThat(result).containsExactly(103L, 101L); // 점수 높은 순
+	}
+	@Test
+	void 블룸필터로_productId1인_상품_제외하기(){
+		// given
+		popularProductRedisService.blockProductFromRanking(1L);
+		LocalDate day1 = LocalDate.of(2025, 5, 17);
+		LocalDate day2 = LocalDate.of(2025, 5, 18);
+		String startDateKey = String.format(CacheKeys.POPULAR_PRODUCT.getKey(), day1);
+		String endDateKey = String.format(CacheKeys.POPULAR_PRODUCT.getKey(), day2);
+
+		redissonClient.getKeys().delete(startDateKey);
+		RType type = redissonClient.getKeys().getType(startDateKey);
+		String keyType = (type == null) ? "NONE" : type.toString();
+		System.out.println("### Key type: " + keyType);
+
+		RScoredSortedSet<Long> day2ZSet = redissonClient.getScoredSortedSet(startDateKey,
+			LongCodec.INSTANCE);
+		day2ZSet.addScore(1L, 2);
+		day2ZSet.addScore(103L, 10);
+
+		String unionKey = CacheKeys.PRODUCT_UNION.getKey(new Object[]{day1,day2});
+		RScoredSortedSet<Long> unionZSet = redissonClient.getScoredSortedSet(unionKey,
+			LongCodec.INSTANCE);
+
+		unionZSet.union(startDateKey,endDateKey);
+		// when
+		List<Long> result = popularProductRedisService.getTopPopularProductIds(day1, day2, 2);
+
+		// then
+		assertThat(result).containsExactly(103L);
 	}
 }

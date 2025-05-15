@@ -1,13 +1,8 @@
 package kr.hhplus.be.server.integration.concurrency;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-
-import java.util.List;
-import java.util.stream.IntStream;
 import kr.hhplus.be.server.application.coupon.CouponCommand;
 import kr.hhplus.be.server.application.coupon.CouponService;
 import kr.hhplus.be.server.domain.coupon.Coupon;
-import kr.hhplus.be.server.domain.coupon.CouponRepository;
 import kr.hhplus.be.server.domain.coupon.UserCoupon;
 import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.domain.user.repository.UserCouponRepository;
@@ -21,15 +16,20 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
+import java.util.stream.IntStream;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
 @Slf4j
 public class CouponConcurrencyTest extends BaseIntegrationTest {
 
 	@Autowired
 	private CouponService couponService;
-	@Autowired
-	private CouponRepository couponRepository;
+
 	@Autowired
 	private UserRepository userRepository;
+
 	@Autowired
 	private UserCouponRepository userCouponRepository;
 
@@ -48,7 +48,7 @@ public class CouponConcurrencyTest extends BaseIntegrationTest {
 	@Test
 	@DisplayName("단일 쿠폰의 재고가 부족할때 해당 쿠폰 재고만큼의 유저에게만 발급이 성공한다.")
 	void 선착순쿠폰_발급시_쿠폰_재고가_1개_남았으면_10명중_1명만_발급에_성공한다() throws InterruptedException {
-		Coupon issue = couponRepository.save(CouponTestFixture.create(1));
+		Coupon issue = couponService.save(CouponTestFixture.create(1));
 		List<User> users = userRepository.findAll();
 		concurrencyTestHelper.run(threadCount, index -> {
 			User user = users.get(index);
@@ -70,7 +70,7 @@ public class CouponConcurrencyTest extends BaseIntegrationTest {
 		// given: 3개의 재고 1인 쿠폰 저장 , 10명의 유저
 		List<Coupon> coupons = IntStream.range(0, 3)
 			.mapToObj(i -> CouponTestFixture.create(1))
-			.map(couponRepository::save)
+			.map(couponService::save)
 			.toList();
 
 		List<User> users = userRepository.findAll(); // 10명
@@ -93,7 +93,7 @@ public class CouponConcurrencyTest extends BaseIntegrationTest {
 
 		// 각 쿠폰의 재고는 0
 		coupons.forEach(coupon -> {
-			Coupon refreshed = couponRepository.findById(coupon.getId());
+			Coupon refreshed = couponService.findById(coupon.getId());
 			assertThat(refreshed.getRemainingQuantity()).isEqualTo(0);
 		});
 	}

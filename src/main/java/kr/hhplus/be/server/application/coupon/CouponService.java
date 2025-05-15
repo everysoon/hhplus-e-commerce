@@ -8,7 +8,6 @@ import kr.hhplus.be.server.domain.user.repository.UserCouponRepository;
 import kr.hhplus.be.server.infra.NotificationSender;
 import kr.hhplus.be.server.infra.cache.CouponIssueService;
 import lombok.RequiredArgsConstructor;
-import org.redisson.api.RSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -31,7 +30,9 @@ public class CouponService {
 	private final NotificationSender notificationSender;
 	private final CouponIssueService couponIssueService;
 
+	private final CouponIssueEventPublisher couponIssueEventPublisher;
 	private final ApplicationEventPublisher eventPublisher;
+
 	@Transactional(readOnly = true)
 	public List<UserCouponDetailResult> getUserCoupons(Long userId) {
 		return userCouponRepository.findByUserId(userId).stream().map(UserCouponDetailResult::of)
@@ -66,22 +67,22 @@ public class CouponService {
 		userCouponRepository.updateAll(userCoupons);
 		couponRepository.updateAll(coupons);
 	}
+
 	@Transactional
 	public String issueCoupon(CouponCommand.Issue command) {
 		logger.info("### issueCoupon parameter : {}", command.toString());
-		RSet<Long> userIds = couponIssueService.issueCoupon(command.userId(), command.couponId());
-		Coupon coupon = couponRepository.issue(command.couponId(),userIds.size());
-		//  userCoupon save 이벤트 처리로 변환 -> response ?!
-		eventPublisher.publishEvent(new CouponIssueEvent(this,command.userId(),command.couponId()));
-//		UserCoupon userCoupon = userCouponRepository.save(command.toUnitCouponValid(coupon));
-//		return UserCouponDetailResult.of(userCoupon);
-		return coupon.getId();
+		couponIssueService.issueCoupon(command.userId(), command.couponId());
+		couponIssueEventPublisher.publish(command.toEvent());
+		return null;
 	}
-
+	public Coupon findById(String id) {
+		return couponRepository.findById(id);
+	}
 	public Coupon save(Coupon coupon) {
-		couponIssueService.initCouponStock(coupon.getId(),coupon.getInitialQuantity());
+		couponIssueService.initCouponStock(coupon.getId(), coupon.getInitialQuantity());
 		return couponRepository.save(coupon);
 	}
+
 	@Transactional(propagation = MANDATORY)
 	public UseCouponInfo use(CouponCommand.Use command) {
 		if (command.couponIds() == null || command.couponIds().isEmpty()) {

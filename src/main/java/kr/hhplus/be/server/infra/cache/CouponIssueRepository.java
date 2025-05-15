@@ -25,18 +25,19 @@ public class CouponIssueRepository {
 		RAtomicLong stock = redissonClient.getAtomicLong(CacheKeys.COUPON_STOCK.getKey(couponId));
 		RSet<Long> userSet = redissonClient.getSet(CacheKeys.COUPON_ISSUED_USER.getKey(args));
 		if (userSet.contains(userId)) {
-			throw new CustomException(ErrorCode.USED_COUPON);
+			throw new CustomException(ErrorCode.DUPLICATE_COUPON_CLAIM);
 		}
 
 		requestUsers.add(userId);
-		if(stock.get() <=0){
+		stock.decrementAndGet();
+		if(stock.get() < 0){
+			stock.incrementAndGet(); // 재고 수량 원복
 			throw new CustomException(ErrorCode.COUPON_SOLD_OUT);
 		}
-		// 요청이 재고 수보다 많은 경우, 선착순으로 자르기
+		// 요청이 쿠폰 재고 수보다 많은 경우, 선착순으로 자르기
 		int processSize = (int) Math.min(stock.get(), requestUsers.size());
 		List<Long> validUsers = requestUsers.range(0, processSize - 1);
 
-		stock.decrementAndGet();
 		userSet.addAll(validUsers);
 
 		return userSet;

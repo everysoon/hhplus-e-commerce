@@ -5,6 +5,7 @@ public enum CacheKeys {
 	COUPON_ISSUED_USER("cache:coupon:%s:users:issued:%d"),
 	COUPON_ISSUE_REQUEST_USER("cache:coupon:%s:users:request:%d"),
 	COUPON_STOCK("cache:coupon:stock:%s"),
+	COUPON_STREAM("coupon:issue:stream"),
 	PRODUCT_UNION("cache:popular:products:union:%s_to_%s");
 	private final String key;
 	CacheKeys(String key) {

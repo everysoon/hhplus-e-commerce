@@ -20,6 +20,9 @@ public class CouponCommand {
 		public String getLockKey(){
 			return LockKeyPrefix.COUPON.createKey(couponId);
 		}
+		public CouponIssuedEvent toEvent(){
+			return new CouponIssuedEvent(userId, couponId);
+		}
 	}
 
 	public record Restore(

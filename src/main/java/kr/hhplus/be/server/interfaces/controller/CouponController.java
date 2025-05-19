@@ -47,14 +47,16 @@ public class CouponController {
 		NOT_EXIST_USER,
 		DUPLICATE_COUPON_CLAIM
 	})
-	public ResponseEntity<ResponseApi<UserCouponDTO.CouponDetailResponse>> issueCoupon(
+//	public ResponseEntity<ResponseApi<UserCouponDTO.CouponDetailResponse>> issueCoupon(
+	public ResponseEntity<ResponseApi<String>> issueCoupon(
 		@Parameter(description = "유저 ID", required = true)
 		@PathVariable Long userId,
 		@Parameter(description = "쿠폰 UUID", required = true)
 		@RequestParam String couponId
 	) {
 		CouponCommand.Issue command = CouponCommand.Issue.of(userId, couponId);
-		UserCouponDetailResult result = couponService.issueCoupon(command);
-		return ResponseEntity.ok(ResponseApi.of(UserCouponDTO.CouponDetailResponse.from(result)));
+//		UserCouponDetailResult result = couponService.issueCoupon(command);
+		String result = couponService.issueCoupon(command);
+		return ResponseEntity.ok(ResponseApi.of(result));
 	}
 }

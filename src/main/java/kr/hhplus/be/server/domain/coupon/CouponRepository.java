@@ -6,6 +6,7 @@ import java.util.List;
 public interface CouponRepository {
 	Coupon findById(String id);
 	Coupon issue(String id);
+	Coupon issue(String id,int quantity);
 	void updateAll(List<Coupon> coupons);
 	List<Coupon> findAll();
 	List<Coupon> findExpiredAll(LocalDateTime expiredAt);

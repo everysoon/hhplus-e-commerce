@@ -20,6 +20,9 @@ public class CouponCommand {
 		public String getLockKey(){
 			return LockKeyPrefix.COUPON.createKey(couponId);
 		}
+		public CouponIssuedEvent toEvent(){
+			return new CouponIssuedEvent(userId, couponId);
+		}
 	}
 
 	public record Restore(
@@ -32,6 +35,17 @@ public class CouponCommand {
 
 		public List<String> couponIds() {
 			return coupons.stream().map(Coupon::getId).collect(Collectors.toList());
+		}
+	}
+	public record MultiCouponValid(
+		List<Long> userIds,
+		Coupon coupon
+	) {
+		public static UnitCouponValid of(Long userId, Coupon coupon) {
+			return new UnitCouponValid(
+				userId,
+				coupon
+			);
 		}
 	}
 

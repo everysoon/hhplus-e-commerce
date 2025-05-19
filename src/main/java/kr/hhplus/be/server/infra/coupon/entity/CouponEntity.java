@@ -45,7 +45,7 @@ public class CouponEntity {
 	private LocalDateTime issuedAt;
 
 	public CouponEntity(CouponType type, String description, BigDecimal discountAmount,
-						int initialQuantity, int remainingQuantity) {
+		int initialQuantity, int remainingQuantity) {
 		this.id = UUID.randomUUID().toString();
 		this.type = type;
 		this.description = description;
@@ -57,7 +57,7 @@ public class CouponEntity {
 	}
 
 	public CouponEntity(String id, CouponType type, String description, BigDecimal discountAmount,
-						int initialQuantity, int remainingQuantity, LocalDateTime expiredAt, LocalDateTime issuedAt) {
+		int initialQuantity, int remainingQuantity,LocalDateTime expiredAt, LocalDateTime issuedAt) {
 		this(type, description, discountAmount, initialQuantity, remainingQuantity);
 		this.id = id;
 		this.expiredAt = expiredAt;
@@ -99,18 +99,10 @@ public class CouponEntity {
 			this.issuedAt
 		);
 	}
-
-	public CouponEntity issue() {
+	public CouponEntity issue(){
 		validateStock();
 		validExpired();
 		decreaseStock();
-		return this;
-	}
-
-	public CouponEntity issue(int quantity) {
-		validateStock();
-		validExpired();
-		decreaseStock(quantity);
 		return this;
 	}
 
@@ -122,33 +114,22 @@ public class CouponEntity {
 				.divide(BigDecimal.valueOf(100));
 		};
 	}
-
-	public void decreaseStock() {
-		if (this.remainingQuantity <= 0) {
+	public void decreaseStock(){
+		if(this.remainingQuantity <= 0){
 			throw new CustomException(ErrorCode.COUPON_SOLD_OUT);
 		}
-		this.remainingQuantity -= 1;
+		this.remainingQuantity-=1;
 	}
-
-	public void decreaseStock(int quantity) {
-		if (this.remainingQuantity - quantity <= 0) {
-			throw new CustomException(ErrorCode.COUPON_SOLD_OUT);
-		}
-		this.remainingQuantity -= quantity;
+	public void increaseStock(){
+		this.remainingQuantity+=1;
 	}
-
-	public void increaseStock() {
-		this.remainingQuantity += 1;
-	}
-
 	public void validateStock() {
 		if (this.initialQuantity < this.remainingQuantity) {
 			throw new CustomException(ErrorCode.INVALID_COUPON_QUANTITY);
 		}
 	}
-
-	public void validExpired() {
-		if (expiredAt.isBefore(LocalDateTime.now())) {
+	public void validExpired(){
+		if(expiredAt.isBefore(LocalDateTime.now())){
 			throw new CustomException(ErrorCode.EXPIRED_COUPON);
 		}
 	}

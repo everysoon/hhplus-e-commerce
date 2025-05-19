@@ -2,11 +2,13 @@ package kr.hhplus.be.server.application.coupon;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.stream.*;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
@@ -57,9 +59,17 @@ public class CouponIssueDLQProcessor {
 		try {
 			log.info("createGroupIfNotExists groupName : {}, streamKey : {}", DLQ_STREAM_KEY,
 				GROUP_NAME);
-			redisTemplate.opsForStream().createGroup(DLQ_STREAM_KEY, GROUP_NAME);
+			RedisConnection conn = redisTemplate.getConnectionFactory().getConnection();
+			conn.streamCommands().xGroupCreate(
+				DLQ_STREAM_KEY.getBytes(StandardCharsets.UTF_8),
+				GROUP_NAME,
+				ReadOffset.from("0"),
+				true // MKSTREAM
+			);
 		} catch (Exception e) {
+			log.info("### RedisSystemException?!", e.getMessage());
 			if (e.getMessage() != null && e.getMessage().contains("BUSYGROUP")) {
+				// 그룹 이미 존재 — 무시
 				log.info("### Consumer group '{}' already exists for stream '{}'", e.getMessage());
 			}
 		}

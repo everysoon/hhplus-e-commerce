@@ -10,7 +10,6 @@ import kr.hhplus.be.server.infra.cache.CouponIssueService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +30,6 @@ public class CouponService {
 	private final CouponIssueService couponIssueService;
 
 	private final CouponIssueEventPublisher couponIssueEventPublisher;
-	private final ApplicationEventPublisher eventPublisher;
 
 	@Transactional(readOnly = true)
 	public List<UserCouponDetailResult> getUserCoupons(Long userId) {

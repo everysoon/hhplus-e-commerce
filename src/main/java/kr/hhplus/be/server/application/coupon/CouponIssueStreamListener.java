@@ -19,6 +19,7 @@ public class CouponIssueStreamListener implements StreamListener<String, MapReco
 
 	@Override
 	public void onMessage(MapRecord<String, String, String> message) {
+		log.info("onMessage: {}", message);
 		retryHandler.runWithRetry(()->{
 			Long userId = Long.parseLong(message.getValue().get("userId"));
 			String couponId = message.getValue().get("couponId");

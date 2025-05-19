@@ -2,43 +2,45 @@ package kr.hhplus.be.server.integration.common;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
-import java.io.IOException;
-import java.net.Inet4Address;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.Redisson;
+import org.redisson.api.RedissonClient;
+import org.redisson.config.Config;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
-import redis.embedded.RedisCluster;
-import redis.embedded.RedisSentinel;
-import redis.embedded.core.RedisSentinelBuilder;
+import redis.embedded.RedisServer;
+
+import java.io.IOException;
 
 @TestConfiguration
 @Slf4j
 @Profile({"local", "test"})
 public class EmbeddedRedisConfig {
+	private static RedisServer redisServer;
 
-	private RedisCluster cluster;
+	private static final int REDIS_PORT = 6379;
 
 	@PostConstruct
-	public void startRedis() throws IOException, IllegalAccessException {
-		String bindAddress = Inet4Address.getLocalHost().getHostAddress();
-		RedisSentinelBuilder sentinelBuilder = RedisSentinel.newRedisSentinel();
-		sentinelBuilder.bind(bindAddress);
-
-		cluster = RedisCluster.newRedisCluster()
-			.withSentinelBuilder(sentinelBuilder)
-			.ephemeralServers()
-			.sentinelStartingPort(26400)
-			.sentinelCount(3)
-			.quorumSize(2)
-			.replicationGroup("master1", 1)
-			.replicationGroup("master2", 1)
-			.replicationGroup("master3", 1)
-			.build();
-		cluster.start();
+	public void startRedis() throws IOException {
+		redisServer = new RedisServer(REDIS_PORT);
+		redisServer.start();
 	}
 
 	@PreDestroy
 	public void stopRedis() throws IOException {
-		cluster.stop();
+		if (redisServer != null) {
+			redisServer.stop();
+		}
+	}
+
+	@Bean
+	public RedissonClient redissonClient() {
+		Config config = new Config();
+		config.useSingleServer()
+			.setAddress("redis://127.0.0.1:" + REDIS_PORT)
+			.setConnectionMinimumIdleSize(1)
+			.setConnectionPoolSize(5);
+		return Redisson.create(config);
 	}
 }

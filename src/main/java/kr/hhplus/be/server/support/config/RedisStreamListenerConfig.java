@@ -1,7 +1,5 @@
 package kr.hhplus.be.server.support.config;
 
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import kr.hhplus.be.server.application.coupon.CouponIssueStreamListener;
 import kr.hhplus.be.server.support.utils.CacheKeys;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +15,9 @@ import org.springframework.data.redis.connection.stream.StreamOffset;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.stream.StreamListener;
 import org.springframework.data.redis.stream.StreamMessageListenerContainer;
+
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 
 @Configuration
 @RequiredArgsConstructor
@@ -44,6 +45,7 @@ public class RedisStreamListenerConfig {
 		createGroupIfNotExists(streamKey, groupName);
 		StreamMessageListenerContainer.StreamMessageListenerContainerOptions<String, MapRecord<String, String, String>> options =
 			StreamMessageListenerContainer.StreamMessageListenerContainerOptions.builder()
+				.batchSize(10)
 				.pollTimeout(Duration.ofSeconds(2))
 				.build();
 
@@ -52,11 +54,12 @@ public class RedisStreamListenerConfig {
 
 		container.receive(
 			Consumer.from(groupName, consumerName),
-			StreamOffset.create(streamKey, ReadOffset.from("0")),
+			StreamOffset.create(streamKey, ReadOffset.lastConsumed()),
 			listener
 		);
-
+		log.info("container isRunning", container.isRunning());
 		container.start();
+		log.info("container start ok");
 		return container;
 	}
 
@@ -72,7 +75,7 @@ public class RedisStreamListenerConfig {
 			);
 			log.info("Consumer group '{}' created for stream '{}'", groupName, streamKey);
 		} catch (Exception e) {
-			log.info("### RedisSystemException?!",e.getMessage());
+			log.info("### RedisSystemException?!", e.getMessage());
 			if (e.getMessage() != null && e.getMessage().contains("BUSYGROUP")) {
 				// 그룹 이미 존재 — 무시
 				log.info("### Consumer group '{}' already exists for stream '{}'", e.getMessage());
@@ -84,7 +87,7 @@ public class RedisStreamListenerConfig {
 	public StreamMessageListenerContainer<String, MapRecord<String, String, String>> couponIssueListenerContainer(
 		RedisConnectionFactory connectionFactory,
 		CouponIssueStreamListener couponIssueStreamListener) {
-
+		log.info("create StreamMessageListenerContainer");
 		return createListenerContainer(
 			connectionFactory,
 			CacheKeys.COUPON_STREAM.getKey(),

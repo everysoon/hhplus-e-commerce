@@ -5,6 +5,7 @@ import kr.hhplus.be.server.support.common.exception.CustomException;
 import kr.hhplus.be.server.support.config.swagger.ErrorCode;
 import kr.hhplus.be.server.support.utils.CacheKeys;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RAtomicLong;
 import org.redisson.api.RList;
 import org.redisson.api.RSet;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Slf4j
 @Repository
 @RequiredArgsConstructor
 public class CouponIssueRepository {
@@ -20,6 +22,7 @@ public class CouponIssueRepository {
 
 	@RedisLock(lockKey = "'lock:coupon:' + #couponId")
 	public RSet<Long> issueCoupon(Long userId,String couponId) {
+		log.info("### CouponIssueRepository : userId = {}, couponId = {}", userId, couponId);
 		Object[] args = new Object[]{couponId,userId};
 		RList<Long> requestUsers = redissonClient.getList(CacheKeys.COUPON_ISSUE_REQUEST_USER.getKey(args));
 		RAtomicLong stock = redissonClient.getAtomicLong(CacheKeys.COUPON_STOCK.getKey(couponId));
@@ -27,6 +30,7 @@ public class CouponIssueRepository {
 		if (userSet.contains(userId)) {
 			throw new CustomException(ErrorCode.DUPLICATE_COUPON_CLAIM);
 		}
+		log.info("### coupon : stock = {}", stock);
 
 		requestUsers.add(userId);
 		stock.decrementAndGet();
@@ -39,7 +43,7 @@ public class CouponIssueRepository {
 		List<Long> validUsers = requestUsers.range(0, processSize - 1);
 
 		userSet.addAll(validUsers);
-
+		log.info("### userSet  = {}", userSet);
 		return userSet;
 	}
 	RAtomicLong initCouponStock(String couponId,int initialQuantity){

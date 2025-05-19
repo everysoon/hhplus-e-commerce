@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.application.coupon;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -8,6 +9,7 @@ import java.util.Map;
 
 import static kr.hhplus.be.server.support.utils.CacheKeys.COUPON_STREAM;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class CouponIssueEventPublisher {
@@ -15,6 +17,7 @@ public class CouponIssueEventPublisher {
 
 	public void publish(CouponIssuedEvent event) {
 		try {
+			log.info("CouponIssueEventPublisher userId = {}, couponId ={}", event.userId(), event.couponId());
 			Map<String, String> data = Map.of(
 				"couponId", event.couponId(),
 				"userId", event.userId().toString()

@@ -45,14 +45,12 @@ public class OrderResult {
 	public record Place(
 		Long userId,
 		List<Product> products,
-		Payment payment,
 		Order order
 	) {
-		public static Place of(Long userId, List<Product> products, Payment payment, Order order) {
+		public static Place of(Long userId, List<Product> products, Order order) {
 			return new Place(
 				userId,
 				products,
-				payment,
 				order
 			);
 		}

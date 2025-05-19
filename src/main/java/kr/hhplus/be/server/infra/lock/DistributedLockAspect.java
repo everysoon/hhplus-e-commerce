@@ -1,7 +1,5 @@
 package kr.hhplus.be.server.infra.lock;
 
-import java.lang.reflect.Method;
-import java.util.concurrent.TimeUnit;
 import kr.hhplus.be.server.support.common.exception.CustomException;
 import kr.hhplus.be.server.support.config.swagger.ErrorCode;
 import kr.hhplus.be.server.support.utils.SpELParserHelper;
@@ -15,6 +13,9 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Component;
+
+import java.lang.reflect.Method;
+import java.util.concurrent.TimeUnit;
 
 @Aspect
 @Component
@@ -30,7 +31,6 @@ public class DistributedLockAspect {
 		Method method = ((MethodSignature) joinPoint.getSignature()).getMethod();
 		Object[] args = joinPoint.getArgs();
 
-		// SpEL 표현식 평가
 		String lockKey = SpELParserHelper.parseExpression(redisLock.lockKey(), method, args);
 		long waitTime = redisLock.waitTime();
 		long leaseTime = redisLock.leaseTime();

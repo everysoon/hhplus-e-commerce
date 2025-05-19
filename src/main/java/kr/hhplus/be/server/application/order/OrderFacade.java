@@ -1,12 +1,9 @@
 package kr.hhplus.be.server.application.order;
 
 import jakarta.transaction.Transactional;
-import java.util.List;
 import kr.hhplus.be.server.application.coupon.CouponCommand;
 import kr.hhplus.be.server.application.coupon.CouponService;
 import kr.hhplus.be.server.application.coupon.UseCouponInfo;
-import kr.hhplus.be.server.application.order.service.OrderService;
-import kr.hhplus.be.server.application.payment.PaymentCommand;
 import kr.hhplus.be.server.application.payment.PaymentService;
 import kr.hhplus.be.server.application.point.PointCommand;
 import kr.hhplus.be.server.application.point.PointService;
@@ -21,10 +18,13 @@ import kr.hhplus.be.server.domain.user.User;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -38,6 +38,7 @@ public class OrderFacade {
 	private final CouponService couponService;
 	private final UserService userService;
 
+	private final ApplicationEventPublisher applicationEventPublisher;
 
 	public OrderResult.InfoByUser getOrders(Long userId) {
 		logger.info("### getOrders parameter : {}", userId);
@@ -49,10 +50,8 @@ public class OrderFacade {
 
 	@Retryable(
 		value = {ObjectOptimisticLockingFailureException.class},
-		maxAttempts = 3,
 		backoff = @Backoff(delay = 100)
 	)
-
 	@Transactional
 	public OrderResult.Cancel cancel(OrderCriteria.Cancel criteria) {
 		logger.info("### cancel parameter : {}", criteria.toString());
@@ -78,13 +77,11 @@ public class OrderFacade {
 
 	@Retryable(
 		value = {ObjectOptimisticLockingFailureException.class},
-		maxAttempts = 3,
 		backoff = @Backoff(delay = 100)
 	)
-	@Transactional
+
 	public OrderResult.Place placeOrder(OrderCriteria.Request criteria) {
 		logger.info("### placeOrder parameter : {}", criteria.toString());
-
 		User user = userService.get(criteria.userId());
 		// 쿠폰 사용 - 상태 변환
 		// 쿠폰 유효성 확인
@@ -98,18 +95,11 @@ public class OrderFacade {
 		Order order = orderService.create(OrderCommand.Create.of(orderItems, couponInfo));
 		// 유저 포인트 사용
 		pointService.use(PointCommand.Use.of(user.getId(), order.getTotalPrice()));
-
-		// 주문 저장
-		Order save = orderService.save(order);
-		logger.info("### save order : {}", save.getId());
 		// 결제 시도
-		Payment payment = paymentService.pay(
-			PaymentCommand.Request.of(save, criteria.paymentMethod())
-		);
+		applicationEventPublisher.publishEvent(OrderPaidEvent.of(user.getId(), order, criteria.paymentMethod()));
 		return OrderResult.Place.of(
 			user.getId(),
 			orderItems.stream().map(OrderItem::getProduct).toList(),
-			payment,
 			order
 		);
 	}

@@ -1,9 +1,5 @@
-package kr.hhplus.be.server.application.order.service;
+package kr.hhplus.be.server.application.order;
 
-import static org.springframework.transaction.annotation.Propagation.MANDATORY;
-
-import java.util.List;
-import kr.hhplus.be.server.application.order.OrderCommand;
 import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.order.OrderHistory;
 import kr.hhplus.be.server.domain.order.repository.OrderHistoryRepository;
@@ -14,6 +10,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+import static org.springframework.transaction.annotation.Propagation.MANDATORY;
 
 @Service
 @RequiredArgsConstructor
@@ -32,11 +32,13 @@ public class OrderService {
 	public Order create(OrderCommand.Create command) {
 
 		logger.info("### create : {}", command);
-		return new Order(
+		Order order =  new Order(
 			command.couponInfo().userId(),
 			command.couponInfo().coupons(),
 			command.orderItems()
 		);
+		orderRepository.save(order);
+		return order;
 	}
 
 	public List<OrderHistory> findHistoryByUserId(Long userId) {

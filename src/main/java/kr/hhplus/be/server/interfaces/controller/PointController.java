@@ -11,7 +11,6 @@ import java.math.BigDecimal;
 import kr.hhplus.be.server.ResponseApi;
 import kr.hhplus.be.server.application.point.PointCommand;
 import kr.hhplus.be.server.application.point.PointService;
-import kr.hhplus.be.server.domain.point.Point;
 import kr.hhplus.be.server.interfaces.dto.PointDTO;
 import kr.hhplus.be.server.interfaces.dto.UserDTO;
 import kr.hhplus.be.server.support.config.swagger.SwaggerErrorExample;

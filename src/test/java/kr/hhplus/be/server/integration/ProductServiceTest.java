@@ -1,11 +1,8 @@
 package kr.hhplus.be.server.integration;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-
-import java.util.List;
 import kr.hhplus.be.server.application.product.ProductService;
 import kr.hhplus.be.server.domain.product.Product;
-import kr.hhplus.be.server.domain.product.repository.ProductRepository;
+import kr.hhplus.be.server.domain.product.ProductRepository;
 import kr.hhplus.be.server.infra.cache.PopularProductRedisService;
 import kr.hhplus.be.server.integration.common.BaseIntegrationTest;
 import kr.hhplus.be.server.integration.common.TestBatchDataFactory;
@@ -13,6 +10,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+
+import java.util.List;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 public class ProductServiceTest extends BaseIntegrationTest {
 

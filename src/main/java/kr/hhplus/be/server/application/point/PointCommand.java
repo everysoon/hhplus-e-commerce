@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.application.point;
 
 import kr.hhplus.be.server.domain.point.PointHistory;
-import kr.hhplus.be.server.infra.point.entity.PointStatus;
+import kr.hhplus.be.server.domain.point.PointStatus;
 import kr.hhplus.be.server.support.utils.LockKeyPrefix;
 
 import java.math.BigDecimal;
@@ -13,11 +13,11 @@ public class PointCommand {
 		Integer amount,
 		PointStatus status
 	){
-		public static Detail of(PointHistory history,BigDecimal totalPrice){
+		public static Detail of(PointHistory history, BigDecimal totalPrice){
 			return new Detail(
 				history.getUserId(),
 				totalPrice.intValue(),
-				history.getPrice().intValue(),
+				history.getAmount().intValue(),
 				history.getStatus()
 			);
 		}

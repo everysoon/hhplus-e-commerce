@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import kr.hhplus.be.server.domain.coupon.CouponType;
 import kr.hhplus.be.server.domain.product.ProductStatus;
-import kr.hhplus.be.server.infra.product.entity.Category;
+import kr.hhplus.be.server.domain.product.Category;
 import net.datafaker.Faker;
 import org.springframework.jdbc.core.JdbcTemplate;
 

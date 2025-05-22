@@ -1,11 +1,12 @@
 package kr.hhplus.be.server.interfaces.dto;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import kr.hhplus.be.server.application.coupon.UserCouponDetailResult;
 import kr.hhplus.be.server.domain.coupon.Coupon;
 import kr.hhplus.be.server.domain.coupon.CouponStatus;
 import kr.hhplus.be.server.domain.coupon.CouponType;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 public class UserCouponDTO {
 
@@ -13,7 +14,7 @@ public class UserCouponDTO {
 		Long userId,
 		List<CouponDTO.IssuedResponse> coupons
 	) {
-		public static Response of(Long userId, List<Coupon> coupons,CouponStatus status) {
+		public static Response of(Long userId, List<Coupon> coupons, CouponStatus status) {
 			List<CouponDTO.IssuedResponse> couponDTOs = coupons.stream()
 				.map(c->CouponDTO.IssuedResponse.from(c,status)) // Coupon → CouponResponseDTO
 				.toList();

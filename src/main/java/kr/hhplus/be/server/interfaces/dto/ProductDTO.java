@@ -1,9 +1,9 @@
 package kr.hhplus.be.server.interfaces.dto;
 
 import kr.hhplus.be.server.application.product.ProductCommand;
+import kr.hhplus.be.server.domain.product.Category;
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.product.ProductStatus;
-import kr.hhplus.be.server.infra.product.entity.Category;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

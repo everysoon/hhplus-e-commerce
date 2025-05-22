@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.integration;
 
 import kr.hhplus.be.server.application.user.UserService;
-import kr.hhplus.be.server.domain.user.repository.UserRepository;
+import kr.hhplus.be.server.domain.user.UserRepository;
 import kr.hhplus.be.server.integration.common.BaseIntegrationTest;
 import org.junit.jupiter.api.BeforeAll;
 import org.springframework.beans.factory.annotation.Autowired;

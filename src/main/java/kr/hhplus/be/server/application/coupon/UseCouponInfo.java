@@ -14,4 +14,8 @@ public record UseCouponInfo (
 			coupons
 		);
 	}
+	public List<String> couponIds(){
+		if(coupons == null || coupons.isEmpty()) return null;
+		return coupons.stream().map(Coupon::getId).toList();
+	}
 }

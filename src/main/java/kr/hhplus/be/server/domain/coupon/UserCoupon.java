@@ -1,32 +1,49 @@
 package kr.hhplus.be.server.domain.coupon;
 
+import jakarta.persistence.*;
 import kr.hhplus.be.server.support.common.exception.CustomException;
 import kr.hhplus.be.server.support.config.swagger.ErrorCode;
-import lombok.AllArgsConstructor;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Getter
-@AllArgsConstructor
+@Entity
+@Table(name = "user_coupons")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserCoupon {
 
-	private final Long id;
-	private final Long userId;
-	private final Coupon coupon;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(nullable = false)
+	private Long id;
+
+	private Long userId;
+
+	private String couponId;
+
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
 	private CouponStatus status;
+
 	private LocalDateTime issuedAt;
 
-	public static UserCoupon of(Long userId, Coupon coupon) {
-		return new UserCoupon(null, userId, coupon, CouponStatus.ISSUED, LocalDateTime.now());
+	public UserCoupon(Long userId, String couponId) {
+		this.userId = userId;
+		this.couponId = couponId;
+		this.status = CouponStatus.ISSUED;
+		this.issuedAt = LocalDateTime.now();
 	}
 
-	public UserCoupon isValidRestore(){
-		if(this.status.equals(CouponStatus.REVOKED)){
+	public UserCoupon isValidRestore() {
+		if (this.status.equals(CouponStatus.REVOKED)) {
 			throw new CustomException(ErrorCode.REVOKED_COUPON);
 		}
 		return this;
 	}
+
 	public UserCoupon use() {
 		if (this.status == CouponStatus.USED) {
 			throw new CustomException(ErrorCode.USED_COUPON);
@@ -40,12 +57,15 @@ public class UserCoupon {
 		this.status = CouponStatus.USED;
 		return this;
 	}
+
 	public boolean isValid() {
 		return this.status == CouponStatus.ISSUED;
 	}
+
 	public void expire() {
 		this.status = CouponStatus.EXPIRED;
 	}
+
 	public void restore() {
 		this.status = CouponStatus.ISSUED;
 	}

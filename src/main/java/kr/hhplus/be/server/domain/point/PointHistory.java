@@ -1,40 +1,39 @@
 package kr.hhplus.be.server.domain.point;
 
-import kr.hhplus.be.server.application.point.PointCommand;
-import kr.hhplus.be.server.infra.point.entity.PointStatus;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
-@AllArgsConstructor
+@Entity
+@Table(name = "point_history")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PointHistory {
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(nullable = false)
 	private Long id;
-	private final Long userId;
-	private final PointStatus status;
-	private final BigDecimal price;
+	private Long userId;
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	private PointStatus status;
+
+	@Column(nullable = false)
+	private BigDecimal amount = BigDecimal.ZERO;
+
+	@CreatedDate
+	@Column(nullable = false)
 	private LocalDateTime createdAt;
-
-	public static PointHistory from(PointCommand.Charge command) {
-		return new PointHistory(
-			null,
-			command.userId(),
-			command.status(),
-			command.amount(),
-			LocalDateTime.now()
-		);
-	}
-
-	public static PointHistory from(PointCommand.Use command) {
-		return new PointHistory(
-			null,
-			command.userId(),
-			command.status(),
-			command.amount(),
-			LocalDateTime.now()
-		);
+	public PointHistory(Long userId, PointStatus status, BigDecimal amount) {
+		this.userId = userId;
+		this.status = status;
+		this.amount = amount;
+		this.createdAt = LocalDateTime.now();
 	}
 }

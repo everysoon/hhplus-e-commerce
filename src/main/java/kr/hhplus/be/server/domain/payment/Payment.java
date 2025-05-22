@@ -1,58 +1,56 @@
 package kr.hhplus.be.server.domain.payment;
 
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.UUID;
-import kr.hhplus.be.server.application.payment.PaymentCommand;
-import kr.hhplus.be.server.domain.order.Order;
-import kr.hhplus.be.server.infra.payment.entity.PaymentStatus;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 
 @Getter
-@AllArgsConstructor
+@Entity
+@Table(name = "payments")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Payment {
 
-	private final Long id;
-	private PaymentMethod paymentMethod;
-	private final LocalDateTime paidAt;
-	private Long orderId;
-	private BigDecimal price;
-	private PaymentStatus status;
-	private String transactionId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false)
+    private Long id;
 
-	public void setOrderId(Long orderId) {
-		this.orderId = orderId;
-	}
+    private Long orderId;
 
-	public static Payment of(PaymentCommand.Request command, String transactionId) {
-		return new Payment(
-			null,
-			command.paymentMethod(),
-			LocalDateTime.now(),
-			command.orderId(),
-			command.price(),
-			PaymentStatus.COMPLETED,
-			transactionId
-		);
-	}
+    @Column(nullable = false)
+    private PaymentMethod paymentMethod;
 
-	public static Payment create(Order order) {
-		return new Payment(
-			null,
-			PaymentMethod.POINTS,
-			LocalDateTime.now(),
-			order.getId(),
-			order.getTotalPrice(),
-			PaymentStatus.COMPLETED,
-			UUID.randomUUID().toString()
-		);
-	}
+    private BigDecimal price;
 
-	public void cancel(BigDecimal price, String transactionId) {
-		this.price = price;
+    @Column(nullable = false)
+    private String transactionId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private PaymentStatus status;
+
+    @Column(nullable = false)
+    @CreatedDate
+    private LocalDateTime paidAt;
+	@Builder
+    public Payment(Long orderId, BigDecimal price, PaymentMethod paymentMethod,String transactionId) {
+        this.orderId = orderId;
+        this.paymentMethod = paymentMethod;
 		this.transactionId = transactionId;
-		this.status = PaymentStatus.CANCELED;
-	}
+        this.price = price;
+        this.status = PaymentStatus.COMPLETED;
+        this.paidAt = LocalDateTime.now();
+    }
 
+    public void cancel(BigDecimal price, String transactionId) {
+        this.price = price;
+        this.transactionId = transactionId;
+        this.status = PaymentStatus.CANCELED;
+    }
 }

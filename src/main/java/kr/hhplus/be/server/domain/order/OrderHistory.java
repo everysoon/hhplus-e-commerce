@@ -1,22 +1,41 @@
 package kr.hhplus.be.server.domain.order;
 
-import lombok.AllArgsConstructor;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 
 @Getter
-@AllArgsConstructor
+@Entity
+@Table(name = "order_history")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OrderHistory {
-	private final Long id;
-	private final Long orderId;
-	private String description;
-	private final LocalDateTime createdAt;
 
-	public static OrderHistory of(Long orderId, String description) {
-		return new OrderHistory(null, orderId, description, LocalDateTime.now());
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(nullable = false)
+	private Long id;
+
+	private Long orderId;
+
+	private String description;
+
+	@CreatedDate
+	@Column(nullable = false)
+	private LocalDateTime createdAt;
+
+	public OrderHistory(Long orderId) {
+		this.orderId = orderId;
+		this.createdAt = LocalDateTime.now();
 	}
-	public static OrderHistory of(Long orderId) {
-		return new OrderHistory(null, orderId, "", LocalDateTime.now());
+
+	public OrderHistory(Long orderId, String description) {
+		this.orderId = orderId;
+		this.description = description;
+		this.createdAt = LocalDateTime.now();
 	}
 }
+

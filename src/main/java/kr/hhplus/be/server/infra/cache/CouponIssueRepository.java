@@ -32,17 +32,20 @@ public class CouponIssueRepository {
 		}
 		log.info("### coupon : stock = {}", stock);
 
-		requestUsers.add(userId);
 		stock.decrementAndGet();
 		if(stock.get() < 0){
 			stock.incrementAndGet(); // 재고 수량 원복
 			throw new CustomException(ErrorCode.COUPON_SOLD_OUT);
 		}
+
+		requestUsers.add(userId);
 		// 요청이 쿠폰 재고 수보다 많은 경우, 선착순으로 자르기
 		int processSize = (int) Math.min(stock.get(), requestUsers.size());
 		List<Long> validUsers = requestUsers.range(0, processSize - 1);
-
-		userSet.addAll(validUsers);
+		boolean isContains = validUsers.contains(userId);
+		if(isContains){
+			userSet.add(userId);
+		}
 		log.info("### userSet  = {}", userSet);
 		return userSet;
 	}

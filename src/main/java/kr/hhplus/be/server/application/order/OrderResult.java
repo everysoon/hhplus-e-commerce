@@ -1,32 +1,28 @@
 package kr.hhplus.be.server.application.order;
 
-import kr.hhplus.be.server.domain.coupon.Coupon;
 import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.order.OrderItem;
-import kr.hhplus.be.server.domain.payment.Payment;
-import kr.hhplus.be.server.domain.product.Product;
 
 import java.util.List;
 
 public class OrderResult {
 	public record Cancel(
-		Order order,
-		Payment payment
+		Order order
 	) {
-		public static Cancel of(Order order, Payment payment) {
-			return new Cancel(order, payment);
+		public static Cancel of(Order order) {
+			return new Cancel(order);
 		}
 	}
 	public record DetailByOrder(
 		Long orderId,
-		List<Product> productList,
-		List<Coupon> coupons
+		List<Long> productIds,
+		List<String> couponIds
 	){
 		public static DetailByOrder from(Order order) {
 			return new DetailByOrder(
 				order.getId(),
-				order.getOrderItems().stream().map(OrderItem::getProduct).toList(),
-				order.getCoupons()
+				order.getOrderItems().stream().map(OrderItem::getProductId).toList(),
+				order.getUsedUserCouponIds()
 			);
 		}
 	}
@@ -44,15 +40,13 @@ public class OrderResult {
 	}
 	public record Place(
 		Long userId,
-		List<Product> products,
-		Payment payment,
+		List<Long> productIds,
 		Order order
 	) {
-		public static Place of(Long userId, List<Product> products, Payment payment, Order order) {
+		public static Place of(Long userId, List<Long> productIds, Order order) {
 			return new Place(
 				userId,
-				products,
-				payment,
+				productIds,
 				order
 			);
 		}

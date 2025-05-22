@@ -1,18 +1,12 @@
 package kr.hhplus.be.server.application.point;
 
-import kr.hhplus.be.server.domain.point.Point;
-import kr.hhplus.be.server.domain.point.PointHistory;
-import kr.hhplus.be.server.domain.point.repository.PointHistoryRepository;
-import kr.hhplus.be.server.domain.point.repository.PointRepository;
+import kr.hhplus.be.server.domain.point.*;
 import kr.hhplus.be.server.infra.lock.RedisLock;
-import kr.hhplus.be.server.infra.point.entity.PointStatus;
 import kr.hhplus.be.server.support.common.exception.CustomException;
 import kr.hhplus.be.server.support.config.swagger.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
 
 import static org.springframework.transaction.annotation.Propagation.MANDATORY;
 
@@ -26,10 +20,9 @@ public class PointService {
 	@Transactional(propagation = MANDATORY)
 	@RedisLock(lockKey = "#command.getLockKey()", waitTime = 200)
 	public Point refund(PointCommand.Refund command) {
-		PointHistory pointHistory = new PointHistory(null, command.userId(), PointStatus.REFUND,
-			command.totalPrice(), LocalDateTime.now());
+		PointHistory history = new PointHistory(command.userId(), PointStatus.REFUND, command.totalPrice());
 		Point point = pointRepository.charge(command.userId(), command.totalPrice());
-		pointHistoryRepository.save(pointHistory);
+		pointHistoryRepository.save(history);
 		return point;
 	}
 
@@ -37,7 +30,7 @@ public class PointService {
 	@RedisLock(lockKey = "#command.getLockKey()", waitTime = 500)
 	public PointCommand.Detail charge(PointCommand.Charge command) {
 		Point point = pointRepository.charge(command.userId(), command.amount());
-		PointHistory history = PointHistory.from(command);
+		PointHistory history = new PointHistory(command.userId(), PointStatus.CHARGED, command.amount());
 		pointHistoryRepository.save(history);
 		return PointCommand.Detail.of(history, point.getBalance());
 	}
@@ -52,7 +45,7 @@ public class PointService {
 	@RedisLock(lockKey = "#command.getLockKey()", waitTime = 500)
 	public PointCommand.Detail use(PointCommand.Use command) {
 		Point point = pointRepository.use(command.userId(), command.amount());
-		PointHistory history = PointHistory.from(command);
+		PointHistory history = new PointHistory(command.userId(), PointStatus.USED, command.amount());
 		pointHistoryRepository.save(history);
 		return PointCommand.Detail.of(history, point.getBalance());
 	}

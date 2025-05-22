@@ -1,14 +1,18 @@
 package kr.hhplus.be.server.integration;
 
-import kr.hhplus.be.server.application.coupon.*;
+import kr.hhplus.be.server.application.coupon.CouponCommand;
+import kr.hhplus.be.server.application.coupon.CouponIssueDLQHandler;
+import kr.hhplus.be.server.application.coupon.CouponIssuedEvent;
+import kr.hhplus.be.server.application.coupon.CouponService;
 import kr.hhplus.be.server.domain.coupon.UserCoupon;
-import kr.hhplus.be.server.domain.user.repository.UserCouponRepository;
-import kr.hhplus.be.server.domain.user.repository.UserRepository;
+import kr.hhplus.be.server.domain.user.UserCouponRepository;
+import kr.hhplus.be.server.domain.user.UserRepository;
 import kr.hhplus.be.server.integration.common.BaseIntegrationTest;
 import kr.hhplus.be.server.utils.CouponTestFixture;
 import kr.hhplus.be.server.utils.UserTestFixture;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.redis.connection.stream.*;
 import org.springframework.data.redis.core.RedisTemplate;
 
@@ -30,7 +34,7 @@ public class CouponIssueStreamTest extends BaseIntegrationTest {
 	@Autowired
 	private RedisTemplate<String, String> redisTemplate;
 	@Autowired
-	private CouponIssueEventPublisher eventPublisher;
+	private ApplicationEventPublisher eventPublisher;
 	@Autowired
 	private CouponService couponService;
 	@Autowired
@@ -38,7 +42,7 @@ public class CouponIssueStreamTest extends BaseIntegrationTest {
 	@Autowired
 	private UserCouponRepository userCouponRepository;
 	@Autowired
-	private CouponIssueDLQProcessor dlqProcessor;
+	private CouponIssueDLQHandler dlqProcessor;
 
 	@Autowired
 	private UserRepository userRepository;
@@ -58,7 +62,7 @@ public class CouponIssueStreamTest extends BaseIntegrationTest {
 		// then
 		List<UserCoupon> saved = userCouponRepository.findByUserIdAndCouponIds(userId,List.of(couponId));
 		assertThat(saved.size()).isGreaterThan(0);
-		assertThat(saved.get(0).getCoupon().getId()).isEqualTo(couponId);
+		assertThat(saved.get(0).getCouponId()).isEqualTo(couponId);
 		assertThat(saved.get(0).getUserId()).isEqualTo(userId);
 	}
 
@@ -72,7 +76,7 @@ public class CouponIssueStreamTest extends BaseIntegrationTest {
 		userRepository.save(UserTestFixture.createUser(userId));
 		// when
 		redisTemplate.opsForStream().createGroup(DLQ_STREAM_KEY, GROUP_NAME);
-		eventPublisher.publish(new CouponIssuedEvent(userId, couponId));
+		eventPublisher.publishEvent(new CouponIssuedEvent(userId, couponId));
 		// then
 		List<MapRecord<String, Object, Object>> dlqRecords = redisTemplate.opsForStream()
 			.read(

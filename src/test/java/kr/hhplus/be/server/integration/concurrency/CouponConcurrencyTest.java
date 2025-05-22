@@ -6,8 +6,8 @@ import kr.hhplus.be.server.domain.coupon.Coupon;
 import kr.hhplus.be.server.domain.coupon.CouponRepository;
 import kr.hhplus.be.server.domain.coupon.UserCoupon;
 import kr.hhplus.be.server.domain.user.User;
-import kr.hhplus.be.server.domain.user.repository.UserCouponRepository;
-import kr.hhplus.be.server.domain.user.repository.UserRepository;
+import kr.hhplus.be.server.domain.user.UserCouponRepository;
+import kr.hhplus.be.server.domain.user.UserRepository;
 import kr.hhplus.be.server.integration.common.BaseIntegrationTest;
 import kr.hhplus.be.server.utils.CouponTestFixture;
 import kr.hhplus.be.server.utils.UserTestFixture;
@@ -55,9 +55,10 @@ public class CouponConcurrencyTest extends BaseIntegrationTest {
 		List<UserCoupon> issuedCoupons = userCouponRepository.findAll();
 		int issuedCount = issuedCoupons.size();
 
+		Coupon testCoupon = couponRepository.findById(issuedCoupons.get(0).getCouponId());
 		assertThat(users.size()).isEqualTo(10);
 		assertThat(issuedCount).isEqualTo(1);
-		assertThat(issuedCoupons.get(0).getCoupon().getRemainingQuantity()).isEqualTo(0);
+		assertThat(testCoupon.getRemainingQuantity()).isEqualTo(0);
 		assertThat(concurrencyTestHelper.getExceptions().size()).isEqualTo(9);
 	}
 

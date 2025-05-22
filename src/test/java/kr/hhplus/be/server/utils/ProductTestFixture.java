@@ -1,8 +1,8 @@
 package kr.hhplus.be.server.utils;
 
+import kr.hhplus.be.server.domain.product.Category;
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.product.ProductStatus;
-import kr.hhplus.be.server.infra.product.entity.Category;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

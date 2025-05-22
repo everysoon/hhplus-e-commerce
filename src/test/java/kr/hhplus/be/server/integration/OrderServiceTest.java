@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.integration;
 
 import kr.hhplus.be.server.application.coupon.CouponService;
-import kr.hhplus.be.server.application.order.service.OrderService;
+import kr.hhplus.be.server.application.order.OrderService;
 import kr.hhplus.be.server.application.product.ProductService;
 import kr.hhplus.be.server.domain.order.repository.OrderHistoryRepository;
 import kr.hhplus.be.server.domain.order.repository.OrderRepository;

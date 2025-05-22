@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.application.coupon;
 
+import kr.hhplus.be.server.domain.coupon.Coupon;
 import kr.hhplus.be.server.domain.coupon.CouponStatus;
 import kr.hhplus.be.server.domain.coupon.CouponType;
 import kr.hhplus.be.server.domain.coupon.UserCoupon;
@@ -17,16 +18,16 @@ public record UserCouponDetailResult(
 	BigDecimal discount,
 	LocalDateTime expired
 ) {
-	public static UserCouponDetailResult of(UserCoupon uc) {
+	public static UserCouponDetailResult of(UserCoupon uc, Coupon coupon) {
 		return new UserCouponDetailResult(
 			uc.getUserId(),
-			uc.getCoupon().getId(),
+			coupon.getId(),
 			uc.getStatus(),
 			uc.getIssuedAt(),
-			uc.getCoupon().getType(),
-			uc.getCoupon().getDescription(),
-			uc.getCoupon().getDiscountAmount(),
-			uc.getCoupon().getExpiredAt()
+			coupon.getType(),
+			coupon.getDescription(),
+			coupon.getDiscountAmount(),
+			coupon.getExpiredAt()
 		);
 	}
 

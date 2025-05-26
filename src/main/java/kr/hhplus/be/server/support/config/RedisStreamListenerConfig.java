@@ -1,6 +1,6 @@
 package kr.hhplus.be.server.support.config;
 
-import kr.hhplus.be.server.application.coupon.CouponIssueStreamListener;
+import kr.hhplus.be.server.application.coupon.CouponIssueHandler;
 import kr.hhplus.be.server.support.utils.CacheKeys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -86,7 +86,7 @@ public class RedisStreamListenerConfig {
 	@Bean
 	public StreamMessageListenerContainer<String, MapRecord<String, String, String>> couponIssueListenerContainer(
 		RedisConnectionFactory connectionFactory,
-		CouponIssueStreamListener couponIssueStreamListener) {
+		CouponIssueHandler couponIssueStreamListener) {
 		log.info("create StreamMessageListenerContainer");
 		return createListenerContainer(
 			connectionFactory,

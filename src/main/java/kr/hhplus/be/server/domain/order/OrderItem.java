@@ -1,33 +1,40 @@
 package kr.hhplus.be.server.domain.order;
 
+import jakarta.persistence.*;
 import kr.hhplus.be.server.domain.product.Product;
-import lombok.AllArgsConstructor;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
 @Getter
-@AllArgsConstructor
+@Entity
+@Table(name = "order_items")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+// 주문이 들어간 products
 public class OrderItem {
 
-	private final Long id;
-	private final Product product;
-	private Long orderId;
-	private final Integer quantity;
-	private BigDecimal unitPrice;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(nullable = false)
+	private Long id;
 
-	public OrderItem setOrderId(Long orderId) {
-		this.orderId = orderId;
-		return this;
-	}
-	public static OrderItem create(Product product,Integer quantity){
-		return new OrderItem(
-			null,
-			product,
-			null,
-			quantity,
-			product.getPrice()
-		);
-	}
+	@Column(nullable = false)
+	private Long productId;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "order_id", nullable = false)
+	private Order order;
+
+	private BigDecimal unitPrice; // 주문 당시 개당 가격
+
+	@Column(nullable = false)
+	private Integer quantity;
+
+	public OrderItem(Product product, Integer quantity) {
+		this.productId = product.getId();
+		this.unitPrice = product.getPrice();
+		this.quantity = quantity;
+	}
 }

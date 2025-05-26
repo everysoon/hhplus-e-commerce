@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.interfaces.dto;
 
 import kr.hhplus.be.server.application.point.PointCommand;
-import kr.hhplus.be.server.infra.point.entity.PointStatus;
+import kr.hhplus.be.server.domain.point.PointStatus;
 
 public class PointDTO {
 	public record UserPointResponse(

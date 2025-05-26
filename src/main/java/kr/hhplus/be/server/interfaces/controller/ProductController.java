@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.hhplus.be.server.ResponseApi;
 import kr.hhplus.be.server.application.product.ProductCommand;
 import kr.hhplus.be.server.application.product.ProductService;
-import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.interfaces.dto.ProductDTO;
 import kr.hhplus.be.server.support.config.swagger.SwaggerErrorExample;
 import lombok.RequiredArgsConstructor;

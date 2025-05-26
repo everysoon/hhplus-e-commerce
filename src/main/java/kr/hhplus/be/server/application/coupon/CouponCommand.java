@@ -4,7 +4,6 @@ import kr.hhplus.be.server.domain.coupon.Coupon;
 import kr.hhplus.be.server.support.utils.LockKeyPrefix;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class CouponCommand {
 	public record Issue(
@@ -14,8 +13,8 @@ public class CouponCommand {
 		public static Issue of(Long userId, String couponId) {
 			return new Issue(userId, couponId);
 		}
-		public UnitCouponValid toUnitCouponValid(Coupon coupon) {
-			return new CouponCommand.UnitCouponValid(userId, coupon);
+		public UnitCouponValid toUnitCouponValid(String couponId) {
+			return new CouponCommand.UnitCouponValid(userId, couponId);
 		}
 		public String getLockKey(){
 			return LockKeyPrefix.COUPON.createKey(couponId);
@@ -27,36 +26,33 @@ public class CouponCommand {
 
 	public record Restore(
 		Long userId,
-		List<Coupon> coupons
+		List<String> couponIds
 	) {
-		public static Restore of(Long userId, List<Coupon> coupons) {
-			return new Restore(userId, coupons);
+		public static Restore of(Long userId, List<String> couponIds) {
+			return new Restore(userId, couponIds);
 		}
 
-		public List<String> couponIds() {
-			return coupons.stream().map(Coupon::getId).collect(Collectors.toList());
-		}
 	}
 	public record MultiCouponValid(
 		List<Long> userIds,
-		Coupon coupon
+		String couponId
 	) {
-		public static UnitCouponValid of(Long userId, Coupon coupon) {
+		public static UnitCouponValid of(Long userId, String couponId) {
 			return new UnitCouponValid(
 				userId,
-				coupon
+				couponId
 			);
 		}
 	}
 
 	public record UnitCouponValid(
 		Long userId,
-		Coupon coupon
+		String couponId
 	) {
-		public static UnitCouponValid of(Long userId, Coupon coupon) {
+		public static UnitCouponValid of(Long userId, String couponId) {
 			return new UnitCouponValid(
 				userId,
-				coupon
+				couponId
 			);
 		}
 	}

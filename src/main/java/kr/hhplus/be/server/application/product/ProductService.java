@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.application.product;
 
 import kr.hhplus.be.server.domain.product.Product;
-import kr.hhplus.be.server.domain.product.repository.ProductRepository;
+import kr.hhplus.be.server.domain.product.ProductRepository;
 import kr.hhplus.be.server.infra.cache.PopularProductRedisService;
 import kr.hhplus.be.server.infra.lock.RedisLock;
 import lombok.RequiredArgsConstructor;
@@ -55,9 +55,9 @@ public class ProductService {
 
 		return command.orderItems().stream()
 			.map(o -> {
-				popularProductRedisService.decreaseScore(o.getProduct().getId(),
+				popularProductRedisService.decreaseScore(o.getProductId(),
 					-o.getQuantity());
-				return productRepository.increaseStock(o.getProduct(), o.getQuantity());
+				return productRepository.increaseStock(o.getProductId(), o.getQuantity());
 			})
 			.toList();
 	}

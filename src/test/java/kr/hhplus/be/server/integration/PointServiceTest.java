@@ -1,8 +1,8 @@
 package kr.hhplus.be.server.integration;
 
 import kr.hhplus.be.server.application.point.PointService;
-import kr.hhplus.be.server.domain.point.repository.PointHistoryRepository;
-import kr.hhplus.be.server.domain.point.repository.PointRepository;
+import kr.hhplus.be.server.domain.point.PointHistoryRepository;
+import kr.hhplus.be.server.domain.point.PointRepository;
 import kr.hhplus.be.server.integration.common.BaseIntegrationTest;
 import org.junit.jupiter.api.BeforeAll;
 import org.springframework.beans.factory.annotation.Autowired;

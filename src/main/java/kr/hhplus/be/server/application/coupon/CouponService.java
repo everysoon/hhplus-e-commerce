@@ -4,19 +4,19 @@ import kr.hhplus.be.server.domain.coupon.Coupon;
 import kr.hhplus.be.server.domain.coupon.CouponRepository;
 import kr.hhplus.be.server.domain.coupon.CouponValidator;
 import kr.hhplus.be.server.domain.coupon.UserCoupon;
-import kr.hhplus.be.server.domain.user.repository.UserCouponRepository;
+import kr.hhplus.be.server.domain.user.UserCouponRepository;
 import kr.hhplus.be.server.infra.NotificationSender;
 import kr.hhplus.be.server.infra.cache.CouponIssueService;
 import lombok.RequiredArgsConstructor;
+import org.redisson.api.RSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
-import static org.springframework.transaction.annotation.Propagation.MANDATORY;
 
 @Service
 @RequiredArgsConstructor
@@ -29,11 +29,16 @@ public class CouponService {
 	private final NotificationSender notificationSender;
 	private final CouponIssueService couponIssueService;
 
-	private final CouponIssueEventPublisher couponIssueEventPublisher;
+	private final ApplicationEventPublisher applicationEventPublisher;
 
 	@Transactional(readOnly = true)
 	public List<UserCouponDetailResult> getUserCoupons(Long userId) {
-		return userCouponRepository.findByUserId(userId).stream().map(UserCouponDetailResult::of)
+		return userCouponRepository.findByUserId(userId)
+			.stream()
+			.map(uc->{
+				Coupon coupon = couponRepository.findById(uc.getCouponId());
+				return UserCouponDetailResult.of(uc,coupon);
+			})
 			.toList();
 	}
 
@@ -42,16 +47,15 @@ public class CouponService {
 		logger.info("### findCouponByUserId parameter : {}", userId);
 		List<String> couponIds = userCouponRepository.findByUserId(userId)
 			.stream()
-			.map(UserCoupon::getCoupon)
-			.map(Coupon::getId)
+			.map(UserCoupon::getCouponId)
 			.toList();
 		return couponRepository.findAllByIdIn(couponIds);
 	}
 
-	@Transactional(propagation = MANDATORY)
+	@Transactional
 	public void restore(CouponCommand.Restore command) {
 		logger.info("### restore parameter : {}", command.toString());
-		if (command.coupons() == null || command.coupons().isEmpty()) {
+		if (command.couponIds() == null || command.couponIds().isEmpty()) {
 			return;
 		}
 		List<UserCoupon> userCoupons = userCouponRepository.findByUserIdAndCouponIds(
@@ -59,19 +63,19 @@ public class CouponService {
 			.stream()
 			.map(UserCoupon::isValidRestore)
 			.toList();
-		List<Coupon> coupons = userCoupons.stream().map(UserCoupon::getCoupon).toList();
+		List<Coupon> coupons = userCoupons.stream().map(UserCoupon::getCouponId).map(couponRepository::findById).toList();
 		userCoupons.forEach(UserCoupon::restore);
 		coupons.forEach(Coupon::increaseStock);
-		userCouponRepository.updateAll(userCoupons);
-		couponRepository.updateAll(coupons);
+//		userCouponRepository.updateAll(userCoupons);
+//		couponRepository.updateAll(coupons);
 	}
 
 	@Transactional
-	public String issueCoupon(CouponCommand.Issue command) {
+	public boolean issueCoupon(CouponCommand.Issue command) {
 		logger.info("### issueCoupon parameter : {}", command.toString());
-		couponIssueService.issueCoupon(command.userId(), command.couponId());
-		couponIssueEventPublisher.publish(command.toEvent());
-		return null;
+		RSet<Long> ids = couponIssueService.issueCoupon(command.userId(), command.couponId());
+		applicationEventPublisher.publishEvent(command.toEvent());
+		return ids.contains(command.userId());
 	}
 	public Coupon findById(String id) {
 		return couponRepository.findById(id);
@@ -81,7 +85,7 @@ public class CouponService {
 		return couponRepository.save(coupon);
 	}
 
-	@Transactional(propagation = MANDATORY)
+	@Transactional
 	public UseCouponInfo use(CouponCommand.Use command) {
 		if (command.couponIds() == null || command.couponIds().isEmpty()) {
 			return new UseCouponInfo(command.userId(), null);
@@ -92,13 +96,15 @@ public class CouponService {
 			.stream()
 			.map(UserCoupon::use)
 			.toList();
-		userCouponRepository.saveAll(userCoupons);
-		userCoupons.stream()
-			.map(UserCoupon::getCoupon)
-			.forEach(Coupon::validExpired);
+
+		List<Coupon> coupons = userCoupons.stream()
+			.map(UserCoupon::getCouponId)
+			.map(couponRepository::findById).toList();
+
+		coupons.forEach(Coupon::validExpired);
 		return new UseCouponInfo(
 			command.userId(),
-			userCoupons.stream().map(UserCoupon::getCoupon).toList()
+			coupons
 		);
 	}
 
@@ -127,9 +133,10 @@ public class CouponService {
 		List<UserCoupon> userCoupons = userCouponRepository.findByCouponIds(expiredCouponIds);
 		logger.info("### scheduleNotifyUserBeforeExpireDay {}", userCoupons.size());
 		userCoupons.forEach(uc -> {
+			Coupon coupon = couponRepository.findById(uc.getCouponId());
 			logger.info("### TEMP SEND Notification");
 			String message =
-				uc.getUserId() + "님, " + uc.getCoupon().getDescription() + " 쿠폰이 만료 하루 전입니다.";
+				uc.getUserId() + "님, " + coupon.getDescription() + " 쿠폰이 만료 하루 전입니다.";
 			notificationSender.sendNotification(message);
 		});
 	}

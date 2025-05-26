@@ -2,7 +2,7 @@ package kr.hhplus.be.server.application.coupon;
 
 import kr.hhplus.be.server.domain.coupon.Coupon;
 import kr.hhplus.be.server.domain.coupon.CouponRepository;
-import kr.hhplus.be.server.domain.user.repository.UserCouponRepository;
+import kr.hhplus.be.server.domain.user.UserCouponRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

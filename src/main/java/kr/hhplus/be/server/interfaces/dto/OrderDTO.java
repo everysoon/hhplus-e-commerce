@@ -2,15 +2,14 @@ package kr.hhplus.be.server.interfaces.dto;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDateTime;
-import java.util.List;
 import kr.hhplus.be.server.application.order.OrderResult;
-import kr.hhplus.be.server.domain.payment.PaymentMethod;
-import kr.hhplus.be.server.infra.payment.entity.PaymentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 public class OrderDTO {
 
@@ -30,27 +29,21 @@ public class OrderDTO {
 	public record CancelResponse(
 		Long userId,
 		Long orderId,
-		Long paymentId,
-		Integer totalPrice,
-		PaymentMethod method
+		Integer totalPrice
 	) {
 
 		public static CancelResponse of(OrderResult.Cancel result) {
 			return new CancelResponse(
 				result.order().getUserId(),
 				result.order().getId(),
-				result.payment().getId(),
-				result.order().getTotalPrice().intValue(),
-				result.payment().getPaymentMethod()
+				result.order().getTotalPrice().intValue()
 			);
 		}
 	}
 
 	public record OrderResponse(
 		Long userId,
-		List<ProductDTO.ProductResponse> orderItems,
-		PaymentMethod paymentMethod,
-		PaymentStatus paymentStatus,
+		List<Long> orderProductIds,
 		Integer totalPrice,
 		Integer totalDiscount,
 		LocalDateTime orderedAt
@@ -59,10 +52,7 @@ public class OrderDTO {
 		public static OrderResponse of(OrderResult.Place result) {
 			return new OrderResponse(
 				result.userId(),
-				result.products().stream()
-					.map(ProductDTO.ProductResponse::from).toList(),
-				result.payment().getPaymentMethod(),
-				result.payment().getStatus(),
+				result.productIds(),
 				result.order().getTotalPrice().intValue(),
 				result.order().getTotalDiscount().intValue(),
 				result.order().getOrderedAt()
@@ -85,16 +75,16 @@ public class OrderDTO {
 
 	public record OrderDetailResponse(
 		Long orderId,
-		List<ProductDTO.OrderItemDetailResponse> orderItems,
-		List<CouponDTO.OrderCouponResponse> coupons
+		List<Long> orderProductIds,
+		List<String> coupons
 
 	) {
 
 		public static OrderDetailResponse of(OrderResult.DetailByOrder result) {
 			return new OrderDetailResponse(
 				result.orderId(),
-				result.productList().stream().map(ProductDTO.OrderItemDetailResponse::of).toList(),
-				result.coupons().stream().map(CouponDTO.OrderCouponResponse::of).toList()
+				result.productIds(),
+				result.couponIds()
 			);
 		}
 	}

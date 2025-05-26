@@ -1,6 +1,6 @@
 package kr.hhplus.be.server.domain.coupon;
 
-import kr.hhplus.be.server.domain.user.repository.UserCouponRepository;
+import kr.hhplus.be.server.domain.user.UserCouponRepository;
 import kr.hhplus.be.server.support.common.exception.CustomException;
 import kr.hhplus.be.server.support.config.swagger.ErrorCode;
 import lombok.RequiredArgsConstructor;

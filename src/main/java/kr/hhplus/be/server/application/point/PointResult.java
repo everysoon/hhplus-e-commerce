@@ -1,6 +1,6 @@
 package kr.hhplus.be.server.application.point;
 
-import kr.hhplus.be.server.infra.point.entity.PointStatus;
+import kr.hhplus.be.server.domain.point.PointStatus;
 
 import java.math.BigDecimal;
 

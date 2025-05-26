@@ -1,11 +1,9 @@
 package kr.hhplus.be.server.support.config.swagger;
 
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
+import static org.springframework.http.HttpStatus.*;
 
 @Getter
 @AllArgsConstructor
@@ -55,6 +53,8 @@ public enum ErrorCode {
     CUSTOM_INTERNAL_SERVER_ERROR(INTERNAL_SERVER_ERROR.value(),"예상하지 않은 에러가 발생하였습니다. 관리자에게 문의해 주세요."),
 	NOT_EXIST_ORDER(INTERNAL_SERVER_ERROR.value(),"해당 주문ID의 주문내역이 존재하지 않습니다."),
 	UNAUTHORIZED_ORDER_ACCESS(INTERNAL_SERVER_ERROR.value(),"사용자의 주문내역이 아닙니다."),
+	FAIL_ORDER_CANCEL(INTERNAL_SERVER_ERROR.value(),"주문 취소 과정 중 오류가 발생했습니다."),
+	FAIL_PLACE_ORDER(INTERNAL_SERVER_ERROR.value(),"상품 주문 과정 중 오류가 발생했습니다."),
 
 	// payment
 	PAYMENT_FAIL(BAD_REQUEST.value(),"결제가 실패했습니다."),

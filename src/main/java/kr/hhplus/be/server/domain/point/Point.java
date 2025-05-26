@@ -1,37 +1,37 @@
 package kr.hhplus.be.server.domain.point;
 
-import kr.hhplus.be.server.application.point.PointCommand;
+import jakarta.persistence.*;
 import kr.hhplus.be.server.support.common.exception.CustomException;
 import kr.hhplus.be.server.support.config.swagger.ErrorCode;
-import lombok.AllArgsConstructor;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
 @Getter
-@AllArgsConstructor
+@Entity
+@Table(name = "points")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Point {
 
-	private final Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(updatable = false, nullable = false)
+	private Long id;
 
 	private Long userId;
 
 	private BigDecimal balance;
 
-	public static Point create(Long userId) {
-		return new Point(
-			null,
-			userId,
-			BigDecimal.ZERO
-		);
+	public Point(Long userId) {
+		this.userId = userId;
+		this.balance = BigDecimal.ZERO;
 	}
 
-	public static Point from(PointCommand.Charge command) {
-		return new Point(
-			null,
-			command.userId(),
-			command.amount()
-		);
+	public Point(Long userId, BigDecimal balance) {
+		this.userId = userId;
+		this.balance = balance;
 	}
 
 	public Point charge(BigDecimal amount) {
@@ -41,7 +41,6 @@ public class Point {
 		this.balance = this.balance.add(amount);
 		return this;
 	}
-
 
 	public Point use(BigDecimal amount) {
 		if (balance.compareTo(amount) < 0) {

@@ -1,23 +1,18 @@
 package kr.hhplus.be.server.integration.concurrency;
 
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-
-import java.math.BigDecimal;
-import java.util.List;
 import kr.hhplus.be.server.application.order.OrderCriteria;
 import kr.hhplus.be.server.application.order.OrderFacade;
 import kr.hhplus.be.server.application.order.OrderResult;
-import kr.hhplus.be.server.application.point.PointCommand;
 import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.order.repository.OrderRepository;
 import kr.hhplus.be.server.domain.payment.PaymentMethod;
 import kr.hhplus.be.server.domain.payment.repository.PaymentRepository;
 import kr.hhplus.be.server.domain.point.Point;
-import kr.hhplus.be.server.domain.point.repository.PointRepository;
+import kr.hhplus.be.server.domain.point.PointRepository;
 import kr.hhplus.be.server.domain.product.Product;
-import kr.hhplus.be.server.domain.product.repository.ProductRepository;
+import kr.hhplus.be.server.domain.product.ProductRepository;
 import kr.hhplus.be.server.domain.user.User;
-import kr.hhplus.be.server.domain.user.repository.UserRepository;
+import kr.hhplus.be.server.domain.user.UserRepository;
 import kr.hhplus.be.server.integration.common.BaseIntegrationTest;
 import kr.hhplus.be.server.utils.ProductTestFixture;
 import kr.hhplus.be.server.utils.UserTestFixture;
@@ -25,6 +20,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 @Slf4j
 public class OrderConcurrencyTest extends BaseIntegrationTest {
@@ -52,7 +52,7 @@ public class OrderConcurrencyTest extends BaseIntegrationTest {
 
 		productRepository.save(product);
 		userRepository.save(user);
-		pointRepository.save(Point.from(PointCommand.Charge.of(user.getId(), BigDecimal.valueOf(50000))));
+		pointRepository.save(new Point(user.getId(),BigDecimal.valueOf(50000)));
 
 		concurrencyTestHelper.run(threadCount, index -> {
 			OrderCriteria.Request request = new OrderCriteria.Request(

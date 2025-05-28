@@ -46,6 +46,8 @@ public enum ErrorCode {
 
     // lock
     LOCK_ACQUISITION_FAIL(BAD_REQUEST.value(),"락을 획득하는데 실패했습니다. 다시 시도해주세요."),
+	// kafka event
+	ALREADY_PROCESSED_EVENT(BAD_REQUEST.value(),"이미 처리된 이벤트 입니다."),
 
 	// order
 	NOT_EXIST_ORDER_ITEM(BAD_REQUEST.value(),"주문 상품이 존재하지 않습니다."),

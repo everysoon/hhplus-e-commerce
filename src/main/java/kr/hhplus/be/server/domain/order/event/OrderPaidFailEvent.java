@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.application.order;
+package kr.hhplus.be.server.domain.order.event;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.application.order;
+package kr.hhplus.be.server.domain.order.event;
 
 import kr.hhplus.be.server.application.payment.PaymentCommand;
 import kr.hhplus.be.server.domain.payment.PaymentMethod;
@@ -11,16 +11,18 @@ public record OrderPaidEvent(
 	String MID,
 	BigDecimal price,
 	String merchantKey,
-	PaymentMethod paymentMethod
+	PaymentMethod paymentMethod,
+	String requestId
 ) {
-	public static OrderPaidEvent of(Long userId, Long orderId, BigDecimal totalPrice, PaymentMethod paymentMethod) {
+	public static OrderPaidEvent of(Long userId, Long orderId, BigDecimal totalPrice, PaymentMethod paymentMethod,String requestId) {
 		return new OrderPaidEvent(
 			userId,
 			orderId,
 			"MID_SOON_STORE",
 			totalPrice,
 			"SECRET_MERCHANT_KEY",
-			paymentMethod
+			paymentMethod,
+			requestId
 		);
 	}
 

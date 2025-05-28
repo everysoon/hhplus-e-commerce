@@ -2,7 +2,7 @@ package kr.hhplus.be.server.application.product;
 
 import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.order.OrderItem;
-import kr.hhplus.be.server.support.utils.LockKeyPrefix;
+import kr.hhplus.be.server.support.aop.lock.LockKeyPrefix;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;

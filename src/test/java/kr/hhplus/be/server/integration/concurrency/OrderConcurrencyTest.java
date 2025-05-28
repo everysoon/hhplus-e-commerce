@@ -6,7 +6,6 @@ import kr.hhplus.be.server.application.order.OrderResult;
 import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.order.repository.OrderRepository;
 import kr.hhplus.be.server.domain.payment.PaymentMethod;
-import kr.hhplus.be.server.domain.payment.repository.PaymentRepository;
 import kr.hhplus.be.server.domain.point.Point;
 import kr.hhplus.be.server.domain.point.PointRepository;
 import kr.hhplus.be.server.domain.product.Product;
@@ -36,8 +35,6 @@ public class OrderConcurrencyTest extends BaseIntegrationTest {
 	private OrderRepository orderRepository;
 	@Autowired
 	private UserRepository userRepository;
-	@Autowired
-	private PaymentRepository paymentRepository;
 	@Autowired
 	PointRepository pointRepository;
 	@Autowired

@@ -2,7 +2,7 @@ package kr.hhplus.be.server.application.point;
 
 import kr.hhplus.be.server.domain.point.PointHistory;
 import kr.hhplus.be.server.domain.point.PointStatus;
-import kr.hhplus.be.server.support.utils.LockKeyPrefix;
+import kr.hhplus.be.server.support.aop.lock.LockKeyPrefix;
 
 import java.math.BigDecimal;
 

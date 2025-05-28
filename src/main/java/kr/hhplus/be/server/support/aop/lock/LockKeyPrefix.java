@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.support.utils;
+package kr.hhplus.be.server.support.aop.lock;
 
 public enum LockKeyPrefix {
 	PRODUCT("lock:product:%d"),

@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.application.order;
+package kr.hhplus.be.server.domain.order.event;
 
 import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.order.OrderItem;
@@ -21,5 +21,8 @@ public record CancelOrderEvent(
 			order.getUsedUserCouponIds(),
 			order.getTotalPrice()
 		);
+	}
+	public String getIdempotencyKey(){
+		return "order:canceled".concat(orderId.toString());
 	}
 }

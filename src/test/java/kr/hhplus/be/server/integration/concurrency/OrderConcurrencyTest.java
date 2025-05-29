@@ -6,7 +6,6 @@ import kr.hhplus.be.server.application.order.OrderResult;
 import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.order.repository.OrderRepository;
 import kr.hhplus.be.server.domain.payment.PaymentMethod;
-import kr.hhplus.be.server.domain.payment.repository.PaymentRepository;
 import kr.hhplus.be.server.domain.point.Point;
 import kr.hhplus.be.server.domain.point.PointRepository;
 import kr.hhplus.be.server.domain.product.Product;
@@ -23,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
@@ -36,8 +36,6 @@ public class OrderConcurrencyTest extends BaseIntegrationTest {
 	private OrderRepository orderRepository;
 	@Autowired
 	private UserRepository userRepository;
-	@Autowired
-	private PaymentRepository paymentRepository;
 	@Autowired
 	PointRepository pointRepository;
 	@Autowired
@@ -59,7 +57,8 @@ public class OrderConcurrencyTest extends BaseIntegrationTest {
 				user.getId(), // userId
 				List.of(new OrderCriteria.Request.Item(product.getId(), 1)), // 상품 1개 주문
 				List.of(), // 쿠폰 없음
-				PaymentMethod.POINTS
+				PaymentMethod.POINTS,
+				UUID.randomUUID().toString()
 			);
 			OrderResult.Place placeOrderResult = orderFacade.placeOrder(request);
 			log.info("### placeOrderResult : {}", placeOrderResult);

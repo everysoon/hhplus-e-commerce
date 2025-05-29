@@ -3,6 +3,7 @@ package kr.hhplus.be.server.application.order;
 import kr.hhplus.be.server.application.coupon.CouponCommand;
 import kr.hhplus.be.server.application.coupon.CouponService;
 import kr.hhplus.be.server.application.coupon.UseCouponInfo;
+import kr.hhplus.be.server.domain.order.event.CancelOrderEvent;
 import kr.hhplus.be.server.application.payment.PaymentService;
 import kr.hhplus.be.server.application.point.PointCommand;
 import kr.hhplus.be.server.application.point.PointService;
@@ -11,6 +12,7 @@ import kr.hhplus.be.server.application.product.ProductService;
 import kr.hhplus.be.server.application.user.UserService;
 import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.order.OrderItem;
+import kr.hhplus.be.server.domain.order.event.OrderPlacedEvent;
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.support.common.exception.CustomException;
@@ -56,7 +58,6 @@ public class OrderFacade {
 		value = {ObjectOptimisticLockingFailureException.class},
 		backoff = @Backoff(delay = 100)
 	)
-
 	public OrderResult.Cancel cancel(OrderCriteria.Cancel criteria) {
 		logger.info("### cancel parameter : {}", criteria.toString());
 		Order order = orderService.findByIdAndUserId(criteria.orderId(), criteria.userId());
@@ -78,7 +79,6 @@ public class OrderFacade {
 		value = {ObjectOptimisticLockingFailureException.class},
 		backoff = @Backoff(delay = 100)
 	)
-
 	public OrderResult.Place placeOrder(OrderCriteria.Request criteria) {
 		logger.info("### placeOrder parameter : {}", criteria.toString());
 		User user = userService.get(criteria.userId());
@@ -92,7 +92,7 @@ public class OrderFacade {
 			));
 			orderItems = createOrderItems(criteria.orderItems());
 			order = orderService.create(OrderCommand.Create.of(orderItems, couponInfo));
-			applicationEventPublisher.publishEvent(OrderPlacedEvent.of(user.getId(), order, criteria.paymentMethod()));
+			applicationEventPublisher.publishEvent(OrderPlacedEvent.of(user.getId(), order, criteria.paymentMethod(), criteria.requestId()));
 		} catch (Exception e) {
 			if (couponInfo != null)
 				couponService.restore(CouponCommand.Restore.of(user.getId(), couponInfo.couponIds())); // 쿠폰 원복

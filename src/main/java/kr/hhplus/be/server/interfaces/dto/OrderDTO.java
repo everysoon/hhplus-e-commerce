@@ -18,7 +18,8 @@ public class OrderDTO {
 	@AllArgsConstructor
 	@Builder
 	public static class OrderRequest {
-
+		@NotNull
+		String requestId; // client random UUID
 		@NotNull
 		Long userId;
 		@NotNull

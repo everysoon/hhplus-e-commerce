@@ -1,6 +1,6 @@
 package kr.hhplus.be.server.infra.cache;
 
-import kr.hhplus.be.server.infra.lock.RedisLock;
+import kr.hhplus.be.server.support.aop.lock.RedisLock;
 import kr.hhplus.be.server.support.common.exception.CustomException;
 import kr.hhplus.be.server.support.config.swagger.ErrorCode;
 import kr.hhplus.be.server.support.utils.CacheKeys;

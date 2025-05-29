@@ -1,5 +1,6 @@
-package kr.hhplus.be.server.application.coupon;
+package kr.hhplus.be.server.application.coupon.handler;
 
+import kr.hhplus.be.server.application.coupon.CouponIssueProcessor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.RedisConnection;

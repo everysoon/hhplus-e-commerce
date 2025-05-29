@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.application.coupon;
+package kr.hhplus.be.server.domain.coupon.event;
 
 public record CouponIssueDLQEvent(
 	Long userId,

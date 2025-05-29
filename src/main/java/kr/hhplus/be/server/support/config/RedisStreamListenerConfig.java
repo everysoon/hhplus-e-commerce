@@ -1,10 +1,7 @@
 package kr.hhplus.be.server.support.config;
 
-import kr.hhplus.be.server.application.coupon.CouponIssueHandler;
-import kr.hhplus.be.server.support.utils.CacheKeys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -83,16 +80,16 @@ public class RedisStreamListenerConfig {
 		}
 	}
 
-	@Bean
-	public StreamMessageListenerContainer<String, MapRecord<String, String, String>> couponIssueListenerContainer(
-		RedisConnectionFactory connectionFactory,
-		CouponIssueHandler couponIssueStreamListener) {
-		log.info("create StreamMessageListenerContainer");
-		return createListenerContainer(
-			connectionFactory,
-			CacheKeys.COUPON_STREAM.getKey(),
-			"coupon-group",
-			"coupon-consumer-1",
-			couponIssueStreamListener);
-	}
+//	@Bean
+//	public StreamMessageListenerContainer<String, MapRecord<String, String, String>> couponIssueListenerContainer(
+//		RedisConnectionFactory connectionFactory,
+//		CouponIssueHandler couponIssueStreamListener) {
+//		log.info("create StreamMessageListenerContainer");
+//		return createListenerContainer(
+//			connectionFactory,
+//			CacheKeys.COUPON_STREAM.getKey(),
+//			"coupon-group",
+//			"coupon-consumer-1",
+//			couponIssueStreamListener);
+//	}
 }

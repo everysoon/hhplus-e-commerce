@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.application.coupon;
 
 import kr.hhplus.be.server.domain.coupon.Coupon;
-import kr.hhplus.be.server.support.utils.LockKeyPrefix;
+import kr.hhplus.be.server.support.aop.lock.LockKeyPrefix;
 
 import java.util.List;
 

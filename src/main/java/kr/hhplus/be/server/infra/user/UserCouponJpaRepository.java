@@ -13,8 +13,8 @@ public interface UserCouponJpaRepository extends JpaRepository<UserCoupon, Long>
 
 	@Query("""
 		    SELECT uc FROM UserCoupon uc
-		    JOIN UserEntity  u ON uc.userId = u.id
-		    JOIN CouponEntity  c ON c.id = uc.couponId
+		    JOIN User  u ON uc.userId = u.id
+		    JOIN Coupon  c ON c.id = uc.couponId
 		    WHERE uc.userId = :userId AND uc.couponId IN :couponIds
 		""")
 	List<UserCoupon> findByUserIdAndCouponIds(@Param("userId") Long userId, @Param("couponIds") List<String> couponIds);

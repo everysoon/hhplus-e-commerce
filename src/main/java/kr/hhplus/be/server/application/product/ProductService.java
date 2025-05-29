@@ -3,7 +3,7 @@ package kr.hhplus.be.server.application.product;
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.product.ProductRepository;
 import kr.hhplus.be.server.infra.cache.PopularProductRedisService;
-import kr.hhplus.be.server.infra.lock.RedisLock;
+import kr.hhplus.be.server.support.aop.lock.RedisLock;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.application.point;
 
 import kr.hhplus.be.server.domain.point.*;
-import kr.hhplus.be.server.infra.lock.RedisLock;
+import kr.hhplus.be.server.support.aop.lock.RedisLock;
 import kr.hhplus.be.server.support.common.exception.CustomException;
 import kr.hhplus.be.server.support.config.swagger.ErrorCode;
 import lombok.RequiredArgsConstructor;

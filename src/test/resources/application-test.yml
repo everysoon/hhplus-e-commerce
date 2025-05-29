@@ -1,5 +1,12 @@
 
 spring:
+
+  kafka:
+    consumer:
+      group-id: hhplus-service-group
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
   datasource:
 #    url: jdbc:tc:mysql:8.0.36:///hhplus  # ✅ 테스트컨테이너용 특수 JDBC URL
 #    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver

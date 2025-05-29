@@ -26,16 +26,18 @@ public class OrderCriteria {
 		Long userId,
 		List<Request.Item> orderItems,
 		List<String> couponIds,
-		String requestId,
-		PaymentMethod paymentMethod
+
+		PaymentMethod paymentMethod,
+		String requestId
 	) {
 		public static Request from(OrderDTO.OrderRequest dto) {
 			List<Request.Item> items = dto.getProducts().stream()
 				.map(p -> new Request.Item(p.getProductId(), p.getQuantity()))
 				.toList();
 
-			return new Request(dto.getUserId(), items, dto.getCouponId(), dto.getRequestId(), POINTS);
+			return new Request(dto.getUserId(), items, dto.getCouponId(), POINTS, dto.getRequestId());
 		}
+
 		public String getLockKey() {
 			return LockKeyPrefix.ORDER.createKey(userId);
 		}

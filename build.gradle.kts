@@ -74,5 +74,8 @@ dependencies {
     testImplementation ("com.github.codemonstur:embedded-redis:1.4.3")
 
     implementation("org.apache.commons:commons-pool2")
+
+    testImplementation ("org.springframework.kafka:spring-kafka-test")
+
 }
 

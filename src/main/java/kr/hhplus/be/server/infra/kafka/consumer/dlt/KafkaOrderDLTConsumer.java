@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class KafkaOrderDLTConsumer {
 	private final DLTRecordService dlqRecordService;
 
-	@KafkaListener(topics = "order.paid.DLT", groupId = "order-dlt-group")
+	@KafkaListener(topics = "order.placed.paid.DLT", groupId = "order-dlt-group")
 	public void handlePaidDLT(ConsumerRecord<String, String> record) {
 		log.error("Received DLT message for OrderPlacedEvent: {}", record.value());
 
@@ -22,7 +22,7 @@ public class KafkaOrderDLTConsumer {
 		dlqRecordService.save(dltRecord);
 	}
 
-	@KafkaListener(topics = "order.cancel.DLT", groupId = "order-dlt-group")
+	@KafkaListener(topics = "order.canceled.paid.DLT", groupId = "order-dlt-group")
 	public void handleCancelDLT(ConsumerRecord<String, String> record) {
 		log.error("Received DLT message for CancelOrderEvent: {}", record.value());
 		DLTRecord dltRecord = createRecord(DLTRecord.DLTEventType.CANCEL_ORDER_PAID, record);

@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
@@ -56,7 +57,8 @@ public class OrderConcurrencyTest extends BaseIntegrationTest {
 				user.getId(), // userId
 				List.of(new OrderCriteria.Request.Item(product.getId(), 1)), // 상품 1개 주문
 				List.of(), // 쿠폰 없음
-				PaymentMethod.POINTS
+				PaymentMethod.POINTS,
+				UUID.randomUUID().toString()
 			);
 			OrderResult.Place placeOrderResult = orderFacade.placeOrder(request);
 			log.info("### placeOrderResult : {}", placeOrderResult);

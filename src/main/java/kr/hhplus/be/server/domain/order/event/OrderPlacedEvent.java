@@ -13,7 +13,7 @@ public record OrderPlacedEvent(
 	PaymentMethod paymentMethod,
 	String requestId
 ) {
-	public static OrderPlacedEvent of(Long userId, Order order, PaymentMethod paymentMethod,String requestId) {
+	public static OrderPlacedEvent of(Long userId, Order order, PaymentMethod paymentMethod, String requestId) {
 		return new OrderPlacedEvent(
 			userId,
 			order.getId(),
@@ -22,15 +22,17 @@ public record OrderPlacedEvent(
 			requestId
 		);
 	}
-	public PaymentCommand.Request toPayRequest(){
+
+	public PaymentCommand.Request toPayRequest() {
 		return new PaymentCommand.Request(
-				"MID_SOON_STORE",
-				totalPrice,
-				"SECRET_MERCHANT_KEY",
-				orderId,
-				paymentMethod
+			"MID_SOON_STORE",
+			totalPrice,
+			"SECRET_MERCHANT_KEY",
+			orderId,
+			paymentMethod
 		);
 	}
+
 	public String getIdempotencyKey() {
 		return "order:placed".concat(requestId);
 	}

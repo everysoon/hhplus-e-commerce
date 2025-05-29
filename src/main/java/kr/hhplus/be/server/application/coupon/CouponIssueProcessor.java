@@ -19,6 +19,6 @@ public class CouponIssueProcessor {
 	public void process(Long userId, String couponId) {
 		log.info("couponIssueProcessor : userId = {}, couponId = {}", userId, couponId);
 		Coupon coupon = couponRepository.issue(couponId);
-		userCouponRepository.save(CouponCommand.UnitCouponValid.of(userId,coupon));
+		userCouponRepository.save(CouponCommand.UnitCouponValid.of(userId,coupon.getId()));
 	}
 }

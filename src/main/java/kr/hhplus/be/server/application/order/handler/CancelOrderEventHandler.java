@@ -8,7 +8,7 @@ import kr.hhplus.be.server.application.product.ProductCommand;
 import kr.hhplus.be.server.application.product.ProductService;
 import kr.hhplus.be.server.domain.order.event.CancelOrderEvent;
 import kr.hhplus.be.server.domain.order.event.CancelOrderPaidEvent;
-import kr.hhplus.be.server.infra.kafka.publisher.OrderEventPublisher;
+import kr.hhplus.be.server.infra.kafka.publisher.KafkaEventPublisher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -22,7 +22,7 @@ public class CancelOrderEventHandler {
 	private final CouponService couponService;
 	private final ProductService productService;
 
-	private final OrderEventPublisher orderEventPublisher;
+	private final KafkaEventPublisher kafkaEventPublisher;
 
 	@EventListener
 	public void handle(CancelOrderEvent event) {
@@ -33,6 +33,6 @@ public class CancelOrderEventHandler {
 		// 재고 복원
 		productService.increaseStock(ProductCommand.Refund.of(event.orderItems(), event.orderId()));
 		// 결제 취소
-		orderEventPublisher.sendOrderCancelPaidEvent(new CancelOrderPaidEvent(event.orderId(), event.totalPrice()));
+		kafkaEventPublisher.publish("order.canceled.paid",new CancelOrderPaidEvent(event.orderId(), event.totalPrice()));
 	}
 }

@@ -9,7 +9,7 @@ import java.util.List;
 public interface OrderHistoryJpaRepository extends JpaRepository<OrderHistory, Long> {
 	@Query("""
 		SELECT oh FROM OrderHistory oh
-		LEFT JOIN OrderEntity o ON o.id = oh.orderId
+		LEFT JOIN Order o ON o.id = oh.orderId
 		WHERE o.userId =:userId
 		""")
 	List<OrderHistory> findByUserId(Long userId);

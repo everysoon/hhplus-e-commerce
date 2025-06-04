@@ -33,6 +33,7 @@ public class DLTRecord {
 	private String topicName;
 	private String value;
 	private int partitionNum;
+	@Column(name = "message_offset")
 	private long offset;
 	@Column(updatable = false)
 	private LocalDateTime failedAt;

@@ -3,7 +3,6 @@ package kr.hhplus.be.server.application.coupon;
 import kr.hhplus.be.server.domain.coupon.event.CouponIssueDLQEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +14,7 @@ import java.util.Map;
 @Slf4j
 public class CouponIssueDLQPublisher {
 
-	private final RedisTemplate<String, String> redisTemplate;
+//	private final RedisTemplate<String, String> redisTemplate;
 	private final String DLQ_STREAM_KEY = "coupon:issue:dlq";
 
 	@Async
@@ -25,7 +24,7 @@ public class CouponIssueDLQPublisher {
 		message.put("couponId", event.couponId());
 		message.put("error", event.exception().getMessage());
 
-		redisTemplate.opsForStream().add(DLQ_STREAM_KEY, message);
+//		redisTemplate.opsForStream().add(DLQ_STREAM_KEY, message);
 		log.warn("DLQ에 메시지 저장됨: userId={}, couponId={}", event.userId(), event.couponId());
 	}
 }

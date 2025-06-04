@@ -3,14 +3,12 @@ package kr.hhplus.be.server.domain.coupon;
 import jakarta.persistence.*;
 import kr.hhplus.be.server.support.common.exception.CustomException;
 import kr.hhplus.be.server.support.config.swagger.ErrorCode;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Getter
 @Entity
@@ -42,6 +40,18 @@ public class Coupon {
 	@CreatedDate
 	@Column(nullable = false)
 	private LocalDateTime issuedAt;
+
+	@Builder
+	public Coupon(CouponType couponType, int discountAmount, String description, Integer remainingQuantity, LocalDateTime expiredAt) {
+		this.id = UUID.randomUUID().toString();
+		this.expiredAt = expiredAt;
+		this.issuedAt = LocalDateTime.now();
+		this.type = couponType;
+		this.description = description;
+		this.initialQuantity = remainingQuantity;
+		this.remainingQuantity = remainingQuantity;
+		this.discountAmount = BigDecimal.valueOf(discountAmount);
+	}
 
 	public Coupon issue(Integer quantity) {
 		validateStock();

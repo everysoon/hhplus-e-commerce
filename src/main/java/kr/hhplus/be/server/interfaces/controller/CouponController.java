@@ -7,6 +7,8 @@ import kr.hhplus.be.server.ResponseApi;
 import kr.hhplus.be.server.application.coupon.CouponCommand;
 import kr.hhplus.be.server.application.coupon.CouponService;
 import kr.hhplus.be.server.application.coupon.UserCouponDetailResult;
+import kr.hhplus.be.server.domain.coupon.Coupon;
+import kr.hhplus.be.server.interfaces.dto.CouponDTO;
 import kr.hhplus.be.server.interfaces.dto.UserCouponDTO;
 import kr.hhplus.be.server.interfaces.dto.UserCouponDTO.CouponDetailResponse;
 import kr.hhplus.be.server.support.config.swagger.SwaggerErrorExample;
@@ -56,5 +58,17 @@ public class CouponController {
 		CouponCommand.Issue command = CouponCommand.Issue.of(userId, couponId);
 		boolean result = couponService.issueCoupon(command);
 		return ResponseEntity.ok(ResponseApi.of(result));
+	}
+
+	@PostMapping
+	public ResponseEntity<ResponseApi<CouponDTO.CreateResponse>> save(@RequestBody CouponDTO.CreateRequest requestDTO){
+		Coupon coupon = Coupon.builder()
+			.couponType(requestDTO.getCouponType())
+			.discountAmount(requestDTO.getDiscountAmount())
+			.description(requestDTO.getDescription())
+			.remainingQuantity(requestDTO.getRemainingStock())
+			.expiredAt(requestDTO.getExpiredAt())
+			.build();
+		return ResponseEntity.ok(ResponseApi.of(new CouponDTO.CreateResponse(couponService.save(coupon).getId())));
 	}
 }

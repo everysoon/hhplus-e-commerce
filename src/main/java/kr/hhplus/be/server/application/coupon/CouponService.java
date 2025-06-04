@@ -62,8 +62,6 @@ public class CouponService {
 		List<Coupon> coupons = userCoupons.stream().map(UserCoupon::getCouponId).map(couponRepository::findById).toList();
 		userCoupons.forEach(UserCoupon::restore);
 		coupons.forEach(Coupon::increaseStock);
-//		userCouponRepository.updateAll(userCoupons);
-//		couponRepository.updateAll(coupons);
 	}
 
 	@Transactional
@@ -74,6 +72,7 @@ public class CouponService {
 	public Coupon findById(String id) {
 		return couponRepository.findById(id);
 	}
+
 	public Coupon save(Coupon coupon) {
 		couponIssueService.initCouponStock(coupon.getId(), coupon.getInitialQuantity());
 		return couponRepository.save(coupon);

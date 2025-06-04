@@ -1,8 +1,8 @@
 package kr.hhplus.be.server.integration;
 
 import kr.hhplus.be.server.application.coupon.CouponCommand;
-import kr.hhplus.be.server.application.coupon.CouponIssueDLQHandler;
-import kr.hhplus.be.server.application.coupon.CouponIssuedEvent;
+import kr.hhplus.be.server.application.coupon.handler.CouponIssueDLQHandler;
+import kr.hhplus.be.server.domain.coupon.event.CouponIssuedEvent;
 import kr.hhplus.be.server.application.coupon.CouponService;
 import kr.hhplus.be.server.domain.coupon.UserCoupon;
 import kr.hhplus.be.server.domain.user.UserCouponRepository;

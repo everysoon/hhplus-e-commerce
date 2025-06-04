@@ -8,10 +8,8 @@ import kr.hhplus.be.server.domain.user.UserCouponRepository;
 import kr.hhplus.be.server.infra.NotificationSender;
 import kr.hhplus.be.server.infra.cache.CouponIssueService;
 import lombok.RequiredArgsConstructor;
-import org.redisson.api.RSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,8 +26,6 @@ public class CouponService {
 	private final CouponValidator couponValidator;
 	private final NotificationSender notificationSender;
 	private final CouponIssueService couponIssueService;
-
-	private final ApplicationEventPublisher applicationEventPublisher;
 
 	@Transactional(readOnly = true)
 	public List<UserCouponDetailResult> getUserCoupons(Long userId) {
@@ -73,9 +69,7 @@ public class CouponService {
 	@Transactional
 	public boolean issueCoupon(CouponCommand.Issue command) {
 		logger.info("### issueCoupon parameter : {}", command.toString());
-		RSet<Long> ids = couponIssueService.issueCoupon(command.userId(), command.couponId());
-		applicationEventPublisher.publishEvent(command.toEvent());
-		return ids.contains(command.userId());
+		return couponIssueService.issueCoupon(command.userId(), command.couponId());
 	}
 	public Coupon findById(String id) {
 		return couponRepository.findById(id);

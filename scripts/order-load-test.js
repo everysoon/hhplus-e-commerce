@@ -1,11 +1,14 @@
 import http from 'k6/http';
 import {check} from 'k6';
 
-export let options = {
-    vus: 50,           // 동시에 실행할 가상 사용자 수
-    duration: '1m',    // 테스트 지속 시간 (1분)
-};
-
+export const options = {
+    vus: 100,
+    duration: '60s',
+    thresholds: {
+        http_req_failed: ['rate<0.01'],
+        http_req_duration: ['p(95)<500'],
+    },
+}
 export function setup() {
 
     const headers = {
@@ -25,7 +28,7 @@ export function setup() {
         throw new Error("상품 생성 실패");
     }
     // 2. 유저 포인트 충전
-    var price = 100000;
+    var price = 10000;
     var userIdResponse = http.post(`http://localhost:8224/api/test/charge-all?price=${price}`);
     console.log(`userIdResponse: ${JSON.stringify(userIdResponse.json().data)}`)
     var userIds = userIdResponse.json().data;

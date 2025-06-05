@@ -1,10 +1,14 @@
 import http from 'k6/http';
 import {check} from 'k6';
 
-export let options = {
-    vus: 100,           // 동시에 실행할 가상 사용자 수
-    duration: '30s',    // 테스트 지속 시간
-};
+export const options = {
+    vus: 100,
+    duration: '60s',
+    thresholds: {
+        http_req_failed: ['rate<0.01'],
+        http_req_duration: ['p(95)<500'],
+    },
+}
 let userIds = Array.from({length: 150}, (_, i) => i + 1);
 
 export function setup() {

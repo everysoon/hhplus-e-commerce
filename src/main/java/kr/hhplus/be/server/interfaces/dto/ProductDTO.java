@@ -14,6 +14,17 @@ public class ProductDTO {
 	@Data
 	@NoArgsConstructor
 	@AllArgsConstructor
+	public static class CreateRequest{
+		String productName;
+		Integer stock;
+		String category;
+		String description;
+		BigDecimal price;
+
+	}
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
 	public static class SearchRequest{
 		private String name;
 		private String category;

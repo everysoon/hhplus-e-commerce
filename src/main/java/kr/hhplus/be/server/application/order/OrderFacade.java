@@ -3,7 +3,6 @@ package kr.hhplus.be.server.application.order;
 import kr.hhplus.be.server.application.coupon.CouponCommand;
 import kr.hhplus.be.server.application.coupon.CouponService;
 import kr.hhplus.be.server.application.coupon.UseCouponInfo;
-import kr.hhplus.be.server.domain.order.event.CancelOrderEvent;
 import kr.hhplus.be.server.application.payment.PaymentService;
 import kr.hhplus.be.server.application.point.PointCommand;
 import kr.hhplus.be.server.application.point.PointService;
@@ -12,6 +11,7 @@ import kr.hhplus.be.server.application.product.ProductService;
 import kr.hhplus.be.server.application.user.UserService;
 import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.order.OrderItem;
+import kr.hhplus.be.server.domain.order.event.CancelOrderEvent;
 import kr.hhplus.be.server.domain.order.event.OrderPlacedEvent;
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.user.User;
@@ -20,12 +20,8 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.orm.ObjectOptimisticLockingFailureException;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import static kr.hhplus.be.server.support.config.swagger.ErrorCode.FAIL_ORDER_CANCEL;
@@ -54,10 +50,6 @@ public class OrderFacade {
 		return OrderResult.InfoByUser.from(userId, orderDetails);
 	}
 
-	@Retryable(
-		value = {ObjectOptimisticLockingFailureException.class},
-		backoff = @Backoff(delay = 100)
-	)
 	public OrderResult.Cancel cancel(OrderCriteria.Cancel criteria) {
 		logger.info("### cancel parameter : {}", criteria.toString());
 		Order order = orderService.findByIdAndUserId(criteria.orderId(), criteria.userId());
@@ -66,7 +58,7 @@ public class OrderFacade {
 		try {
 			// 주문상태 변경 및 저장 - 취소
 			orderService.cancel(order);
-			applicationEventPublisher.publishEvent(CancelOrderEvent.of(user.getId(),order));
+			applicationEventPublisher.publishEvent(CancelOrderEvent.of(user.getId(), order));
 		} catch (Exception e) {
 			throw new CustomException(FAIL_ORDER_CANCEL);
 		}
@@ -75,17 +67,12 @@ public class OrderFacade {
 		);
 	}
 
-	@Retryable(
-		value = {ObjectOptimisticLockingFailureException.class},
-		backoff = @Backoff(delay = 100)
-	)
 	public OrderResult.Place placeOrder(OrderCriteria.Request criteria) {
 		logger.info("### placeOrder parameter : {}", criteria.toString());
 		User user = userService.get(criteria.userId());
 		UseCouponInfo couponInfo = null;
 		List<OrderItem> orderItems = null;
 		Order order = null;
-
 		try {
 			couponInfo = couponService.use(CouponCommand.Use.of(
 				user.getId(), criteria.couponIds()
@@ -97,9 +84,12 @@ public class OrderFacade {
 			if (couponInfo != null)
 				couponService.restore(CouponCommand.Restore.of(user.getId(), couponInfo.couponIds())); // 쿠폰 원복
 			if (orderItems != null) productService.increaseStock(ProductCommand.Refund.of(orderItems)); // 상품 재고 원복
-			pointService.refund(PointCommand.Refund.of(user.getId(), order != null ? order.getTotalPrice() : BigDecimal.ZERO)); // 포인트 원복
 
-			if (order != null) paymentService.cancel(order.getId(), order.getTotalPrice()); // 결제 취소
+			if (order != null) {
+				pointService.refund(PointCommand.Refund.of(user.getId(), order.getTotalPrice())); // 포인트 원복
+				paymentService.cancel(order.getId(), order.getTotalPrice()); // 결제 취소
+			}
+			logger.error(e.getMessage(), e);
 			throw new CustomException(FAIL_PLACE_ORDER);
 		}
 
@@ -110,13 +100,14 @@ public class OrderFacade {
 		);
 	}
 
+
 	private List<OrderItem> createOrderItems(List<OrderCriteria.Request.Item> orderItems) {
 		logger.info("### createOrderItems parameter : {}", orderItems.toString());
 		return orderItems.stream()
 			.map(itemCommand -> {
 				Product product = productService.decreaseStock(itemCommand.productId(),
 					itemCommand.quantity());
-				return new OrderItem(product, itemCommand.quantity());
+				return new OrderItem(product.getId(), product.getPrice(), itemCommand.quantity());
 			})
 			.toList();
 	}

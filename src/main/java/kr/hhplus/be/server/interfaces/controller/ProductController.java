@@ -62,4 +62,17 @@ public class ProductController {
 			.stream().map(ProductDTO.ProductResponse::from).toList();
 		return ResponseEntity.ok(ResponseApi.of(products));
 	}
+
+	@PostMapping
+	public ResponseEntity<ResponseApi<ProductDTO.ProductResponse>> save(@RequestBody ProductDTO.CreateRequest requestDTO){
+		Product product = Product.builder()
+			.productName(requestDTO.getProductName())
+			.category(requestDTO.getCategory())
+			.description(requestDTO.getDescription())
+			.price(requestDTO.getPrice())
+			.stock(requestDTO.getStock())
+			.build();
+		productService.save(product);
+		return ResponseEntity.ok(ResponseApi.of(ProductDTO.ProductResponse.from(product)));
+	}
 }

@@ -81,7 +81,7 @@ public class CouponService {
 	@Transactional
 	public UseCouponInfo use(CouponCommand.Use command) {
 		if (command.couponIds() == null || command.couponIds().isEmpty()) {
-			return new UseCouponInfo(command.userId(), null);
+			return new UseCouponInfo(command.userId(), List.of());
 		}
 		logger.info("### use parameter : {}", command);
 		List<UserCoupon> userCoupons = userCouponRepository.findByUserIdAndCouponIds(

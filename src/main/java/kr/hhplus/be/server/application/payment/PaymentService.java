@@ -14,8 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 
-import static org.springframework.transaction.annotation.Propagation.MANDATORY;
-
 @Service
 @RequiredArgsConstructor
 public class PaymentService {
@@ -24,7 +22,7 @@ public class PaymentService {
 	private final PaymentRepository paymentRepository;
 	private final PaymentHistoryRepository paymentHistoryRepository;
 
-	@Transactional(propagation = MANDATORY)
+	@Transactional
 	public Payment pay(PaymentCommand.Request command) {
 		logger.info("### pay command : {}", command);
 		// client 통신
@@ -43,7 +41,7 @@ public class PaymentService {
 		return payment;
 	}
 
-	@Transactional(propagation = MANDATORY)
+	@Transactional
 	public Payment cancel(Long orderId, BigDecimal totalPrice) {
 		// client 통신
 		logger.info("### cancel command : orderId = {}, totalPrice = {}", orderId, totalPrice);

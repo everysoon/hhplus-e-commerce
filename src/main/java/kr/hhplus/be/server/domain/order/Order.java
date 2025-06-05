@@ -68,6 +68,7 @@ public class Order {
 			.reduce(BigDecimal.ZERO, BigDecimal::add);
 		this.userId = userId;
 		this.orderItems = orderItems;
+		this.orderItems.forEach((oi)->oi.setOrder(this));
 		this.totalPrice = getTotalPrice();
 		this.orderedAt = LocalDateTime.now();
 	}

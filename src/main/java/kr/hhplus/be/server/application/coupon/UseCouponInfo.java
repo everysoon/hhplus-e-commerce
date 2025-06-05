@@ -11,7 +11,7 @@ public record UseCouponInfo (
 	public static UseCouponInfo from(Long userId,List<Coupon> coupons) {
 		return new UseCouponInfo(
 			userId,
-			coupons
+			coupons == null || coupons.isEmpty() ? List.of() : coupons
 		);
 	}
 	public List<String> couponIds(){

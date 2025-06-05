@@ -6,9 +6,11 @@ spring:
   application:
     name: hhplus
   datasource:
+    hikari:
+      maximum-pool-size: 50
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/hhplus?characterEncoding=UTF-8&serverTimezone=UTC
-    username: root
+    username: soon
     password: alstjsl1!
   sql:
     init:

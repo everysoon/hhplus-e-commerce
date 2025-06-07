@@ -15,11 +15,11 @@ import java.io.IOException;
 
 @TestConfiguration
 @Slf4j
-@Profile({"local", "test"})
+@Profile({"test"})
 public class EmbeddedRedisConfig {
 	private static RedisServer redisServer;
 
-	private static final int REDIS_PORT = 6379;
+	private static final int REDIS_PORT = 6380;
 
 	@PostConstruct
 	public void startRedis() throws IOException {

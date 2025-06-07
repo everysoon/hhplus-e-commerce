@@ -68,4 +68,5 @@ public class PointController {
 		Point point = pointService.getUserPoint(userId);
 		return ResponseEntity.ok(ResponseApi.of(UserDTO.UserResponse.from(point)));
 	}
+
 }

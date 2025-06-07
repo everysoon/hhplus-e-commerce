@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class DLTRecordService {
 	private final DLTRecordRepository dltRecordRepository;
+
 	public void save(DLTRecord dlqRecord) {
 		dltRecordRepository.save(dlqRecord);
 	}

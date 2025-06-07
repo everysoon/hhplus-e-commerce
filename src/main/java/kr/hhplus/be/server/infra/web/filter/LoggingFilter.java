@@ -10,6 +10,7 @@ import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 @Component
 public class LoggingFilter implements Filter {
@@ -34,7 +35,7 @@ public class LoggingFilter implements Filter {
 	}
 
 	private void logRequest(ContentCachingRequestWrapper request) throws IOException {
-		String body = new String(request.getContentAsByteArray(), request.getCharacterEncoding());
+		String body = new String(request.getContentAsByteArray(), StandardCharsets.UTF_8);
 		logger.info("▶️ [Request] {} {} | Params: {} | Body: {}",
 			request.getMethod(),
 			request.getRequestURI(),
@@ -44,7 +45,7 @@ public class LoggingFilter implements Filter {
 	}
 
 	private void logResponse(ContentCachingResponseWrapper response, long duration) throws IOException {
-		String responseBody = new String(response.getContentAsByteArray(), response.getCharacterEncoding());
+		String responseBody = new String(response.getContentAsByteArray(), StandardCharsets.UTF_8);
 		logger.info("✅ [Response] Status: {} | Duration: {}ms | Body: {}",
 			response.getStatus(),
 			duration,

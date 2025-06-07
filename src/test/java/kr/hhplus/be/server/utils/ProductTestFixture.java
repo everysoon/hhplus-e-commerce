@@ -8,6 +8,19 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class ProductTestFixture {
+	public static Product create(Integer stock) {
+		return new Product(
+			null,
+			"TEST PRODUCT",
+			stock,
+			Category.BABY,
+			"TEST desc",
+			BigDecimal.valueOf(1000 * stock),
+			ProductStatus.AVAILABLE,
+			LocalDateTime.now()
+		);
+	}
+
 	public static Product create(Long productId, Integer stock) {
 		return new Product(
 			productId,

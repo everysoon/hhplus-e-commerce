@@ -45,8 +45,8 @@ public class OrderConcurrencyTest extends BaseIntegrationTest {
 	@Test
 	@DisplayName("재고 차감 동시성 이슈")
 	void 상품_주문시_상품_재고가_1개일_경우_여러주문이_들어오면_한개만_성공한다() throws InterruptedException {
-		User user = UserTestFixture.createUser(1L);
-		Product product = ProductTestFixture.create(1L, 1);
+		User user = UserTestFixture.createUser();
+		Product product = ProductTestFixture.create(1);
 
 		productRepository.save(product);
 		userRepository.save(user);

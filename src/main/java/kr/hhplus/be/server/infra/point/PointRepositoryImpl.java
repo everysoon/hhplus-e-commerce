@@ -33,6 +33,7 @@ public class PointRepositoryImpl implements PointRepository {
 		return pointJpaRepository.save(point);
 	}
 
+
 	@Override
 	public Point charge(Long userId, BigDecimal amount) {
 		Point point = pointJpaRepository.findByUserId(userId).orElseGet(() ->

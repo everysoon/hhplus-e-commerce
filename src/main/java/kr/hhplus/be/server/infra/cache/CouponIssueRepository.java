@@ -1,6 +1,5 @@
 package kr.hhplus.be.server.infra.cache;
 
-import kr.hhplus.be.server.support.aop.lock.RedisLock;
 import kr.hhplus.be.server.domain.coupon.event.CouponIssuedEvent;
 import kr.hhplus.be.server.infra.kafka.publisher.KafkaEventPublisher;
 import kr.hhplus.be.server.support.aop.lock.RedisLock;
@@ -21,17 +20,29 @@ import java.util.List;
 public class CouponIssueRepository {
 	private final RedissonClient redissonClient;
 	private final KafkaEventPublisher kafkaEventPublisher;
-	private static final String LUA_SCRIPT =
-		"local stock = tonumber(redis.call('GET', KEYS[1])) " +
-			"if stock <= 0 then return -1 end " +
-			"if redis.call('SISMEMBER', KEYS[2], ARGV[1]) == 1 then return 0 end " +
-			"redis.call('DECR', KEYS[1]) " +
-			"redis.call('SADD', KEYS[2], ARGV[1]) " +
-			"return 1";
+	private static final String LUA_SCRIPT = """
+		    local stock = tonumber(redis.call("GET", KEYS[1]))
+		    if not stock then
+		        return -3
+		    end
+		    if stock <= 0 then
+		        return -1
+		    end
+			local userIdStr = ARGV[1]
+			userIdStr = string.gsub(userIdStr, '^"(.*)"$', '%1')
+			redis.call("PUBLISH", "debug", userIdStr)
+		    if redis.call("SISMEMBER", KEYS[2], ARGV[1]) == 1 then
+		        return 0
+		    end
+
+		    redis.call("DECR", KEYS[1])
+		    redis.call("SADD", KEYS[2], userIdStr)
+		    return 1
+		""";
 
 	public boolean issueCouponV2(Long userId, String couponId) {
-		String stockKey = "coupon:stock:" + couponId;
-		String userSetKey = "coupon:issued:users:" + couponId;
+		String stockKey = CacheKeys.COUPON_STOCK.getKey(couponId);
+		String userSetKey = String.format("cache:coupon:%s:users:issued",couponId);
 
 		Long result = redissonClient.getScript().eval(
 			RScript.Mode.READ_WRITE,

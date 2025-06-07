@@ -13,7 +13,7 @@ import java.util.List;
 public interface ProductJpaRepository extends JpaRepository<Product, Long> , JpaSpecificationExecutor<Product> {
 	@Query("""
 		SELECT p FROM Product p
-		JOIN OrderItemEntity oi ON p.id = oi.productId
+		JOIN OrderItem oi ON p.id = oi.productId
 		WHERE oi.order.orderedAt BETWEEN :startDate AND :endDate
 		GROUP BY p
 		ORDER BY SUM(oi.quantity) DESC

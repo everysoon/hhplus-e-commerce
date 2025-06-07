@@ -1,23 +1,20 @@
 package kr.hhplus.be.server.infra.cache;
 
-import java.time.Duration;
-import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import kr.hhplus.be.server.support.utils.CacheKeys;
 import lombok.RequiredArgsConstructor;
-import org.redisson.api.RBloomFilter;
-import org.redisson.api.RMap;
-import org.redisson.api.RScoredSortedSet;
-import org.redisson.api.RType;
-import org.redisson.api.RedissonClient;
+import org.redisson.api.*;
 import org.redisson.client.RedisException;
 import org.redisson.client.codec.LongCodec;
 import org.redisson.client.protocol.ScoredEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
+
+import java.time.Duration;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Repository
 @RequiredArgsConstructor
@@ -40,8 +37,8 @@ public class PopularProductRepository {
 		zset.addScore(productId, score);
 
 		// Zset없이 구현할 때의 판매 score 기록
-		RMap<Long, Integer> map = redissonClient.getMap(todayKey, LongCodec.INSTANCE);
-		map.addAndGet(productId, score); // 없는 경우 0부터 시작
+//		RMap<Long, Integer> map = redissonClient.getMap(todayKey, LongCodec.INSTANCE);
+//		map.addAndGet(productId, score);
 	}
 
 	// 인기 상품 점수 감소

@@ -8,8 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.springframework.transaction.annotation.Propagation.MANDATORY;
-
 @Service
 @RequiredArgsConstructor
 public class PointService {
@@ -17,7 +15,7 @@ public class PointService {
 	private final PointRepository pointRepository;
 	private final PointHistoryRepository pointHistoryRepository;
 
-	@Transactional(propagation = MANDATORY)
+	@Transactional
 	@RedisLock(lockKey = "#command.getLockKey()", waitTime = 200)
 	public Point refund(PointCommand.Refund command) {
 		PointHistory history = new PointHistory(command.userId(), PointStatus.REFUND, command.totalPrice());

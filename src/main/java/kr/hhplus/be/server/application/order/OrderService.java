@@ -13,8 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static org.springframework.transaction.annotation.Propagation.MANDATORY;
-
 @Service
 @RequiredArgsConstructor
 public class OrderService {
@@ -31,7 +29,7 @@ public class OrderService {
 
 	public Order create(OrderCommand.Create command) {
 		logger.info("### create : {}", command);
-		Order order =  new Order(
+		Order order = new Order(
 			command.couponInfo().userId(),
 			command.couponInfo().coupons(),
 			command.orderItems()
@@ -58,15 +56,16 @@ public class OrderService {
 
 	@Transactional
 	public Order save(Order order) {
+		logger.info("### save Order {}", order);
 		Order save = orderRepository.save(order);
 		OrderHistory history = new OrderHistory(save.getId());
 		orderHistoryRepository.save(history);
 		return save;
 	}
 
-	@Transactional(propagation = MANDATORY)
+	@Transactional
 	public void cancel(Order order) {
-		OrderHistory history = new OrderHistory(order.getId(),OrderStatus.CANCELED.toString());
+		OrderHistory history = new OrderHistory(order.getId(), OrderStatus.CANCELED.toString());
 		orderHistoryRepository.save(history);
 	}
 }

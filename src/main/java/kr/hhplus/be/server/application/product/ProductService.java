@@ -12,8 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static org.springframework.transaction.annotation.Propagation.MANDATORY;
-
 @Service
 @RequiredArgsConstructor
 public class ProductService {
@@ -22,7 +20,9 @@ public class ProductService {
 	private final ProductRepository productRepository;
 
 	private final PopularProductRedisService popularProductRedisService;
-
+	public Product save(Product product) {
+		return productRepository.save(product);
+	}
 	@Transactional(readOnly = true)
 	public Product findById(Long productId) {
 		return productRepository.findById(productId);
@@ -48,11 +48,9 @@ public class ProductService {
 				.toLocalDate(), command.getEndDateOrDefault().toLocalDate(), 5);
 		return productRepository.findByIdIn(topPopularProductIds);
 	}
-
-	@Transactional(propagation = MANDATORY)
+	@Transactional
 	@RedisLock(lockKey = "#command.getLockKey()")
 	public List<Product> increaseStock(ProductCommand.Refund command) {
-
 		return command.orderItems().stream()
 			.map(o -> {
 				popularProductRedisService.decreaseScore(o.getProductId(),
@@ -62,7 +60,7 @@ public class ProductService {
 			.toList();
 	}
 
-	@Transactional(propagation = MANDATORY)
+	@Transactional
 	@RedisLock(lockKey = "'lock:product:' + #productId")
 	public Product decreaseStock(Long productId, Integer quantity) {
 		logger.info("### decreaseStock : {}, {}", productId, quantity);

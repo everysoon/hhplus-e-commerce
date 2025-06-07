@@ -44,6 +44,17 @@ public class Product {
 	@Column(nullable = false)
 	private LocalDateTime createdAt;
 
+	@Builder
+	public Product(String productName, Integer stock, String category, String description, BigDecimal price) {
+		this.productName = productName;
+		this.stock = stock;
+		this.category = Category.valueOf(category);
+		this.description = description;
+		this.price = price;
+		this.createdAt = LocalDateTime.now();
+		this.status = ProductStatus.AVAILABLE;
+	}
+
 	public Product decreaseStock(Integer amount) {
 		if (this.stock < amount) {
 			throw new CustomException(ErrorCode.OUT_OF_STOCK);

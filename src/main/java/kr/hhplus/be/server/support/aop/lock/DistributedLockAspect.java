@@ -35,20 +35,22 @@ public class DistributedLockAspect {
 		Object[] args = joinPoint.getArgs();
 
 		String parsedLockKey = SpELParserHelper.parseExpression(redisLock.lockKey(), method, args);
-		RLock lock = lockRepository.getLock(parsedLockKey);
 
+		RLock lock = lockRepository.getLock(parsedLockKey);
+		log.debug("[분산락 시작] {} 획득 시도", lock.getName());
 		boolean lockAcquired = lock.tryLock(waitTime, leaseTime, TimeUnit.MILLISECONDS);
 
 		if (!lockAcquired) {
+			log.warn("[분산락 획득 실패] {} {}초 대기 후 락 획득 실패", lock.getName(), waitTime);
 			throw new CustomException(ErrorCode.LOCK_ACQUISITION_FAIL);
 		}
 		try {
+			log.debug("[분산락 획득 성공] {} (유효시간: {}초)", lock.getName(), leaseTime);
 			return aopForTransaction.proceed(joinPoint);
 		} finally {
 			// release lock
 			if (lock.isHeldByCurrentThread()) {
-				log.info("### [{}] releaseLock : {} ", Thread.currentThread().getName(),
-					lock.getName());
+				log.debug("[분산락 해제] {}", lock.getName());
 				lock.unlock();
 			}
 		}
@@ -56,7 +58,6 @@ public class DistributedLockAspect {
 
 	@AfterThrowing(value = "@annotation(redisLock)", throwing = "ex")
 	public void handleLockOnException(RedisLock redisLock, Throwable ex) {
-		log.info("### [{}] handleLockOnException ", Thread.currentThread().getName(),
-			ex.getMessage());
+		log.error("분산락 {} 획득 중 오류 발생", Thread.currentThread().getName(), ex);
 	}
 }

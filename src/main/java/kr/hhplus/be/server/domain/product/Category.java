@@ -3,6 +3,8 @@ package kr.hhplus.be.server.domain.product;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 @AllArgsConstructor
 @Getter
 public enum Category {
@@ -25,4 +27,9 @@ public enum Category {
     JEWELRY("주얼리/액세서리");
 
     private final String description;
+	public static Category random(){
+		Category[] values = Category.values();
+		int index = ThreadLocalRandom.current().nextInt(values.length);
+		return values[index];
+	}
 }
